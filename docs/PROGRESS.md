@@ -42,10 +42,20 @@ check (JavaScript before React) using the exact learner example from the brief
 avoid embarrassment if a judge tests an obscure role. Prioritize this if time
 allows before Day 13.
 
-## Day 9-10 (23-24 Aug) — Roadmap UI + Explainability
-- [ ] Connect PathScene to real generated roadmap data
-- [ ] `/api/ai/explain` — LLM explanation grounded in score breakdown
-- [ ] Dashboard page (progress %, skill radar)
+## Day 9-10 (23-24 Aug) — Roadmap UI + Explainability ✅ DONE
+- [x] Roadmap page: PathScene now renders the REAL generated path (not demo data), milestone status pulled from actual course progress
+- [x] "Why this?" button per course — calls `/api/ai/explain`, grounded in the real score breakdown (not invented)
+- [x] `PUT /api/path/:id/progress` — mark a course done, cascades next course to 'current', syncs learner's skill levels in their profile
+- [x] Dashboard page: animated progress %, skill development bar chart (Recharts), next recommended action card
+- [x] Full navigation wired: Landing → Onboarding → auto-generate path → Roadmap → Dashboard
+- [x] Verified: frontend builds clean, backend boots clean, new endpoint fails gracefully without DB
+
+**How to test the full loop once your DB is connected:**
+1. Land on `/`, click "Build My Learning Path"
+2. Complete onboarding → auto-redirects to `/roadmap/:id` with a real generated roadmap
+3. Click "Why this?" on any course → real AI-generated explanation appears
+4. Click "Mark complete" on the current course → status updates, next course activates
+5. Click "Dashboard" → see progress %, skill chart update accordingly
 
 ## Day 11-12 (25-26 Aug) — Feedback Loop + Innovation
 - [ ] Feedback endpoint that re-ranks remaining roadmap
