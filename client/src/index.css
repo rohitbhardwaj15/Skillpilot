@@ -1,0 +1,45 @@
+@import "tailwindcss";
+
+@theme {
+  /* SkillPilot design tokens — "The Path" concept */
+  --color-bg: #0B0E14;
+  --color-bg-elevated: #10141D;
+  --color-path: #E8A33D;
+  --color-path-dim: #7A5A28;
+  --color-growth: #3DDC97;
+  --color-text: #EDEEF0;
+  --color-muted: #5B6478;
+  --color-border: #1E2330;
+
+  --font-display: "Space Grotesk", sans-serif;
+  --font-body: "Inter", sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
+}
+
+@layer base {
+  html {
+    background-color: var(--color-bg);
+    color: var(--color-text);
+    scroll-behavior: smooth;
+  }
+  body {
+    font-family: var(--font-body);
+    background-color: var(--color-bg);
+    color: var(--color-text);
+  }
+  h1, h2, h3, h4 {
+    font-family: var(--font-display);
+  }
+  ::selection {
+    background: var(--color-path);
+    color: var(--color-bg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
