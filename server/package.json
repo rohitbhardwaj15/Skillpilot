@@ -6,7 +6,8 @@
   "type": "module",
   "scripts": {
     "dev": "nodemon server.js",
-    "start": "node server.js"
+    "start": "node server.js",
+    "test:engine": "node tests/recommendation-engine.test.mjs"
   },
   "keywords": [],
   "author": "",
