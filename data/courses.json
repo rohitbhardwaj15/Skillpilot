@@ -163,5 +163,170 @@
     "durationWeeks": 3,
     "type": "course",
     "url": "https://www.freecodecamp.org/learn/2022/responsive-web-design/"
+  },
+  {
+    "title": "Data Structures and Algorithms in JavaScript",
+    "provider": "Udemy",
+    "description": "Core CS fundamentals: arrays, trees, graphs, sorting, complexity analysis.",
+    "skills": ["Data Structures", "Algorithms"],
+    "level": "intermediate",
+    "prerequisites": ["JavaScript"],
+    "durationWeeks": 4,
+    "type": "course",
+    "url": "https://www.udemy.com/course/js-algorithms-and-data-structures-masterclass/"
+  },
+  {
+    "title": "SQL for Data Analysis",
+    "provider": "Udacity",
+    "description": "Querying, joins, aggregation, and analysis using SQL.",
+    "skills": ["SQL"],
+    "level": "beginner",
+    "prerequisites": [],
+    "durationWeeks": 2,
+    "type": "course",
+    "url": "https://www.udacity.com/course/sql-for-data-analysis--ud198"
+  },
+  {
+    "title": "Google Cybersecurity Certificate",
+    "provider": "Coursera (Google)",
+    "description": "Networking, security fundamentals, threat detection, and incident response.",
+    "skills": ["Cybersecurity Fundamentals", "Networking"],
+    "level": "beginner",
+    "prerequisites": [],
+    "durationWeeks": 6,
+    "type": "course",
+    "url": "https://www.coursera.org/professional-certificates/google-cybersecurity"
+  },
+  {
+    "title": "Ethical Hacking Essentials",
+    "provider": "Coursera",
+    "description": "Penetration testing fundamentals and vulnerability assessment.",
+    "skills": ["Penetration Testing", "Cybersecurity Fundamentals"],
+    "level": "intermediate",
+    "prerequisites": ["Networking", "Cybersecurity Fundamentals"],
+    "durationWeeks": 4,
+    "type": "course",
+    "url": "https://www.coursera.org/learn/ethical-hacking-essentials"
+  },
+  {
+    "title": "Linux Command Line Basics",
+    "provider": "Udemy",
+    "description": "Shell fundamentals, file systems, permissions, scripting basics.",
+    "skills": ["Linux"],
+    "level": "beginner",
+    "prerequisites": [],
+    "durationWeeks": 2,
+    "type": "course",
+    "url": "https://www.udemy.com/course/linux-command-line-basics/"
+  },
+  {
+    "title": "DevOps Fundamentals",
+    "provider": "Coursera",
+    "description": "CI/CD pipelines, infrastructure as code, and monitoring basics.",
+    "skills": ["CI/CD", "DevOps"],
+    "level": "intermediate",
+    "prerequisites": ["Linux", "Git", "Docker"],
+    "durationWeeks": 4,
+    "type": "course",
+    "url": "https://www.coursera.org/learn/devops-culture-and-mindset"
+  },
+  {
+    "title": "Google UX Design Certificate",
+    "provider": "Coursera (Google)",
+    "description": "User research, wireframing, prototyping, and usability testing.",
+    "skills": ["UI/UX Design", "Figma", "User Research"],
+    "level": "beginner",
+    "prerequisites": [],
+    "durationWeeks": 6,
+    "type": "course",
+    "url": "https://www.coursera.org/professional-certificates/google-ux-design"
+  },
+  {
+    "title": "Figma UI Design Essentials",
+    "provider": "Udemy",
+    "description": "Practical UI design and prototyping in Figma.",
+    "skills": ["Figma", "UI/UX Design"],
+    "level": "beginner",
+    "prerequisites": [],
+    "durationWeeks": 2,
+    "type": "course",
+    "url": "https://www.udemy.com/course/figma-ux-ui-design-user-experience-tutorial-course/"
+  },
+  {
+    "title": "TypeScript Fundamentals",
+    "provider": "Udemy",
+    "description": "Static typing for JavaScript, interfaces, generics.",
+    "skills": ["TypeScript"],
+    "level": "intermediate",
+    "prerequisites": ["JavaScript"],
+    "durationWeeks": 2,
+    "type": "course",
+    "url": "https://www.udemy.com/course/understanding-typescript/"
+  },
+  {
+    "title": "Testing JavaScript Applications",
+    "provider": "Udemy",
+    "description": "Unit and integration testing with Jest and React Testing Library.",
+    "skills": ["Testing"],
+    "level": "intermediate",
+    "prerequisites": ["JavaScript"],
+    "durationWeeks": 2,
+    "type": "course",
+    "url": "https://www.udemy.com/course/testing-javascript/"
+  },
+  {
+    "title": "AWS Cloud Practitioner Essentials",
+    "provider": "Coursera (AWS)",
+    "description": "Cloud fundamentals: compute, storage, networking on AWS.",
+    "skills": ["Cloud Computing", "AWS"],
+    "level": "beginner",
+    "prerequisites": [],
+    "durationWeeks": 3,
+    "type": "course",
+    "url": "https://www.coursera.org/learn/aws-cloud-practitioner-essentials"
+  },
+  {
+    "title": "Data Engineering Fundamentals",
+    "provider": "Coursera",
+    "description": "ETL pipelines, data warehousing, and pipeline orchestration.",
+    "skills": ["Data Engineering", "SQL", "ETL"],
+    "level": "intermediate",
+    "prerequisites": ["SQL", "Python"],
+    "durationWeeks": 5,
+    "type": "course",
+    "url": "https://www.coursera.org/professional-certificates/google-data-engineering"
+  },
+  {
+    "title": "Natural Language Processing Specialization",
+    "provider": "Coursera (DeepLearning.AI)",
+    "description": "Text classification, sequence models, and transformers for NLP.",
+    "skills": ["NLP", "Deep Learning"],
+    "level": "advanced",
+    "prerequisites": ["Deep Learning", "Python"],
+    "durationWeeks": 8,
+    "type": "course",
+    "url": "https://www.coursera.org/specializations/natural-language-processing"
+  },
+  {
+    "title": "Portfolio Project: REST API with Auth",
+    "provider": "SkillPilot Curated",
+    "description": "Build and deploy a secured REST API with authentication.",
+    "skills": ["REST APIs", "Node.js", "Authentication"],
+    "level": "intermediate",
+    "prerequisites": ["Node.js", "Express"],
+    "durationWeeks": 2,
+    "type": "project",
+    "url": ""
+  },
+  {
+    "title": "Portfolio Project: ML Model Deployment",
+    "provider": "SkillPilot Curated",
+    "description": "Train a model and deploy it behind a REST API.",
+    "skills": ["Deployment", "Machine Learning"],
+    "level": "advanced",
+    "prerequisites": ["Machine Learning"],
+    "durationWeeks": 2,
+    "type": "project",
+    "url": ""
   }
 ]
