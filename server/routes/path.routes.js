@@ -77,4 +77,67 @@ router.get('/:id', async (req, res) => {
   }
 });
 
+// PUT /api/path/:id/progress
+// Body: { courseId: string, status: 'done' }
+// Marks a course complete, advances the next upcoming course to 'current',
+// and syncs the learner's profile (completedCourseIds + currentSkills).
+router.put('/:id/progress', async (req, res) => {
+  const { courseId, status } = req.body;
+  if (!courseId || status !== 'done') {
+    return res.status(400).json({ error: 'courseId and status "done" are required' });
+  }
+
+  try {
+    const learningPath = await LearningPath.findById(req.params.id);
+    if (!learningPath) return res.status(404).json({ error: 'Learning path not found' });
+
+    // Flatten phases into a single ordered course list to find position + cascade "current"
+    const flat = learningPath.phases.flatMap((p) => p.courses);
+    const idx = flat.findIndex((c) => String(c.courseId) === String(courseId));
+    if (idx === -1) return res.status(404).json({ error: 'Course not found in this path' });
+
+    flat[idx].status = 'done';
+    const next = flat[idx + 1];
+    if (next && next.status === 'upcoming') {
+      next.status = 'current';
+    }
+
+    // Write the mutated flat statuses back into the nested phase structure
+    let cursor = 0;
+    learningPath.phases.forEach((p) => {
+      p.courses.forEach((c, i) => {
+        p.courses[i] = flat[cursor];
+        cursor++;
+      });
+    });
+    learningPath.markModified('phases');
+    await learningPath.save();
+
+    // Sync profile: mark course completed, upgrade skill levels for what it taught
+    const profile = await Profile.findById(learningPath.profileId);
+    if (profile) {
+      if (!profile.completedCourseIds.some((id) => String(id) === String(courseId))) {
+        profile.completedCourseIds.push(courseId);
+      }
+      const completedCourse = flat[idx];
+      completedCourse.skills.forEach((skillName) => {
+        const existing = profile.currentSkills.find(
+          (s) => s.name.toLowerCase() === skillName.toLowerCase()
+        );
+        if (existing) {
+          existing.level = 'intermediate';
+        } else {
+          profile.currentSkills.push({ name: skillName, level: 'intermediate' });
+        }
+      });
+      await profile.save();
+    }
+
+    res.json(learningPath);
+  } catch (err) {
+    console.error('progress update failed:', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
 export default router;
