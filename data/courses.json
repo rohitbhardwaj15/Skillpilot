@@ -1,0 +1,167 @@
+[
+  {
+    "title": "JavaScript Algorithms and Data Structures",
+    "provider": "freeCodeCamp",
+    "description": "Core JavaScript fundamentals, ES6, algorithmic thinking.",
+    "skills": ["JavaScript", "ES6", "Algorithms"],
+    "level": "beginner",
+    "prerequisites": [],
+    "durationWeeks": 3,
+    "type": "course",
+    "url": "https://www.freecodecamp.org/learn/javascript-algorithms-and-data-structures/"
+  },
+  {
+    "title": "The Complete JavaScript Course",
+    "provider": "Udemy",
+    "description": "Modern JavaScript from the beginning, including async/await and DOM.",
+    "skills": ["JavaScript", "DOM", "Async JavaScript"],
+    "level": "beginner",
+    "prerequisites": [],
+    "durationWeeks": 4,
+    "type": "course",
+    "url": "https://www.udemy.com/course/the-complete-javascript-course/"
+  },
+  {
+    "title": "React - The Complete Guide",
+    "provider": "Udemy",
+    "description": "React fundamentals, hooks, state management, routing.",
+    "skills": ["React", "State Management", "React Router"],
+    "level": "intermediate",
+    "prerequisites": ["JavaScript", "ES6", "DOM"],
+    "durationWeeks": 4,
+    "type": "course",
+    "url": "https://www.udemy.com/course/react-the-complete-guide-incl-redux/"
+  },
+  {
+    "title": "Front End Development Libraries",
+    "provider": "freeCodeCamp",
+    "description": "React and Redux fundamentals with certification projects.",
+    "skills": ["React", "Redux"],
+    "level": "intermediate",
+    "prerequisites": ["JavaScript"],
+    "durationWeeks": 3,
+    "type": "course",
+    "url": "https://www.freecodecamp.org/learn/front-end-development-libraries/"
+  },
+  {
+    "title": "Node.js, Express, MongoDB & More",
+    "provider": "Udemy",
+    "description": "Backend development with Node, Express, and MongoDB.",
+    "skills": ["Node.js", "Express", "MongoDB", "REST APIs"],
+    "level": "intermediate",
+    "prerequisites": ["JavaScript"],
+    "durationWeeks": 4,
+    "type": "course",
+    "url": "https://www.udemy.com/course/nodejs-express-mongodb-bootcamp/"
+  },
+  {
+    "title": "Back End Development and APIs",
+    "provider": "freeCodeCamp",
+    "description": "Node.js and Express fundamentals with API-building projects.",
+    "skills": ["Node.js", "Express", "REST APIs"],
+    "level": "intermediate",
+    "prerequisites": ["JavaScript"],
+    "durationWeeks": 3,
+    "type": "course",
+    "url": "https://www.freecodecamp.org/learn/back-end-development-and-apis/"
+  },
+  {
+    "title": "MongoDB Basics",
+    "provider": "MongoDB University",
+    "description": "CRUD operations, schema design, and aggregation in MongoDB.",
+    "skills": ["MongoDB"],
+    "level": "beginner",
+    "prerequisites": [],
+    "durationWeeks": 2,
+    "type": "course",
+    "url": "https://learn.mongodb.com/"
+  },
+  {
+    "title": "Full Stack Capstone Project",
+    "provider": "SkillPilot Curated",
+    "description": "Build and deploy a full MERN application end-to-end.",
+    "skills": ["React", "Node.js", "MongoDB", "Deployment"],
+    "level": "advanced",
+    "prerequisites": ["React", "Node.js", "MongoDB"],
+    "durationWeeks": 3,
+    "type": "project",
+    "url": ""
+  },
+  {
+    "title": "Python for Everybody",
+    "provider": "Coursera (University of Michigan)",
+    "description": "Python fundamentals for beginners.",
+    "skills": ["Python"],
+    "level": "beginner",
+    "prerequisites": [],
+    "durationWeeks": 4,
+    "type": "course",
+    "url": "https://www.coursera.org/specializations/python"
+  },
+  {
+    "title": "Machine Learning Specialization",
+    "provider": "Coursera (DeepLearning.AI / Stanford)",
+    "description": "Supervised learning, unsupervised learning, and best practices.",
+    "skills": ["Machine Learning", "Statistics"],
+    "level": "intermediate",
+    "prerequisites": ["Python", "Statistics"],
+    "durationWeeks": 8,
+    "type": "course",
+    "url": "https://www.coursera.org/specializations/machine-learning-introduction"
+  },
+  {
+    "title": "Deep Learning Specialization",
+    "provider": "Coursera (DeepLearning.AI)",
+    "description": "Neural networks, CNNs, RNNs, and sequence models.",
+    "skills": ["Deep Learning", "Neural Networks"],
+    "level": "advanced",
+    "prerequisites": ["Machine Learning", "Python"],
+    "durationWeeks": 10,
+    "type": "course",
+    "url": "https://www.coursera.org/specializations/deep-learning"
+  },
+  {
+    "title": "Statistics with Python",
+    "provider": "Coursera (University of Michigan)",
+    "description": "Statistical inference and analysis using Python.",
+    "skills": ["Statistics", "Python"],
+    "level": "beginner",
+    "prerequisites": ["Python"],
+    "durationWeeks": 4,
+    "type": "course",
+    "url": "https://www.coursera.org/specializations/statistics-with-python"
+  },
+  {
+    "title": "Docker & Kubernetes: The Practical Guide",
+    "provider": "Udemy",
+    "description": "Containerization and deployment fundamentals.",
+    "skills": ["Deployment", "Docker"],
+    "level": "intermediate",
+    "prerequisites": ["Node.js"],
+    "durationWeeks": 3,
+    "type": "course",
+    "url": "https://www.udemy.com/course/docker-kubernetes-the-practical-guide/"
+  },
+  {
+    "title": "Git and GitHub Bootcamp",
+    "provider": "Udemy",
+    "description": "Version control fundamentals for collaborative development.",
+    "skills": ["Git"],
+    "level": "beginner",
+    "prerequisites": [],
+    "durationWeeks": 1,
+    "type": "course",
+    "url": "https://www.udemy.com/course/git-and-github-bootcamp/"
+  },
+  {
+    "title": "Responsive Web Design",
+    "provider": "freeCodeCamp",
+    "description": "HTML and CSS fundamentals including Flexbox and Grid.",
+    "skills": ["HTML", "CSS"],
+    "level": "beginner",
+    "prerequisites": [],
+    "durationWeeks": 3,
+    "type": "course",
+    "url": "https://www.freecodecamp.org/learn/2022/responsive-web-design/"
+  }
+]
