@@ -13,7 +13,7 @@ const demoMilestones = [
   { id: 7, title: 'Capstone Project', status: 'upcoming' },
 ];
 
-export default function Landing() {
+export default function Landing({ onStart }) {
   const heroRef = useRef(null);
 
   useEffect(() => {
@@ -50,7 +50,10 @@ export default function Landing() {
             continuously adapts a learning journey — from where you are, to where
             you're going.
           </p>
-          <button className="hero-cta group inline-flex items-center gap-2 bg-[var(--color-path)] text-[var(--color-bg)] font-medium px-7 py-3.5 rounded-full hover:brightness-110 transition-all">
+          <button
+            onClick={onStart}
+            className="hero-cta group inline-flex items-center gap-2 bg-[var(--color-path)] text-[var(--color-bg)] font-medium px-7 py-3.5 rounded-full hover:brightness-110 transition-all"
+          >
             Build My Learning Path
             <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
           </button>
