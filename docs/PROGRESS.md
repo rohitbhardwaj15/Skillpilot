@@ -24,11 +24,23 @@
 `LLM_API_KEY=...` in `server/.env`. Without it, the endpoint fails with a clear
 error instead of crashing (tested).
 
-## Day 6-8 (20-22 Aug) — Recommendation Engine
-- [ ] Skill-gap detection (profile skills vs target role's required skills)
-- [ ] Scoring formula: 0.30*skillGap + 0.25*goalRelevance + 0.20*prereqReadiness + 0.15*interest + 0.10*style
-- [ ] Prerequisite graph + topological sort for ordering
-- [ ] `/api/path/generate` fully implemented
+## Day 6-8 (20-22 Aug) — Recommendation Engine ✅ DONE
+- [x] Skill-gap detection (role's required skills minus what learner already knows at intermediate+)
+- [x] Scoring formula implemented exactly as specified: 0.30*skillGap + 0.25*goalRelevance + 0.20*prereqReadiness + 0.15*interest + 0.10*styleMatch
+- [x] Role-matching from free-text target role → 9 defined roles (Full Stack, Frontend, Backend, Data Scientist, ML Engineer, Data Engineer, DevOps, Cybersecurity, UI/UX)
+- [x] Prerequisite-aware ordering (topological, greedy by score among eligible courses)
+- [x] Phase/milestone grouping (3 courses per phase)
+- [x] `POST /api/path/generate` fully implemented and tested
+- [x] **Standalone test suite** (`server/tests/recommendation-engine.test.mjs`) — runs without MongoDB, verified: role matching, gap detection excludes known skills, JavaScript correctly sequenced before React, phases generate correctly. Run with `npm run test:engine`
+- [x] Course dataset expanded from 15 → 30 (still short of the 150-300 target — see note below)
+
+**Verified test output:** all 8 assertions pass, including the critical prerequisite-ordering
+check (JavaScript before React) using the exact learner example from the brief
+(knows Java + HTML, wants Full Stack Developer in 6 months).
+
+**Still open:** dataset needs more growth before final submission, especially to
+avoid embarrassment if a judge tests an obscure role. Prioritize this if time
+allows before Day 13.
 
 ## Day 9-10 (23-24 Aug) — Roadmap UI + Explainability
 - [ ] Connect PathScene to real generated roadmap data
