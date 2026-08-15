@@ -1,20 +1,43 @@
 import { Router } from 'express';
+import { extractGoalProfile, explainRecommendation } from '../services/llm.service.js';
 
 const router = Router();
 
 // POST /api/ai/analyze-goal
-// TODO (Day 3-5): call LLM to extract { targetRole, timelineMonths, currentSkills }
-// from the learner's free-text goal. Keep this the ONLY place the LLM is used
-// for understanding — the recommendation logic itself must NOT be LLM-based.
+// Body: { goalText: string }
+// Returns structured profile data extracted from free text.
 router.post('/analyze-goal', async (req, res) => {
-  res.status(501).json({ message: 'Not implemented yet — Day 3-5 task' });
+  const { goalText } = req.body;
+  if (!goalText || typeof goalText !== 'string' || goalText.trim().length < 5) {
+    return res.status(400).json({ error: 'goalText is required and must be a meaningful sentence.' });
+  }
+
+  try {
+    const profileData = await extractGoalProfile(goalText);
+    res.json(profileData);
+  } catch (err) {
+    console.error('analyze-goal failed:', err.message);
+    res.status(500).json({ error: err.message });
+  }
 });
 
 // POST /api/ai/explain
-// TODO (Day 9-10): call LLM to generate a "why this recommendation" explanation,
-// grounded in the actual score breakdown from the recommendation engine.
+// Body: { courseTitle, scoreBreakdown, learnerGoal }
+// TODO (Day 9-10): wired up once the recommendation engine (Day 6-8) produces
+// real score breakdowns to explain.
 router.post('/explain', async (req, res) => {
-  res.status(501).json({ message: 'Not implemented yet — Day 9-10 task' });
+  const { courseTitle, scoreBreakdown, learnerGoal } = req.body;
+  if (!courseTitle || !scoreBreakdown) {
+    return res.status(400).json({ error: 'courseTitle and scoreBreakdown are required.' });
+  }
+
+  try {
+    const explanation = await explainRecommendation({ courseTitle, scoreBreakdown, learnerGoal });
+    res.json({ explanation });
+  } catch (err) {
+    console.error('explain failed:', err.message);
+    res.status(500).json({ error: err.message });
+  }
 });
 
 export default router;
