@@ -12,11 +12,17 @@
 - [x] Seed script to load dataset into MongoDB
 - [x] README, .env.example, .gitignore
 
-## Day 3-5 (17-19 Aug) — Learner System [NEXT]
-- [ ] Natural-language onboarding UI (chat-style goal input)
-- [ ] `/api/ai/analyze-goal` — LLM call to extract {targetRole, timelineMonths, currentSkills} from free text
-- [ ] Wire onboarding form → Profile creation in MongoDB
-- [ ] Expand course dataset toward 150-300 entries
+## Day 3-5 (17-19 Aug) — Learner System ✅ DONE
+- [x] Natural-language onboarding UI: 3-step flow (goal input → AI confirm → preferences)
+- [x] `/api/ai/analyze-goal` — real LLM call (Claude API) extracting {targetRole, timelineMonths, currentSkills}
+- [x] LLM output is validated before use (never trusted blindly) — see `llm.service.js`
+- [x] Wired onboarding → `POST /api/profile` → MongoDB
+- [x] React Router connecting Landing → Onboarding
+- [ ] **Still open:** expand course dataset from 15 toward 150-300 entries (do this alongside Day 6-8, more urgent once the recommendation engine needs range to test against)
+
+**To actually use analyze-goal:** get an API key from console.anthropic.com and set
+`LLM_API_KEY=...` in `server/.env`. Without it, the endpoint fails with a clear
+error instead of crashing (tested).
 
 ## Day 6-8 (20-22 Aug) — Recommendation Engine
 - [ ] Skill-gap detection (profile skills vs target role's required skills)
