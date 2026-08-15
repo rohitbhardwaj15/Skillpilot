@@ -16,10 +16,27 @@ export const api = {
   analyzeGoal: (goalText) =>
     request('/ai/analyze-goal', { method: 'POST', body: JSON.stringify({ goalText }) }),
 
+  explain: ({ courseTitle, scoreBreakdown, learnerGoal }) =>
+    request('/ai/explain', {
+      method: 'POST',
+      body: JSON.stringify({ courseTitle, scoreBreakdown, learnerGoal }),
+    }),
+
   createProfile: (profileData) =>
     request('/profile', { method: 'POST', body: JSON.stringify(profileData) }),
 
   getProfile: (id) => request(`/profile/${id}`),
 
   getCourses: (skill) => request(skill ? `/courses?skill=${encodeURIComponent(skill)}` : '/courses'),
+
+  generatePath: (profileId) =>
+    request('/path/generate', { method: 'POST', body: JSON.stringify({ profileId }) }),
+
+  getPath: (id) => request(`/path/${id}`),
+
+  markCourseDone: (pathId, courseId) =>
+    request(`/path/${pathId}/progress`, {
+      method: 'PUT',
+      body: JSON.stringify({ courseId, status: 'done' }),
+    }),
 };
