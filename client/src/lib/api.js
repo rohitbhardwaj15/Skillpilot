@@ -39,4 +39,13 @@ export const api = {
       method: 'PUT',
       body: JSON.stringify({ courseId, status: 'done' }),
     }),
+
+  giveFeedback: (pathId, courseId, rating) =>
+    request(`/path/${pathId}/feedback`, {
+      method: 'POST',
+      body: JSON.stringify({ courseId, rating }),
+    }),
+
+  updateProfile: (id, data) =>
+    request(`/profile/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
 };
