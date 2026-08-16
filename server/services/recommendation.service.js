@@ -158,5 +158,24 @@ export function rankCourses(courses, profile, role) {
     .filter(Boolean)
     .sort((a, b) => b.breakdown.totalScore - a.breakdown.totalScore);
 
-  return { ranked: scored, skillGaps: gaps };
+  // Diversity pass: once the catalog has several courses teaching the same
+  // skill, naively taking the top-N by score fills the roadmap with redundant
+  // JavaScript/CSS courses and crowds out coverage of OTHER required skills
+  // (e.g. React never makes it in because 4 JS courses outscored it). Keep a
+  // course only if it covers a gap skill nothing else has covered yet, or if
+  // it's a project/capstone (those integrate multiple skills and are worth
+  // keeping regardless of overlap).
+  const coveredGapSkills = new Set();
+  const diverse = [];
+  for (const item of scored) {
+    const courseSkills = item.course.skills.map((s) => s.toLowerCase());
+    const addsNewCoverage = courseSkills.some((s) => gapSet.has(s) && !coveredGapSkills.has(s));
+    const isProject = item.course.type === 'project';
+    if (addsNewCoverage || isProject || coveredGapSkills.size === 0) {
+      diverse.push(item);
+      courseSkills.forEach((s) => coveredGapSkills.add(s));
+    }
+  }
+
+  return { ranked: diverse, skillGaps: gaps };
 }
