@@ -57,9 +57,30 @@ allows before Day 13.
 4. Click "Mark complete" on the current course → status updates, next course activates
 5. Click "Dashboard" → see progress %, skill chart update accordingly
 
-## Day 11-12 (25-26 Aug) — Feedback Loop + Innovation
-- [ ] Feedback endpoint that re-ranks remaining roadmap
-- [ ] Pick 1-2 Tier B/C features (assessment, what-if simulator, etc.)
+## Day 11-12 (25-26 Aug) — Feedback Loop + Innovation ✅ DONE
+
+**Feedback loop** (the explicit "adapt suggestions based on user feedback and
+progress" requirement from the brief):
+- [x] `POST /api/path/:id/feedback` — learner rates a course (too_easy / too_hard / good / perfect)
+- [x] Rating actually mutates the learner's profile (skill levels, learning style preference)
+- [x] Remaining (not-done) portion of the roadmap is re-ranked and re-ordered against the updated profile — already-completed courses are preserved
+- [x] Frontend: emoji feedback buttons per course + a live "adaptation banner" explaining what changed
+- [x] **Proven with a real test, not a claim:** `npm run test:feedback` shows React's
+      recommendation score dropping from 0.73 → 0.66 after "too_easy" feedback, and
+      project-type courses jumping from 0.4 → 1.0 userInterest after a style preference
+      change. Numbers, not assertions of intent.
+
+**Innovation feature — What-if simulator:**
+- [x] Dashboard slider for hours/week → live-recalculates remaining weeks and estimated
+      completion date, client-side, instant (no backend round-trip)
+- [x] "Save this pace" persists the chosen hours/week back to the profile
+
+**Verified:** `npm run test` (both suites) passes, frontend builds clean, backend
+boots clean.
+
+**Tier A checklist status:** all 9 Tier A requirements from the original plan are
+now built and connected end-to-end. Remaining work is deployment, dataset growth,
+docs, and demo video.
 
 ## Day 13 (27 Aug) — Deploy
 - [ ] Deploy client to Vercel
