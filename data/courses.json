@@ -3,7 +3,11 @@
     "title": "JavaScript Algorithms and Data Structures",
     "provider": "freeCodeCamp",
     "description": "Core JavaScript fundamentals, ES6, algorithmic thinking.",
-    "skills": ["JavaScript", "ES6", "Algorithms"],
+    "skills": [
+      "JavaScript",
+      "ES6",
+      "Algorithms"
+    ],
     "level": "beginner",
     "prerequisites": [],
     "durationWeeks": 3,
@@ -14,7 +18,11 @@
     "title": "The Complete JavaScript Course",
     "provider": "Udemy",
     "description": "Modern JavaScript from the beginning, including async/await and DOM.",
-    "skills": ["JavaScript", "DOM", "Async JavaScript"],
+    "skills": [
+      "JavaScript",
+      "DOM",
+      "Async JavaScript"
+    ],
     "level": "beginner",
     "prerequisites": [],
     "durationWeeks": 4,
@@ -25,9 +33,17 @@
     "title": "React - The Complete Guide",
     "provider": "Udemy",
     "description": "React fundamentals, hooks, state management, routing.",
-    "skills": ["React", "State Management", "React Router"],
+    "skills": [
+      "React",
+      "State Management",
+      "React Router"
+    ],
     "level": "intermediate",
-    "prerequisites": ["JavaScript", "ES6", "DOM"],
+    "prerequisites": [
+      "JavaScript",
+      "ES6",
+      "DOM"
+    ],
     "durationWeeks": 4,
     "type": "course",
     "url": "https://www.udemy.com/course/react-the-complete-guide-incl-redux/"
@@ -36,9 +52,14 @@
     "title": "Front End Development Libraries",
     "provider": "freeCodeCamp",
     "description": "React and Redux fundamentals with certification projects.",
-    "skills": ["React", "Redux"],
+    "skills": [
+      "React",
+      "Redux"
+    ],
     "level": "intermediate",
-    "prerequisites": ["JavaScript"],
+    "prerequisites": [
+      "JavaScript"
+    ],
     "durationWeeks": 3,
     "type": "course",
     "url": "https://www.freecodecamp.org/learn/front-end-development-libraries/"
@@ -47,9 +68,16 @@
     "title": "Node.js, Express, MongoDB & More",
     "provider": "Udemy",
     "description": "Backend development with Node, Express, and MongoDB.",
-    "skills": ["Node.js", "Express", "MongoDB", "REST APIs"],
+    "skills": [
+      "Node.js",
+      "Express",
+      "MongoDB",
+      "REST APIs"
+    ],
     "level": "intermediate",
-    "prerequisites": ["JavaScript"],
+    "prerequisites": [
+      "JavaScript"
+    ],
     "durationWeeks": 4,
     "type": "course",
     "url": "https://www.udemy.com/course/nodejs-express-mongodb-bootcamp/"
@@ -58,9 +86,15 @@
     "title": "Back End Development and APIs",
     "provider": "freeCodeCamp",
     "description": "Node.js and Express fundamentals with API-building projects.",
-    "skills": ["Node.js", "Express", "REST APIs"],
+    "skills": [
+      "Node.js",
+      "Express",
+      "REST APIs"
+    ],
     "level": "intermediate",
-    "prerequisites": ["JavaScript"],
+    "prerequisites": [
+      "JavaScript"
+    ],
     "durationWeeks": 3,
     "type": "course",
     "url": "https://www.freecodecamp.org/learn/back-end-development-and-apis/"
@@ -69,7 +103,9 @@
     "title": "MongoDB Basics",
     "provider": "MongoDB University",
     "description": "CRUD operations, schema design, and aggregation in MongoDB.",
-    "skills": ["MongoDB"],
+    "skills": [
+      "MongoDB"
+    ],
     "level": "beginner",
     "prerequisites": [],
     "durationWeeks": 2,
@@ -80,9 +116,18 @@
     "title": "Full Stack Capstone Project",
     "provider": "SkillPilot Curated",
     "description": "Build and deploy a full MERN application end-to-end.",
-    "skills": ["React", "Node.js", "MongoDB", "Deployment"],
+    "skills": [
+      "React",
+      "Node.js",
+      "MongoDB",
+      "Deployment"
+    ],
     "level": "advanced",
-    "prerequisites": ["React", "Node.js", "MongoDB"],
+    "prerequisites": [
+      "React",
+      "Node.js",
+      "MongoDB"
+    ],
     "durationWeeks": 3,
     "type": "project",
     "url": ""
@@ -91,7 +136,9 @@
     "title": "Python for Everybody",
     "provider": "Coursera (University of Michigan)",
     "description": "Python fundamentals for beginners.",
-    "skills": ["Python"],
+    "skills": [
+      "Python"
+    ],
     "level": "beginner",
     "prerequisites": [],
     "durationWeeks": 4,
@@ -102,9 +149,15 @@
     "title": "Machine Learning Specialization",
     "provider": "Coursera (DeepLearning.AI / Stanford)",
     "description": "Supervised learning, unsupervised learning, and best practices.",
-    "skills": ["Machine Learning", "Statistics"],
+    "skills": [
+      "Machine Learning",
+      "Statistics"
+    ],
     "level": "intermediate",
-    "prerequisites": ["Python", "Statistics"],
+    "prerequisites": [
+      "Python",
+      "Statistics"
+    ],
     "durationWeeks": 8,
     "type": "course",
     "url": "https://www.coursera.org/specializations/machine-learning-introduction"
@@ -113,9 +166,15 @@
     "title": "Deep Learning Specialization",
     "provider": "Coursera (DeepLearning.AI)",
     "description": "Neural networks, CNNs, RNNs, and sequence models.",
-    "skills": ["Deep Learning", "Neural Networks"],
+    "skills": [
+      "Deep Learning",
+      "Neural Networks"
+    ],
     "level": "advanced",
-    "prerequisites": ["Machine Learning", "Python"],
+    "prerequisites": [
+      "Machine Learning",
+      "Python"
+    ],
     "durationWeeks": 10,
     "type": "course",
     "url": "https://www.coursera.org/specializations/deep-learning"
@@ -124,9 +183,14 @@
     "title": "Statistics with Python",
     "provider": "Coursera (University of Michigan)",
     "description": "Statistical inference and analysis using Python.",
-    "skills": ["Statistics", "Python"],
+    "skills": [
+      "Statistics",
+      "Python"
+    ],
     "level": "beginner",
-    "prerequisites": ["Python"],
+    "prerequisites": [
+      "Python"
+    ],
     "durationWeeks": 4,
     "type": "course",
     "url": "https://www.coursera.org/specializations/statistics-with-python"
@@ -135,9 +199,14 @@
     "title": "Docker & Kubernetes: The Practical Guide",
     "provider": "Udemy",
     "description": "Containerization and deployment fundamentals.",
-    "skills": ["Deployment", "Docker"],
+    "skills": [
+      "Deployment",
+      "Docker"
+    ],
     "level": "intermediate",
-    "prerequisites": ["Node.js"],
+    "prerequisites": [
+      "Node.js"
+    ],
     "durationWeeks": 3,
     "type": "course",
     "url": "https://www.udemy.com/course/docker-kubernetes-the-practical-guide/"
@@ -146,7 +215,9 @@
     "title": "Git and GitHub Bootcamp",
     "provider": "Udemy",
     "description": "Version control fundamentals for collaborative development.",
-    "skills": ["Git"],
+    "skills": [
+      "Git"
+    ],
     "level": "beginner",
     "prerequisites": [],
     "durationWeeks": 1,
@@ -157,7 +228,10 @@
     "title": "Responsive Web Design",
     "provider": "freeCodeCamp",
     "description": "HTML and CSS fundamentals including Flexbox and Grid.",
-    "skills": ["HTML", "CSS"],
+    "skills": [
+      "HTML",
+      "CSS"
+    ],
     "level": "beginner",
     "prerequisites": [],
     "durationWeeks": 3,
@@ -168,9 +242,14 @@
     "title": "Data Structures and Algorithms in JavaScript",
     "provider": "Udemy",
     "description": "Core CS fundamentals: arrays, trees, graphs, sorting, complexity analysis.",
-    "skills": ["Data Structures", "Algorithms"],
+    "skills": [
+      "Data Structures",
+      "Algorithms"
+    ],
     "level": "intermediate",
-    "prerequisites": ["JavaScript"],
+    "prerequisites": [
+      "JavaScript"
+    ],
     "durationWeeks": 4,
     "type": "course",
     "url": "https://www.udemy.com/course/js-algorithms-and-data-structures-masterclass/"
@@ -179,7 +258,9 @@
     "title": "SQL for Data Analysis",
     "provider": "Udacity",
     "description": "Querying, joins, aggregation, and analysis using SQL.",
-    "skills": ["SQL"],
+    "skills": [
+      "SQL"
+    ],
     "level": "beginner",
     "prerequisites": [],
     "durationWeeks": 2,
@@ -190,7 +271,10 @@
     "title": "Google Cybersecurity Certificate",
     "provider": "Coursera (Google)",
     "description": "Networking, security fundamentals, threat detection, and incident response.",
-    "skills": ["Cybersecurity Fundamentals", "Networking"],
+    "skills": [
+      "Cybersecurity Fundamentals",
+      "Networking"
+    ],
     "level": "beginner",
     "prerequisites": [],
     "durationWeeks": 6,
@@ -201,9 +285,15 @@
     "title": "Ethical Hacking Essentials",
     "provider": "Coursera",
     "description": "Penetration testing fundamentals and vulnerability assessment.",
-    "skills": ["Penetration Testing", "Cybersecurity Fundamentals"],
+    "skills": [
+      "Penetration Testing",
+      "Cybersecurity Fundamentals"
+    ],
     "level": "intermediate",
-    "prerequisites": ["Networking", "Cybersecurity Fundamentals"],
+    "prerequisites": [
+      "Networking",
+      "Cybersecurity Fundamentals"
+    ],
     "durationWeeks": 4,
     "type": "course",
     "url": "https://www.coursera.org/learn/ethical-hacking-essentials"
@@ -212,7 +302,9 @@
     "title": "Linux Command Line Basics",
     "provider": "Udemy",
     "description": "Shell fundamentals, file systems, permissions, scripting basics.",
-    "skills": ["Linux"],
+    "skills": [
+      "Linux"
+    ],
     "level": "beginner",
     "prerequisites": [],
     "durationWeeks": 2,
@@ -223,9 +315,16 @@
     "title": "DevOps Fundamentals",
     "provider": "Coursera",
     "description": "CI/CD pipelines, infrastructure as code, and monitoring basics.",
-    "skills": ["CI/CD", "DevOps"],
+    "skills": [
+      "CI/CD",
+      "DevOps"
+    ],
     "level": "intermediate",
-    "prerequisites": ["Linux", "Git", "Docker"],
+    "prerequisites": [
+      "Linux",
+      "Git",
+      "Docker"
+    ],
     "durationWeeks": 4,
     "type": "course",
     "url": "https://www.coursera.org/learn/devops-culture-and-mindset"
@@ -234,7 +333,11 @@
     "title": "Google UX Design Certificate",
     "provider": "Coursera (Google)",
     "description": "User research, wireframing, prototyping, and usability testing.",
-    "skills": ["UI/UX Design", "Figma", "User Research"],
+    "skills": [
+      "UI/UX Design",
+      "Figma",
+      "User Research"
+    ],
     "level": "beginner",
     "prerequisites": [],
     "durationWeeks": 6,
@@ -245,7 +348,10 @@
     "title": "Figma UI Design Essentials",
     "provider": "Udemy",
     "description": "Practical UI design and prototyping in Figma.",
-    "skills": ["Figma", "UI/UX Design"],
+    "skills": [
+      "Figma",
+      "UI/UX Design"
+    ],
     "level": "beginner",
     "prerequisites": [],
     "durationWeeks": 2,
@@ -256,9 +362,13 @@
     "title": "TypeScript Fundamentals",
     "provider": "Udemy",
     "description": "Static typing for JavaScript, interfaces, generics.",
-    "skills": ["TypeScript"],
+    "skills": [
+      "TypeScript"
+    ],
     "level": "intermediate",
-    "prerequisites": ["JavaScript"],
+    "prerequisites": [
+      "JavaScript"
+    ],
     "durationWeeks": 2,
     "type": "course",
     "url": "https://www.udemy.com/course/understanding-typescript/"
@@ -267,9 +377,13 @@
     "title": "Testing JavaScript Applications",
     "provider": "Udemy",
     "description": "Unit and integration testing with Jest and React Testing Library.",
-    "skills": ["Testing"],
+    "skills": [
+      "Testing"
+    ],
     "level": "intermediate",
-    "prerequisites": ["JavaScript"],
+    "prerequisites": [
+      "JavaScript"
+    ],
     "durationWeeks": 2,
     "type": "course",
     "url": "https://www.udemy.com/course/testing-javascript/"
@@ -278,7 +392,10 @@
     "title": "AWS Cloud Practitioner Essentials",
     "provider": "Coursera (AWS)",
     "description": "Cloud fundamentals: compute, storage, networking on AWS.",
-    "skills": ["Cloud Computing", "AWS"],
+    "skills": [
+      "Cloud Computing",
+      "AWS"
+    ],
     "level": "beginner",
     "prerequisites": [],
     "durationWeeks": 3,
@@ -289,9 +406,16 @@
     "title": "Data Engineering Fundamentals",
     "provider": "Coursera",
     "description": "ETL pipelines, data warehousing, and pipeline orchestration.",
-    "skills": ["Data Engineering", "SQL", "ETL"],
+    "skills": [
+      "Data Engineering",
+      "SQL",
+      "ETL"
+    ],
     "level": "intermediate",
-    "prerequisites": ["SQL", "Python"],
+    "prerequisites": [
+      "SQL",
+      "Python"
+    ],
     "durationWeeks": 5,
     "type": "course",
     "url": "https://www.coursera.org/professional-certificates/google-data-engineering"
@@ -300,9 +424,15 @@
     "title": "Natural Language Processing Specialization",
     "provider": "Coursera (DeepLearning.AI)",
     "description": "Text classification, sequence models, and transformers for NLP.",
-    "skills": ["NLP", "Deep Learning"],
+    "skills": [
+      "NLP",
+      "Deep Learning"
+    ],
     "level": "advanced",
-    "prerequisites": ["Deep Learning", "Python"],
+    "prerequisites": [
+      "Deep Learning",
+      "Python"
+    ],
     "durationWeeks": 8,
     "type": "course",
     "url": "https://www.coursera.org/specializations/natural-language-processing"
@@ -311,9 +441,16 @@
     "title": "Portfolio Project: REST API with Auth",
     "provider": "SkillPilot Curated",
     "description": "Build and deploy a secured REST API with authentication.",
-    "skills": ["REST APIs", "Node.js", "Authentication"],
+    "skills": [
+      "REST APIs",
+      "Node.js",
+      "Authentication"
+    ],
     "level": "intermediate",
-    "prerequisites": ["Node.js", "Express"],
+    "prerequisites": [
+      "Node.js",
+      "Express"
+    ],
     "durationWeeks": 2,
     "type": "project",
     "url": ""
@@ -322,11 +459,728 @@
     "title": "Portfolio Project: ML Model Deployment",
     "provider": "SkillPilot Curated",
     "description": "Train a model and deploy it behind a REST API.",
-    "skills": ["Deployment", "Machine Learning"],
+    "skills": [
+      "Deployment",
+      "Machine Learning"
+    ],
     "level": "advanced",
-    "prerequisites": ["Machine Learning"],
+    "prerequisites": [
+      "Machine Learning"
+    ],
     "durationWeeks": 2,
     "type": "project",
     "url": ""
+  },
+  {
+    "title": "CompTIA Security+ Certification Prep",
+    "provider": "Udemy",
+    "description": "Foundational security certification covering threats, cryptography, and risk management.",
+    "skills": [
+      "Cybersecurity Fundamentals",
+      "Networking"
+    ],
+    "level": "beginner",
+    "prerequisites": [],
+    "durationWeeks": 5,
+    "type": "course",
+    "url": "https://www.udemy.com/course/comptia-security-plus/"
+  },
+  {
+    "title": "Network Security Fundamentals",
+    "provider": "Coursera",
+    "description": "Firewalls, VPNs, intrusion detection, and secure network architecture.",
+    "skills": [
+      "Networking",
+      "Cybersecurity Fundamentals"
+    ],
+    "level": "beginner",
+    "prerequisites": [],
+    "durationWeeks": 3,
+    "type": "course",
+    "url": "https://www.coursera.org/learn/network-security"
+  },
+  {
+    "title": "Practical Ethical Hacking",
+    "provider": "TCM Security (Udemy)",
+    "description": "Hands-on penetration testing methodology from recon to reporting.",
+    "skills": [
+      "Penetration Testing",
+      "Networking"
+    ],
+    "level": "intermediate",
+    "prerequisites": [
+      "Networking",
+      "Linux"
+    ],
+    "durationWeeks": 6,
+    "type": "course",
+    "url": "https://www.udemy.com/course/practical-ethical-hacking/"
+  },
+  {
+    "title": "Incident Response and Digital Forensics",
+    "provider": "Coursera (IBM)",
+    "description": "Detecting, containing, and investigating security incidents.",
+    "skills": [
+      "Incident Response",
+      "Cybersecurity Fundamentals"
+    ],
+    "level": "intermediate",
+    "prerequisites": [
+      "Cybersecurity Fundamentals"
+    ],
+    "durationWeeks": 4,
+    "type": "course",
+    "url": "https://www.coursera.org/learn/ibm-incident-response"
+  },
+  {
+    "title": "Cryptography I",
+    "provider": "Coursera (Stanford)",
+    "description": "Foundations of modern cryptography: encryption, hashing, and protocols.",
+    "skills": [
+      "Cryptography",
+      "Cybersecurity Fundamentals"
+    ],
+    "level": "intermediate",
+    "prerequisites": [],
+    "durationWeeks": 5,
+    "type": "course",
+    "url": "https://www.coursera.org/learn/crypto"
+  },
+  {
+    "title": "SOC Analyst Fundamentals",
+    "provider": "Coursera",
+    "description": "Security operations, SIEM tools, and threat monitoring workflows.",
+    "skills": [
+      "SIEM",
+      "Cybersecurity Fundamentals"
+    ],
+    "level": "intermediate",
+    "prerequisites": [
+      "Networking"
+    ],
+    "durationWeeks": 4,
+    "type": "course",
+    "url": "https://www.coursera.org/professional-certificates/microsoft-cybersecurity-analyst"
+  },
+  {
+    "title": "Portfolio Project: Vulnerability Assessment Report",
+    "provider": "SkillPilot Curated",
+    "description": "Scan, assess, and document vulnerabilities in a sandboxed environment.",
+    "skills": [
+      "Penetration Testing",
+      "Cybersecurity Fundamentals"
+    ],
+    "level": "advanced",
+    "prerequisites": [
+      "Penetration Testing"
+    ],
+    "durationWeeks": 2,
+    "type": "project",
+    "url": ""
+  },
+  {
+    "title": "UX Research and Design Specialization",
+    "provider": "Coursera (Michigan)",
+    "description": "End-to-end UX process: research, personas, wireframes, testing.",
+    "skills": [
+      "User Research",
+      "UI/UX Design"
+    ],
+    "level": "beginner",
+    "prerequisites": [],
+    "durationWeeks": 6,
+    "type": "course",
+    "url": "https://www.coursera.org/specializations/michiganux"
+  },
+  {
+    "title": "Interaction Design Specialization",
+    "provider": "Coursera (UCSD)",
+    "description": "Prototyping and interaction design principles for digital products.",
+    "skills": [
+      "UI/UX Design",
+      "Prototyping"
+    ],
+    "level": "intermediate",
+    "prerequisites": [
+      "UI/UX Design"
+    ],
+    "durationWeeks": 5,
+    "type": "course",
+    "url": "https://www.coursera.org/specializations/interaction-design"
+  },
+  {
+    "title": "Design Systems in Figma",
+    "provider": "Udemy",
+    "description": "Building scalable component libraries and design tokens in Figma.",
+    "skills": [
+      "Figma",
+      "Design Systems"
+    ],
+    "level": "intermediate",
+    "prerequisites": [
+      "Figma"
+    ],
+    "durationWeeks": 2,
+    "type": "course",
+    "url": "https://www.udemy.com/course/figma-design-systems/"
+  },
+  {
+    "title": "Adobe XD Essentials",
+    "provider": "Udemy",
+    "description": "Prototyping and UI design fundamentals using Adobe XD.",
+    "skills": [
+      "UI/UX Design",
+      "Prototyping"
+    ],
+    "level": "beginner",
+    "prerequisites": [],
+    "durationWeeks": 2,
+    "type": "course",
+    "url": "https://www.udemy.com/course/adobe-xd-essentials/"
+  },
+  {
+    "title": "Portfolio Project: Mobile App Redesign",
+    "provider": "SkillPilot Curated",
+    "description": "Research, wireframe, and prototype a redesign of an existing app.",
+    "skills": [
+      "UI/UX Design",
+      "User Research",
+      "Prototyping"
+    ],
+    "level": "advanced",
+    "prerequisites": [
+      "UI/UX Design",
+      "User Research"
+    ],
+    "durationWeeks": 3,
+    "type": "project",
+    "url": ""
+  },
+  {
+    "title": "Kubernetes for Developers",
+    "provider": "Coursera (LFS258)",
+    "description": "Container orchestration fundamentals: pods, deployments, services.",
+    "skills": [
+      "Kubernetes",
+      "Docker"
+    ],
+    "level": "intermediate",
+    "prerequisites": [
+      "Docker"
+    ],
+    "durationWeeks": 4,
+    "type": "course",
+    "url": "https://www.coursera.org/learn/lfs258"
+  },
+  {
+    "title": "Terraform: Infrastructure as Code",
+    "provider": "Udemy",
+    "description": "Provisioning cloud infrastructure declaratively with Terraform.",
+    "skills": [
+      "Infrastructure as Code",
+      "DevOps"
+    ],
+    "level": "intermediate",
+    "prerequisites": [
+      "Cloud Computing"
+    ],
+    "durationWeeks": 3,
+    "type": "course",
+    "url": "https://www.udemy.com/course/terraform-beginner-to-advanced/"
+  },
+  {
+    "title": "Jenkins CI/CD Pipelines",
+    "provider": "Udemy",
+    "description": "Building automated build, test, and deploy pipelines with Jenkins.",
+    "skills": [
+      "CI/CD",
+      "DevOps"
+    ],
+    "level": "intermediate",
+    "prerequisites": [
+      "Git"
+    ],
+    "durationWeeks": 2,
+    "type": "course",
+    "url": "https://www.udemy.com/course/jenkins-from-zero-to-hero/"
+  },
+  {
+    "title": "Site Reliability Engineering Fundamentals",
+    "provider": "Coursera (Google)",
+    "description": "SLIs, SLOs, monitoring, and incident management practices.",
+    "skills": [
+      "DevOps",
+      "Monitoring"
+    ],
+    "level": "advanced",
+    "prerequisites": [
+      "DevOps"
+    ],
+    "durationWeeks": 4,
+    "type": "course",
+    "url": "https://www.coursera.org/learn/site-reliability-engineering-slos"
+  },
+  {
+    "title": "Ansible for Configuration Management",
+    "provider": "Udemy",
+    "description": "Automating server configuration and deployment with Ansible.",
+    "skills": [
+      "DevOps",
+      "Linux"
+    ],
+    "level": "intermediate",
+    "prerequisites": [
+      "Linux"
+    ],
+    "durationWeeks": 2,
+    "type": "course",
+    "url": "https://www.udemy.com/course/learn-ansible/"
+  },
+  {
+    "title": "Portfolio Project: CI/CD Pipeline Setup",
+    "provider": "SkillPilot Curated",
+    "description": "Build a full CI/CD pipeline for a sample application with automated tests.",
+    "skills": [
+      "CI/CD",
+      "DevOps",
+      "Docker"
+    ],
+    "level": "advanced",
+    "prerequisites": [
+      "CI/CD",
+      "Docker"
+    ],
+    "durationWeeks": 2,
+    "type": "project",
+    "url": ""
+  },
+  {
+    "title": "Apache Spark for Data Engineering",
+    "provider": "Coursera",
+    "description": "Distributed data processing at scale with Apache Spark.",
+    "skills": [
+      "Data Engineering",
+      "Spark"
+    ],
+    "level": "intermediate",
+    "prerequisites": [
+      "Python",
+      "SQL"
+    ],
+    "durationWeeks": 5,
+    "type": "course",
+    "url": "https://www.coursera.org/learn/apache-spark"
+  },
+  {
+    "title": "Apache Airflow for Data Pipelines",
+    "provider": "Udemy",
+    "description": "Orchestrating and scheduling ETL workflows with Airflow.",
+    "skills": [
+      "Data Engineering",
+      "ETL"
+    ],
+    "level": "intermediate",
+    "prerequisites": [
+      "Python"
+    ],
+    "durationWeeks": 3,
+    "type": "course",
+    "url": "https://www.udemy.com/course/the-complete-hands-on-course-to-master-apache-airflow/"
+  },
+  {
+    "title": "Data Warehousing Concepts",
+    "provider": "Coursera (IBM)",
+    "description": "Dimensional modeling, star schemas, and warehouse design.",
+    "skills": [
+      "Data Engineering",
+      "SQL"
+    ],
+    "level": "beginner",
+    "prerequisites": [
+      "SQL"
+    ],
+    "durationWeeks": 3,
+    "type": "course",
+    "url": "https://www.coursera.org/learn/ibm-data-warehousing"
+  },
+  {
+    "title": "Portfolio Project: End-to-End ETL Pipeline",
+    "provider": "SkillPilot Curated",
+    "description": "Extract, transform, and load real-world data into a warehouse.",
+    "skills": [
+      "Data Engineering",
+      "ETL",
+      "SQL"
+    ],
+    "level": "advanced",
+    "prerequisites": [
+      "Data Engineering"
+    ],
+    "durationWeeks": 3,
+    "type": "project",
+    "url": ""
+  },
+  {
+    "title": "Eloquent JavaScript (Interactive Course)",
+    "provider": "freeCodeCamp / Marijn Haverbeke",
+    "description": "Deep-dive JavaScript fundamentals through an interactive online book.",
+    "skills": [
+      "JavaScript"
+    ],
+    "level": "beginner",
+    "prerequisites": [],
+    "durationWeeks": 3,
+    "type": "course",
+    "url": "https://eloquentjavascript.net/"
+  },
+  {
+    "title": "You Don't Know JS (Series)",
+    "provider": "Kyle Simpson (free/open source)",
+    "description": "Deep JavaScript internals: scope, closures, prototypes, async.",
+    "skills": [
+      "JavaScript",
+      "ES6"
+    ],
+    "level": "advanced",
+    "prerequisites": [
+      "JavaScript"
+    ],
+    "durationWeeks": 4,
+    "type": "course",
+    "url": "https://github.com/getify/You-Dont-Know-JS"
+  },
+  {
+    "title": "CS50's Web Programming with Python and JavaScript",
+    "provider": "edX (Harvard)",
+    "description": "Full-stack web development: Django, JavaScript, SQL, APIs.",
+    "skills": [
+      "JavaScript",
+      "Python",
+      "SQL"
+    ],
+    "level": "intermediate",
+    "prerequisites": [
+      "JavaScript"
+    ],
+    "durationWeeks": 10,
+    "type": "course",
+    "url": "https://cs50.harvard.edu/web/"
+  },
+  {
+    "title": "Next.js Fundamentals",
+    "provider": "Udemy",
+    "description": "Server-side rendering, routing, and deployment with Next.js.",
+    "skills": [
+      "React",
+      "Deployment"
+    ],
+    "level": "intermediate",
+    "prerequisites": [
+      "React"
+    ],
+    "durationWeeks": 2,
+    "type": "course",
+    "url": "https://www.udemy.com/course/nextjs-dev-to-deployment/"
+  },
+  {
+    "title": "Express.js Deep Dive",
+    "provider": "Udemy",
+    "description": "Middleware, routing, and building production-grade APIs with Express.",
+    "skills": [
+      "Express",
+      "Node.js"
+    ],
+    "level": "intermediate",
+    "prerequisites": [
+      "Node.js"
+    ],
+    "durationWeeks": 2,
+    "type": "course",
+    "url": "https://www.udemy.com/course/expressjs-in-depth/"
+  },
+  {
+    "title": "MongoDB Advanced Aggregation",
+    "provider": "MongoDB University",
+    "description": "Complex aggregation pipelines, indexing, and performance tuning.",
+    "skills": [
+      "MongoDB"
+    ],
+    "level": "advanced",
+    "prerequisites": [
+      "MongoDB"
+    ],
+    "durationWeeks": 2,
+    "type": "course",
+    "url": "https://learn.mongodb.com/"
+  },
+  {
+    "title": "PostgreSQL for Developers",
+    "provider": "Udemy",
+    "description": "Relational database design and advanced SQL with PostgreSQL.",
+    "skills": [
+      "SQL"
+    ],
+    "level": "intermediate",
+    "prerequisites": [],
+    "durationWeeks": 3,
+    "type": "course",
+    "url": "https://www.udemy.com/course/sql-and-postgresql/"
+  },
+  {
+    "title": "Advanced React Patterns",
+    "provider": "Frontend Masters",
+    "description": "Compound components, render props, and performance optimization.",
+    "skills": [
+      "React",
+      "State Management"
+    ],
+    "level": "advanced",
+    "prerequisites": [
+      "React"
+    ],
+    "durationWeeks": 2,
+    "type": "course",
+    "url": "https://frontendmasters.com/courses/advanced-react-patterns/"
+  },
+  {
+    "title": "System Design Interview Prep",
+    "provider": "Educative",
+    "description": "Designing scalable systems: load balancing, caching, sharding.",
+    "skills": [
+      "System Design",
+      "Algorithms"
+    ],
+    "level": "advanced",
+    "prerequisites": [
+      "Data Structures"
+    ],
+    "durationWeeks": 4,
+    "type": "course",
+    "url": "https://www.educative.io/courses/grokking-the-system-design-interview"
+  },
+  {
+    "title": "Introduction to Statistics",
+    "provider": "Khan Academy",
+    "description": "Descriptive and inferential statistics fundamentals, free and self-paced.",
+    "skills": [
+      "Statistics"
+    ],
+    "level": "beginner",
+    "prerequisites": [],
+    "durationWeeks": 3,
+    "type": "course",
+    "url": "https://www.khanacademy.org/math/statistics-probability"
+  },
+  {
+    "title": "Pandas and NumPy for Data Analysis",
+    "provider": "Udemy",
+    "description": "Data manipulation and numerical computing in Python.",
+    "skills": [
+      "Python",
+      "Data Analysis"
+    ],
+    "level": "beginner",
+    "prerequisites": [
+      "Python"
+    ],
+    "durationWeeks": 2,
+    "type": "course",
+    "url": "https://www.udemy.com/course/data-analysis-with-pandas/"
+  },
+  {
+    "title": "Feature Engineering for Machine Learning",
+    "provider": "Coursera",
+    "description": "Transforming raw data into features that improve model performance.",
+    "skills": [
+      "Machine Learning",
+      "Python"
+    ],
+    "level": "intermediate",
+    "prerequisites": [
+      "Machine Learning"
+    ],
+    "durationWeeks": 3,
+    "type": "course",
+    "url": "https://www.coursera.org/learn/feature-engineering"
+  },
+  {
+    "title": "MLOps Fundamentals",
+    "provider": "Coursera (DeepLearning.AI)",
+    "description": "Deploying, monitoring, and maintaining ML models in production.",
+    "skills": [
+      "Deployment",
+      "Machine Learning",
+      "Docker"
+    ],
+    "level": "advanced",
+    "prerequisites": [
+      "Machine Learning",
+      "Docker"
+    ],
+    "durationWeeks": 5,
+    "type": "course",
+    "url": "https://www.coursera.org/specializations/machine-learning-engineering-for-production-mlops"
+  },
+  {
+    "title": "Convolutional Neural Networks Specialization",
+    "provider": "Coursera (DeepLearning.AI)",
+    "description": "Computer vision fundamentals: CNNs, object detection, image segmentation.",
+    "skills": [
+      "Deep Learning",
+      "Computer Vision"
+    ],
+    "level": "advanced",
+    "prerequisites": [
+      "Deep Learning"
+    ],
+    "durationWeeks": 6,
+    "type": "course",
+    "url": "https://www.coursera.org/learn/convolutional-neural-networks"
+  },
+  {
+    "title": "HTML & CSS for Beginners",
+    "provider": "Udemy",
+    "description": "Building your first web pages with semantic HTML and modern CSS.",
+    "skills": [
+      "HTML",
+      "CSS"
+    ],
+    "level": "beginner",
+    "prerequisites": [],
+    "durationWeeks": 2,
+    "type": "course",
+    "url": "https://www.udemy.com/course/html-css-for-beginners/"
+  },
+  {
+    "title": "CSS Flexbox and Grid Mastery",
+    "provider": "Udemy",
+    "description": "Modern responsive layout techniques with Flexbox and CSS Grid.",
+    "skills": [
+      "CSS"
+    ],
+    "level": "intermediate",
+    "prerequisites": [
+      "HTML",
+      "CSS"
+    ],
+    "durationWeeks": 1,
+    "type": "course",
+    "url": "https://www.udemy.com/course/css-grid-flexbox/"
+  },
+  {
+    "title": "Authentication and Authorization in Web Apps",
+    "provider": "Udemy",
+    "description": "JWT, OAuth, sessions, and securing REST APIs.",
+    "skills": [
+      "Authentication",
+      "REST APIs"
+    ],
+    "level": "intermediate",
+    "prerequisites": [
+      "REST APIs"
+    ],
+    "durationWeeks": 2,
+    "type": "course",
+    "url": "https://www.udemy.com/course/web-authentication-and-authorization/"
+  },
+  {
+    "title": "GraphQL Fundamentals",
+    "provider": "Udemy",
+    "description": "Building flexible APIs with GraphQL, schemas, and resolvers.",
+    "skills": [
+      "REST APIs",
+      "Node.js"
+    ],
+    "level": "intermediate",
+    "prerequisites": [
+      "Node.js"
+    ],
+    "durationWeeks": 2,
+    "type": "course",
+    "url": "https://www.udemy.com/course/graphql-with-react-course/"
+  },
+  {
+    "title": "Azure Fundamentals",
+    "provider": "Coursera (Microsoft)",
+    "description": "Core cloud concepts and services on Microsoft Azure.",
+    "skills": [
+      "Cloud Computing"
+    ],
+    "level": "beginner",
+    "prerequisites": [],
+    "durationWeeks": 3,
+    "type": "course",
+    "url": "https://www.coursera.org/learn/microsoft-azure-fundamentals"
+  },
+  {
+    "title": "Google Cloud Platform Essentials",
+    "provider": "Coursera (Google)",
+    "description": "Core GCP services: compute, storage, and networking.",
+    "skills": [
+      "Cloud Computing"
+    ],
+    "level": "beginner",
+    "prerequisites": [],
+    "durationWeeks": 3,
+    "type": "course",
+    "url": "https://www.coursera.org/learn/gcp-fundamentals"
+  },
+  {
+    "title": "Portfolio Project: Deploy a Full Stack App to the Cloud",
+    "provider": "SkillPilot Curated",
+    "description": "Deploy a complete application with CI/CD to a cloud provider.",
+    "skills": [
+      "Deployment",
+      "Cloud Computing",
+      "CI/CD"
+    ],
+    "level": "advanced",
+    "prerequisites": [
+      "Deployment"
+    ],
+    "durationWeeks": 2,
+    "type": "project",
+    "url": ""
+  },
+  {
+    "title": "Introduction to Data Structures",
+    "provider": "Coursera (UC San Diego)",
+    "description": "Arrays, linked lists, stacks, queues, and trees from first principles.",
+    "skills": [
+      "Data Structures"
+    ],
+    "level": "beginner",
+    "prerequisites": [],
+    "durationWeeks": 4,
+    "type": "course",
+    "url": "https://www.coursera.org/learn/data-structures"
+  },
+  {
+    "title": "Algorithmic Toolbox",
+    "provider": "Coursera (UC San Diego)",
+    "description": "Algorithm design paradigms: greedy, divide-and-conquer, dynamic programming.",
+    "skills": [
+      "Algorithms"
+    ],
+    "level": "intermediate",
+    "prerequisites": [
+      "Data Structures"
+    ],
+    "durationWeeks": 5,
+    "type": "course",
+    "url": "https://www.coursera.org/learn/algorithmic-toolbox"
+  },
+  {
+    "title": "Object-Oriented Programming Principles",
+    "provider": "Udemy",
+    "description": "OOP fundamentals: encapsulation, inheritance, polymorphism.",
+    "skills": [
+      "OOP"
+    ],
+    "level": "beginner",
+    "prerequisites": [],
+    "durationWeeks": 2,
+    "type": "course",
+    "url": "https://www.udemy.com/course/object-oriented-programming-in-javascript/"
   }
 ]
