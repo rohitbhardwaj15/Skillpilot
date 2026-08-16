@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { gsap } from 'gsap';
-import { CheckCircle2, Circle, Sparkles, Loader2, ArrowRight, LayoutDashboard } from 'lucide-react';
+import { CheckCircle2, Circle, Sparkles, Loader2, LayoutDashboard, Zap } from 'lucide-react';
 import PathScene from '../components/PathScene';
 import { api } from '../lib/api';
 
@@ -11,6 +11,13 @@ const STATUS_STYLE = {
   upcoming: 'text-[var(--color-muted)]',
 };
 
+const FEEDBACK_OPTIONS = [
+  { rating: 'too_easy', emoji: '😴', label: 'Too easy' },
+  { rating: 'too_hard', emoji: '😫', label: 'Too hard' },
+  { rating: 'good', emoji: '👍', label: 'Good' },
+  { rating: 'perfect', emoji: '🔥', label: 'Perfect' },
+];
+
 export default function Roadmap() {
   const { id } = useParams();
   const [path, setPath] = useState(null);
@@ -19,6 +26,8 @@ export default function Roadmap() {
   const [explaining, setExplaining] = useState(null); // courseId currently loading
   const [explanations, setExplanations] = useState({}); // courseId -> text
   const [marking, setMarking] = useState(null);
+  const [submittingFeedback, setSubmittingFeedback] = useState(null); // courseId
+  const [adaptation, setAdaptation] = useState(null); // { rating, message } — shown as a banner
 
   const load = useCallback(async () => {
     try {
@@ -43,8 +52,24 @@ export default function Roadmap() {
     return () => ctx.revert();
   }, [path]);
 
+  useEffect(() => {
+    if (!adaptation) return;
+    const ctx = gsap.context(() => {
+      gsap.fromTo(
+        '.adaptation-banner',
+        { opacity: 0, y: -12 },
+        { opacity: 1, y: 0, duration: 0.4, ease: 'power2.out' }
+      );
+    });
+    const timer = setTimeout(() => setAdaptation(null), 6000);
+    return () => {
+      ctx.revert();
+      clearTimeout(timer);
+    };
+  }, [adaptation]);
+
   async function handleExplain(course) {
-    if (explanations[course.courseId]) return; // already fetched, panel just toggles via CSS
+    if (explanations[course.courseId]) return;
     setExplaining(course.courseId);
     try {
       const { explanation } = await api.explain({
@@ -54,7 +79,10 @@ export default function Roadmap() {
       });
       setExplanations((prev) => ({ ...prev, [course.courseId]: explanation }));
     } catch (err) {
-      setExplanations((prev) => ({ ...prev, [course.courseId]: `Couldn't generate explanation: ${err.message}` }));
+      setExplanations((prev) => ({
+        ...prev,
+        [course.courseId]: `Couldn't generate explanation: ${err.message}`,
+      }));
     } finally {
       setExplaining(null);
     }
@@ -69,6 +97,20 @@ export default function Roadmap() {
       setError(err.message);
     } finally {
       setMarking(null);
+    }
+  }
+
+  async function handleFeedback(courseId, rating) {
+    setSubmittingFeedback(courseId);
+    try {
+      const { learningPath, adaptation: adaptationInfo } = await api.giveFeedback(id, courseId, rating);
+      setPath(learningPath);
+      setAdaptation(adaptationInfo);
+      setExplanations({}); // scores changed, old explanations are stale
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setSubmittingFeedback(null);
     }
   }
 
@@ -93,7 +135,15 @@ export default function Roadmap() {
 
   return (
     <div className="min-h-screen bg-[var(--color-bg)] text-[var(--color-text)]">
-      {/* Header + 3D scene */}
+      {adaptation && (
+        <div className="adaptation-banner fixed top-4 left-1/2 -translate-x-1/2 z-50 max-w-md w-[92%]">
+          <div className="bg-[var(--color-bg-elevated)] border border-[var(--color-path)] rounded-2xl px-5 py-3 flex items-start gap-3 shadow-lg">
+            <Zap size={16} className="text-[var(--color-path)] mt-0.5 shrink-0" />
+            <p className="text-sm text-[var(--color-text)]">{adaptation.message}</p>
+          </div>
+        </div>
+      )}
+
       <div className="relative h-[60vh] min-h-[420px]">
         <PathScene milestones={milestones} />
         <div className="absolute inset-0 bg-gradient-to-t from-[var(--color-bg)] via-transparent to-[var(--color-bg)]/40 pointer-events-none" />
@@ -119,7 +169,6 @@ export default function Roadmap() {
         </div>
       </div>
 
-      {/* Phases */}
       <div className="max-w-3xl mx-auto px-6 pb-24 -mt-8 relative z-10">
         {path.phases.map((phase) => (
           <div key={phase.phaseNumber} className="phase-card mb-6">
@@ -138,10 +187,7 @@ export default function Roadmap() {
                       {course.status === 'done' ? (
                         <CheckCircle2 size={20} className="text-[var(--color-growth)] mt-0.5 shrink-0" />
                       ) : (
-                        <Circle
-                          size={20}
-                          className={`${STATUS_STYLE[course.status]} mt-0.5 shrink-0`}
-                        />
+                        <Circle size={20} className={`${STATUS_STYLE[course.status]} mt-0.5 shrink-0`} />
                       )}
                       <div>
                         <p className="font-medium">{course.title}</p>
@@ -161,13 +207,34 @@ export default function Roadmap() {
                     )}
                   </div>
 
-                  <button
-                    onClick={() => handleExplain(course)}
-                    className="mt-3 flex items-center gap-1.5 text-xs text-[var(--color-path)] hover:underline"
-                  >
-                    <Sparkles size={12} />
-                    Why this?
-                  </button>
+                  <div className="mt-3 flex items-center justify-between flex-wrap gap-3">
+                    <button
+                      onClick={() => handleExplain(course)}
+                      className="flex items-center gap-1.5 text-xs text-[var(--color-path)] hover:underline"
+                    >
+                      <Sparkles size={12} />
+                      Why this?
+                    </button>
+
+                    {(course.status === 'current' || course.status === 'done') && (
+                      <div className="flex items-center gap-1.5">
+                        <span className="font-mono text-[10px] text-[var(--color-muted)] mr-1">
+                          How was it?
+                        </span>
+                        {FEEDBACK_OPTIONS.map((opt) => (
+                          <button
+                            key={opt.rating}
+                            title={opt.label}
+                            onClick={() => handleFeedback(course.courseId, opt.rating)}
+                            disabled={submittingFeedback === course.courseId}
+                            className="text-base hover:scale-125 transition-transform disabled:opacity-40"
+                          >
+                            {opt.emoji}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
 
                   {explaining === course.courseId && (
                     <p className="mt-2 text-xs text-[var(--color-muted)] flex items-center gap-2">
