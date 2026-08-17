@@ -6,37 +6,45 @@
  *   1. extractGoalProfile()  — turn free text into structured data
  *   2. explainRecommendation() — turn a score breakdown into plain English
  *
+ * Uses Groq's OpenAI-compatible API (free tier) running Llama 3.3 70B.
+ *
  * IMPORTANT: this service must NEVER be used to generate the actual
  * recommendations or ranking — that logic lives in
  * services/recommendation.service.js and is deterministic code, not an LLM
  * call. Keeping this boundary is what makes the AI/ML implementation real
- * instead of "ChatGPT wearing a UI."
+ * instead of "a chatbot wearing a UI."
  */
 
-const ANTHROPIC_API_URL = 'https://api.anthropic.com/v1/messages';
-const MODEL = 'claude-sonnet-4-6'; // swap for whichever model your API key has access to
+const GROQ_API_URL = 'https://api.groq.com/openai/v1/chat/completions';
+const MODEL = 'llama-3.3-70b-versatile'; // Groq free-tier model
 
-async function callClaude(systemPrompt, userMessage) {
+async function callGroq(systemPrompt, userMessage, { jsonMode = false } = {}) {
   const apiKey = process.env.LLM_API_KEY;
   if (!apiKey) {
     throw new Error(
-      'LLM_API_KEY is not set in server/.env — get one from console.anthropic.com and add it there.'
+      'LLM_API_KEY is not set in server/.env — get a free key from console.groq.com and add it there.'
     );
   }
 
-  const response = await fetch(ANTHROPIC_API_URL, {
+  const body = {
+    model: MODEL,
+    max_tokens: 1024,
+    messages: [
+      { role: 'system', content: systemPrompt },
+      { role: 'user', content: userMessage },
+    ],
+  };
+  if (jsonMode) {
+    body.response_format = { type: 'json_object' };
+  }
+
+  const response = await fetch(GROQ_API_URL, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'x-api-key': apiKey,
-      'anthropic-version': '2023-06-01',
+      Authorization: `Bearer ${apiKey}`,
     },
-    body: JSON.stringify({
-      model: MODEL,
-      max_tokens: 1024,
-      system: systemPrompt,
-      messages: [{ role: 'user', content: userMessage }],
-    }),
+    body: JSON.stringify(body),
   });
 
   if (!response.ok) {
@@ -45,8 +53,7 @@ async function callClaude(systemPrompt, userMessage) {
   }
 
   const data = await response.json();
-  const textBlock = data.content?.find((b) => b.type === 'text');
-  return textBlock?.text || '';
+  return data.choices?.[0]?.message?.content || '';
 }
 
 /**
@@ -67,7 +74,7 @@ Respond with ONLY valid JSON, no markdown fences, no preamble, matching exactly 
 }
 If the learner doesn't mention a skill, don't include it. Be conservative — only extract what is actually stated or strongly implied.`;
 
-  const raw = await callClaude(systemPrompt, goalText);
+  const raw = await callGroq(systemPrompt, goalText, { jsonMode: true });
 
   let parsed;
   try {
@@ -104,5 +111,5 @@ Score breakdown: ${JSON.stringify(scoreBreakdown)}
 
 Write the explanation now.`;
 
-  return callClaude(systemPrompt, userMessage);
+  return callGroq(systemPrompt, userMessage);
 }
