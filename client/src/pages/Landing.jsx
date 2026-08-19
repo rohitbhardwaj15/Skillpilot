@@ -22,7 +22,7 @@ export default function Landing({ onStart }) {
       tl.from('.hero-eyebrow', { opacity: 0, y: 12, duration: 0.5 })
         .from('.hero-title span', { opacity: 0, y: 28, stagger: 0.06, duration: 0.7 }, '-=0.25')
         .from('.hero-sub', { opacity: 0, y: 16, duration: 0.6 }, '-=0.3')
-        .from('.hero-cta', { opacity: 0, y: 12, duration: 0.5 }, '-=0.3')
+        .from('.hero-cta', { y: 12, duration: 0.5, clearProps: 'transform' }, '-=0.3')
         .from('.how-step', { opacity: 0, y: 20, stagger: 0.12, duration: 0.5 }, '-=0.1');
     }, heroRef);
     return () => ctx.revert();
