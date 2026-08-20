@@ -7,6 +7,7 @@ import Course from '../models/Course.js';
 import LearningPath from '../models/LearningPath.js';
 import { matchRole, rankCourses } from '../services/recommendation.service.js';
 import { orderByPrerequisites, groupIntoPhases } from '../services/pathgen.service.js';
+import { requireAuth } from '../middleware/auth.middleware.js';
 
 const router = Router();
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -38,7 +39,7 @@ function buildRoadmap(profile, candidateCourses) {
 
 // POST /api/path/generate
 // Body: { profileId: string }
-router.post('/generate', async (req, res) => {
+router.post('/generate', requireAuth, async (req, res) => {
   const { profileId } = req.body;
   if (!profileId) {
     return res.status(400).json({ error: 'profileId is required' });
@@ -71,7 +72,7 @@ router.post('/generate', async (req, res) => {
 });
 
 // GET /api/path/:id
-router.get('/:id', async (req, res) => {
+router.get('/:id', requireAuth, async (req, res) => {
   try {
     const learningPath = await LearningPath.findById(req.params.id);
     if (!learningPath) return res.status(404).json({ error: 'Learning path not found' });
@@ -85,7 +86,7 @@ router.get('/:id', async (req, res) => {
 // Body: { courseId: string, status: 'done' }
 // Marks a course complete, advances the next upcoming course to 'current',
 // and syncs the learner's profile (completedCourseIds + currentSkills).
-router.put('/:id/progress', async (req, res) => {
+router.put('/:id/progress', requireAuth, async (req, res) => {
   const { courseId, status } = req.body;
   if (!courseId || status !== 'done') {
     return res.status(400).json({ error: 'courseId and status "done" are required' });
@@ -148,7 +149,7 @@ router.put('/:id/progress', async (req, res) => {
 // from the brief. It's not cosmetic — it actually changes the learner's implied
 // profile and re-runs the recommendation engine on the remaining (not-done)
 // portion of the path, so the roadmap that comes back can genuinely differ.
-router.post('/:id/feedback', async (req, res) => {
+router.post('/:id/feedback', requireAuth, async (req, res) => {
   const { courseId, rating } = req.body;
   const validRatings = ['too_easy', 'too_hard', 'good', 'perfect'];
   if (!courseId || !validRatings.includes(rating)) {

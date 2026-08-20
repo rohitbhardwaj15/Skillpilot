@@ -2,6 +2,7 @@ import mongoose from 'mongoose';
 
 const profileSchema = new mongoose.Schema(
   {
+    userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
     name: { type: String },
     goal: { type: String, required: true },          // raw text goal, e.g. "become a full-stack dev"
     targetRole: { type: String },                      // extracted by LLM, e.g. "Full Stack Developer"

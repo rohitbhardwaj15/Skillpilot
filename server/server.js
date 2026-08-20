@@ -7,6 +7,7 @@ import profileRoutes from './routes/profile.routes.js';
 import courseRoutes from './routes/course.routes.js';
 import aiRoutes from './routes/ai.routes.js';
 import pathRoutes from './routes/path.routes.js';
+import authRoutes from './routes/auth.routes.js';
 
 dotenv.config();
 
@@ -23,6 +24,7 @@ app.use('/api/profile', profileRoutes);
 app.use('/api/courses', courseRoutes);
 app.use('/api/ai', aiRoutes);
 app.use('/api/path', pathRoutes);
+app.use('/api/auth', authRoutes);
 
 const PORT = process.env.PORT || 5000;
 
