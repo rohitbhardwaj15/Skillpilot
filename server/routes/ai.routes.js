@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { extractGoalProfile, explainRecommendation } from '../services/llm.service.js';
+import { extractGoalProfile, explainRecommendation, chatWithAssistant } from '../services/llm.service.js';
 
 const router = Router();
 
@@ -36,6 +36,25 @@ router.post('/explain', async (req, res) => {
     res.json({ explanation });
   } catch (err) {
     console.error('explain failed:', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// POST /api/ai/chat
+// Body: { message: string, context: object }
+// General-purpose Q&A for the AI Assistant page, grounded in the learner's
+// real profile/path context passed from the frontend.
+router.post('/chat', async (req, res) => {
+  const { message, context } = req.body;
+  if (!message || typeof message !== 'string') {
+    return res.status(400).json({ error: 'message is required.' });
+  }
+
+  try {
+    const reply = await chatWithAssistant(message, context || {});
+    res.json({ reply });
+  } catch (err) {
+    console.error('chat failed:', err.message);
     res.status(500).json({ error: err.message });
   }
 });

@@ -96,6 +96,24 @@ If the learner doesn't mention a skill, don't include it. Be conservative — on
 }
 
 /**
+ * General-purpose chat for the AI Assistant page. Grounded in the learner's
+ * real profile/path context (passed in), so answers reference their actual
+ * goal and progress instead of generic advice.
+ */
+export async function chatWithAssistant(message, context = {}) {
+  const systemPrompt = `You are SkillPilot's AI learning assistant. You help learners
+understand their personalized learning path, explain recommendations, and answer
+questions about their goal and progress. Keep answers concise (2-4 sentences unless
+the question needs more detail). Use ONLY the context provided below — if you don't
+have enough information to answer specifically, say so rather than inventing details.
+
+Learner context:
+${JSON.stringify(context, null, 2)}`;
+
+  return callGroq(systemPrompt, message);
+}
+
+/**
  * Turns a recommendation's score breakdown into a plain-English explanation.
  * Grounded in real numbers passed in — the LLM is explaining data it's given,
  * not inventing reasons, which avoids hallucinated justifications.
