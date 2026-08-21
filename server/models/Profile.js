@@ -7,6 +7,12 @@ const profileSchema = new mongoose.Schema(
     goal: { type: String, required: true },          // raw text goal, e.g. "become a full-stack dev"
     targetRole: { type: String },                      // extracted by LLM, e.g. "Full Stack Developer"
     timelineMonths: { type: Number },
+    interests: [{ type: String }],
+    experienceLevel: {
+      type: String,
+      enum: ['beginner', 'intermediate', 'advanced'],
+      default: 'beginner',
+    },
     currentSkills: [
       {
         name: String,
