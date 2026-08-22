@@ -1,11 +1,23 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
-import tailwindcss from '@tailwindcss/vite'
 
 export default defineConfig({
-  plugins: [react(), tailwindcss()],
+  plugins: [react()],
   server: {
-    host: true,
-    port: 5173,
+    port: 3000,
+    open: true
   },
+  build: {
+    outDir: 'dist',
+    sourcemap: true,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          three: ['three', '@react-three/fiber', '@react-three/drei'],
+          charts: ['recharts'],
+          vendor: ['react', 'react-dom', 'react-router-dom', 'framer-motion']
+        }
+      }
+    }
+  }
 })

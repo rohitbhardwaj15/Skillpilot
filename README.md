@@ -44,10 +44,22 @@ rather than a ChatGPT wrapper.
 
 ## Tech Stack
 
-- **Frontend:** React (Vite), Tailwind CSS v4, Three.js, GSAP, Recharts
+- **Frontend:** React (Vite), Tailwind CSS v3, Redux Toolkit, Framer Motion, React Three Fiber, Recharts
 - **Backend:** Node.js, Express, Mongoose
 - **Database:** MongoDB (Atlas in production)
-- **AI:** LLM API for goal-understanding and explanation generation
+- **Auth:** JWT sessions, bcrypt-hashed passwords
+- **AI:** Groq API (Llama-family models via OpenAI-compatible endpoint) for goal-understanding, explanations, and the AI Assistant chat
+
+## Pages
+
+- **Landing** — hero, live course count (fetched, not hardcoded), how-it-works, features
+- **Login / Register** — real JWT authentication
+- **Onboarding** — conversational goal capture, feeds real AI goal-analysis + profile creation + roadmap generation
+- **Dashboard** — real phase-progress chart, real skill radar, real skill gaps, dynamic next action
+- **Learning Paths** — Timeline and 3D views of the real generated roadmap
+- **Recommendations** — full course catalog with real filters, "fills a skill gap" tags computed from real data
+- **AI Assistant** — real Groq-backed chat, grounded in the learner's actual profile/progress
+- **Profile** — real profile data, editable, auto-saves on change
 
 ## Project Structure
 
@@ -87,7 +99,8 @@ npm run dev              # starts on http://localhost:5173
 |---|---|
 | `MONGODB_URI` | MongoDB Atlas (or local) connection string |
 | `PORT` | Backend port (default 5000) |
-| `LLM_API_KEY` | API key for the LLM used in goal analysis/explanations |
+| `LLM_API_KEY` | Free API key from console.groq.com — used for goal analysis, explanations, and AI Assistant chat |
+| `JWT_SECRET` | Any long random string — signs login sessions. Generate with: `node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"` |
 
 ## Roadmap / Build Plan
 

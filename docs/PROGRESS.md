@@ -126,3 +126,38 @@ worth tightening if time allows before submission.
 
 **Still open:** 76 courses is solid but still short of the 150-300 stretch
 target. Current coverage is good enough to demo confidently across all 9 roles.
+
+## Frontend Rebuild (19-21 Aug) — ✅ DONE
+
+Replaced the entire client with a new, more polished multi-page design
+(originally a visual prototype with fake data, now fully rewired to real
+backend calls). Also added full authentication, which the app didn't have
+before.
+
+**New/changed:**
+- [x] Real JWT authentication: register, login, protected routes (bcrypt
+      password hashing, 30-day sessions)
+- [x] 7 pages, all wired to real backend data: Landing, Login, Register,
+      Onboarding, Dashboard, Learning Paths, Recommendations, AI Assistant, Profile
+- [x] Landing page shows a LIVE course count (fetched from `/api/courses`,
+      not hardcoded) instead of fabricated adoption stats
+- [x] Dashboard: real phase-progress bar chart and skill radar replacing
+      fake "weekly activity" and fake streak counters that had no backing
+      data source
+- [x] Recommendations page: real 76-course catalog, dynamic skill filters
+      derived from the actual dataset, "fills a skill gap" tags computed
+      from the learner's real profile — no fake ratings, student counts,
+      or stock images
+- [x] AI Assistant: real Groq-backed chat grounded in the learner's actual
+      profile/roadmap context (new `/api/ai/chat` endpoint)
+- [x] Profile page: real CRUD, auto-saves on toggle. Caught and fixed a
+      real bug here — the learning-style options shown didn't match the
+      backend's supported enum values at all (`visual/auditory/kinesthetic`
+      vs. the real `projects/video/reading/interactive`), so selecting them
+      would have silently done nothing useful.
+- [x] Deleted `data/courses.js` and `data/paths.js` — the old fake local
+      datasets — so nothing can accidentally fall back to them
+- [x] Full test suite still passes after the swap (`npm run test` in `server/`)
+- [x] Frontend builds clean in the new location
+
+**New env var required for deployment:** `JWT_SECRET` (see README).

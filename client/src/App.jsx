@@ -1,58 +1,68 @@
-import { BrowserRouter, Routes, Route, useNavigate } from 'react-router-dom';
-import { useState } from 'react';
-import Landing from './pages/Landing';
-import Onboarding from './pages/Onboarding';
-import Roadmap from './pages/Roadmap';
-import Dashboard from './pages/Dashboard';
-import { api } from './lib/api';
+import { Routes, Route, useLocation } from 'react-router-dom'
+import { AnimatePresence, motion } from 'framer-motion'
+import Navbar from './components/layout/Navbar'
+import Footer from './components/layout/Footer'
+import ParticleBackground from './components/3d/ParticleBackground'
+import ProtectedRoute from './components/auth/ProtectedRoute'
+import LandingPage from './pages/LandingPage'
+import LoginPage from './pages/LoginPage'
+import RegisterPage from './pages/RegisterPage'
+import OnboardingPage from './pages/OnboardingPage'
+import DashboardPage from './pages/DashboardPage'
+import LearningPathPage from './pages/LearningPathPage'
+import AIAssistantPage from './pages/AIAssistantPage'
+import RecommendationsPage from './pages/RecommendationsPage'
+import ProfilePage from './pages/ProfilePage'
 
-function LandingRoute() {
-  const navigate = useNavigate();
-  return <Landing onStart={() => navigate('/onboarding')} />;
-}
-
-function OnboardingRoute() {
-  const navigate = useNavigate();
-  const [generating, setGenerating] = useState(false);
-  const [error, setError] = useState('');
-
-  async function handleComplete(profile) {
-    setGenerating(true);
-    setError('');
-    try {
-      const path = await api.generatePath(profile._id);
-      localStorage.setItem('skillpilot_profile_id', profile._id);
-      navigate(`/roadmap/${path._id}`);
-    } catch (err) {
-      setError(err.message);
-      setGenerating(false);
-    }
-  }
-
-  if (generating) {
-    return (
-      <div className="min-h-screen bg-[var(--color-bg)] text-[var(--color-text)] flex items-center justify-center flex-col gap-4 px-6">
-        <div className="w-8 h-8 border-2 border-[var(--color-path)] border-t-transparent rounded-full animate-spin" />
-        <p className="font-mono text-sm text-[var(--color-muted)]">Building your roadmap...</p>
-        {error && <p className="text-red-400 text-sm text-center max-w-md">{error}</p>}
-      </div>
-    );
-  }
-
-  return <Onboarding onComplete={handleComplete} />;
-}
-
-function App() {
+function PageWrapper({ children }) {
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<LandingRoute />} />
-        <Route path="/onboarding" element={<OnboardingRoute />} />
-        <Route path="/roadmap/:id" element={<Roadmap />} />
-        <Route path="/dashboard/:id" element={<Dashboard />} />
-      </Routes>
-    </BrowserRouter>
-  );
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -20 }}
+      transition={{ duration: 0.4 }}
+    >
+      {children}
+    </motion.div>
+  )
 }
 
-export default App;
+export default function App() {
+  const location = useLocation()
+
+  return (
+    <div className="relative min-h-screen bg-dark-900 text-white">
+      <ParticleBackground />
+      <Navbar />
+      <main className="relative z-10">
+        <AnimatePresence mode="wait">
+          <Routes location={location} key={location.pathname}>
+            <Route path="/" element={<PageWrapper><LandingPage /></PageWrapper>} />
+            <Route path="/login" element={<PageWrapper><LoginPage /></PageWrapper>} />
+            <Route path="/register" element={<PageWrapper><RegisterPage /></PageWrapper>} />
+
+            <Route path="/onboarding" element={
+              <ProtectedRoute><PageWrapper><OnboardingPage /></PageWrapper></ProtectedRoute>
+            } />
+            <Route path="/dashboard" element={
+              <ProtectedRoute><PageWrapper><DashboardPage /></PageWrapper></ProtectedRoute>
+            } />
+            <Route path="/paths" element={
+              <ProtectedRoute><PageWrapper><LearningPathPage /></PageWrapper></ProtectedRoute>
+            } />
+            <Route path="/assistant" element={
+              <ProtectedRoute><PageWrapper><AIAssistantPage /></PageWrapper></ProtectedRoute>
+            } />
+            <Route path="/recommendations" element={
+              <ProtectedRoute><PageWrapper><RecommendationsPage /></PageWrapper></ProtectedRoute>
+            } />
+            <Route path="/profile" element={
+              <ProtectedRoute><PageWrapper><ProfilePage /></PageWrapper></ProtectedRoute>
+            } />
+          </Routes>
+        </AnimatePresence>
+      </main>
+      <Footer />
+    </div>
+  )
+}
