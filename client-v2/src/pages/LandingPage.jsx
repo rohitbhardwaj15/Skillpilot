@@ -1,7 +1,8 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
+import { useSelector } from 'react-redux'
 import { motion, useScroll, useTransform } from 'framer-motion'
-import { 
+import {
   ArrowRight, Sparkles, Brain, Target, Zap, TrendingUp,
   MessageSquare, Shield, Star, Cpu, Layers, GitBranch, Clock
 } from 'lucide-react'
@@ -9,6 +10,7 @@ import { Canvas, useFrame } from '@react-three/fiber'
 import * as THREE from 'three'
 import FloatingOrbs from '../components/3d/FloatingOrbs'
 import GlassCard from '../components/ui/GlassCard'
+import { api } from '../lib/api'
 
 function HeroParticles() {
   const pointsRef = useRef()
@@ -141,13 +143,22 @@ const features = [
   },
 ]
 
-// ✅ FIXED: Replaced fake adoption stats with genuine system capabilities
-const capabilities = [
-  { icon: Cpu, value: 'AI Engine', label: 'GPT-powered recommendations' },
-  { icon: Layers, value: 'Multi-Domain', label: 'Programming, Data, Cloud, Design & more' },
-  { icon: GitBranch, value: 'Dynamic Paths', label: 'Adaptive roadmaps that evolve with you' },
-  { icon: Clock, value: '24/7 Assistant', label: 'Always-on AI learning guide' },
-]
+// Real, verifiable numbers — course count is fetched live from the actual
+// catalog rather than hardcoded, so this number can never go stale or fake.
+function useCapabilities() {
+  const [courseCount, setCourseCount] = useState(null)
+
+  useEffect(() => {
+    api.getCourses().then((courses) => setCourseCount(courses.length)).catch(() => {})
+  }, [])
+
+  return [
+    { icon: Cpu, value: 'Groq AI', label: 'Real-time recommendation & goal analysis' },
+    { icon: Layers, value: courseCount !== null ? `${courseCount} Courses` : '—', label: 'Across 9 career paths — web, data, cloud, security & design' },
+    { icon: GitBranch, value: 'Adaptive Paths', label: 'Roadmap re-ranks itself from your feedback' },
+    { icon: Clock, value: '24/7 Assistant', label: 'Always-on AI learning guide' },
+  ]
+}
 
 // ✅ FIXED: Replaced fake testimonials with use-case scenarios
 const useCases = [
@@ -176,6 +187,13 @@ export default function LandingPage() {
   const { scrollYProgress } = useScroll({ target: containerRef })
   const y = useTransform(scrollYProgress, [0, 1], [0, -100])
   const opacity = useTransform(scrollYProgress, [0, 0.3], [1, 0])
+  const capabilities = useCapabilities()
+  const { isAuthenticated, user } = useSelector((state) => state.auth)
+
+  const primaryCtaTo = isAuthenticated ? (user?.profileId ? '/dashboard' : '/onboarding') : '/register'
+  const primaryCtaLabel = isAuthenticated ? (user?.profileId ? 'Go to Dashboard' : 'Build My Learning Path') : 'Get Started Free'
+  const secondaryCtaTo = isAuthenticated ? '/paths' : '/login'
+  const secondaryCtaLabel = isAuthenticated ? 'View My Path' : 'Log In'
 
   return (
     <div ref={containerRef} className="relative">
@@ -225,12 +243,12 @@ export default function LandingPage() {
             transition={{ duration: 0.8, delay: 0.3 }}
             className="flex flex-col sm:flex-row items-center justify-center gap-4"
           >
-            <Link to="/onboarding" className="btn-primary text-lg">
-              Build My Learning Path
+            <Link to={primaryCtaTo} className="btn-primary text-lg">
+              {primaryCtaLabel}
               <ArrowRight size={20} />
             </Link>
-            <Link to="/dashboard" className="btn-secondary">
-              Explore Dashboard
+            <Link to={secondaryCtaTo} className="btn-secondary">
+              {secondaryCtaLabel}
             </Link>
           </motion.div>
 
@@ -420,8 +438,8 @@ export default function LandingPage() {
               <p className="text-gray-400 mb-8 max-w-xl mx-auto">
                 Experience AI-powered personalized learning paths. Build your profile and get your first roadmap in minutes.
               </p>
-              <Link to="/onboarding" className="btn-primary text-lg inline-flex">
-                Get Started Free
+              <Link to={primaryCtaTo} className="btn-primary text-lg inline-flex">
+                {primaryCtaLabel}
                 <ArrowRight size={20} />
               </Link>
             </div>
