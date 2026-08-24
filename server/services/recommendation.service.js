@@ -25,15 +25,35 @@ const KNOWN_THRESHOLD = 2; // 'intermediate' or above counts as "already known"
 
 /**
  * Finds the best-matching role definition for a free-text target role,
- * using simple alias/substring matching. Falls back to null if nothing matches
- * reasonably, in which case the caller should widen the search to all courses.
+ * using whole-word/whole-phrase alias matching. Falls back to null if
+ * nothing matches reasonably, in which case the caller should surface a
+ * clear "role not supported" error rather than guessing.
+ *
+ * IMPORTANT: this deliberately does NOT use naive substring containment
+ * (e.g. `alias.includes(text)`). That approach has a real bug for short
+ * inputs — "CA" would match inside "ethiCAl hacker" purely because the
+ * letters "ca" happen to appear inside the word "ethical". Whole-word
+ * matching prevents that class of false positive.
  */
+function containsAsWholePhrase(haystack, needle) {
+  if (!needle) return false;
+  const escaped = needle.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  // \b won't work reliably around punctuation like slashes, so match on
+  // non-word-character boundaries (or start/end of string) instead.
+  const pattern = new RegExp(`(^|[^a-z0-9])${escaped}([^a-z0-9]|$)`, 'i');
+  return pattern.test(haystack);
+}
+
 export function matchRole(targetRoleText, roles) {
   const text = targetRoleText.toLowerCase().trim();
 
-  // exact/alias match first
+  // exact/alias match first — whole word/phrase only, not raw substring
   for (const role of roles) {
-    if (role.aliases.some((a) => text.includes(a) || a.includes(text))) {
+    if (
+      role.aliases.some(
+        (a) => containsAsWholePhrase(text, a) || containsAsWholePhrase(a, text)
+      )
+    ) {
       return role;
     }
   }
