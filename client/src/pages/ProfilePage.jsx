@@ -279,6 +279,26 @@ export default function ProfilePage() {
               )}
             </div>
           </GlassCard>
+
+          <GlassCard delay={0.5}>
+            <div className="p-6">
+              <div className="flex items-center gap-2 mb-4">
+                <BookOpen size={20} className="text-accent-teal" />
+                <h3 className="text-lg font-semibold text-white">Previous Learning</h3>
+              </div>
+              {profile?.priorLearningHistory?.length > 0 ? (
+                <ul className="space-y-2">
+                  {profile.priorLearningHistory.map((course, i) => (
+                    <li key={i} className="text-sm text-gray-300 px-3 py-2 rounded-lg bg-white/5 border border-white/10">
+                      {course}
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="text-sm text-gray-500">Nothing recorded yet.</p>
+              )}
+            </div>
+          </GlassCard>
         </div>
       </div>
     </div>
