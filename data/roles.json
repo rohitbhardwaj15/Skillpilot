@@ -1,47 +1,168 @@
 [
   {
     "role": "Full Stack Developer",
-    "aliases": ["full stack developer", "full-stack developer", "fullstack developer", "web developer"],
-    "requiredSkills": ["HTML", "CSS", "JavaScript", "ES6", "DOM", "Async JavaScript", "React", "State Management", "Node.js", "Express", "REST APIs", "MongoDB", "Git", "Deployment"]
+    "aliases": [
+      "full stack developer",
+      "full-stack developer",
+      "fullstack developer",
+      "web developer",
+      "full stack dev",
+      "full-stack dev",
+      "fullstack dev"
+    ],
+    "requiredSkills": [
+      "HTML",
+      "CSS",
+      "JavaScript",
+      "ES6",
+      "DOM",
+      "Async JavaScript",
+      "React",
+      "State Management",
+      "Node.js",
+      "Express",
+      "REST APIs",
+      "MongoDB",
+      "Git",
+      "Deployment"
+    ]
   },
   {
     "role": "Frontend Developer",
-    "aliases": ["frontend developer", "front-end developer", "front end developer", "ui developer"],
-    "requiredSkills": ["HTML", "CSS", "JavaScript", "ES6", "DOM", "React", "State Management", "Git", "TypeScript"]
+    "aliases": [
+      "frontend developer",
+      "front-end developer",
+      "front end developer",
+      "ui developer",
+      "frontend dev",
+      "front-end dev",
+      "front end dev"
+    ],
+    "requiredSkills": [
+      "HTML",
+      "CSS",
+      "JavaScript",
+      "ES6",
+      "DOM",
+      "React",
+      "State Management",
+      "Git",
+      "TypeScript"
+    ]
   },
   {
     "role": "Backend Developer",
-    "aliases": ["backend developer", "back-end developer", "back end developer", "api developer"],
-    "requiredSkills": ["JavaScript", "Node.js", "Express", "REST APIs", "MongoDB", "SQL", "Git", "Authentication", "Deployment"]
+    "aliases": [
+      "backend developer",
+      "back-end developer",
+      "back end developer",
+      "api developer",
+      "backend dev",
+      "back-end dev",
+      "back end dev"
+    ],
+    "requiredSkills": [
+      "JavaScript",
+      "Node.js",
+      "Express",
+      "REST APIs",
+      "MongoDB",
+      "SQL",
+      "Git",
+      "Authentication",
+      "Deployment"
+    ]
   },
   {
     "role": "Data Scientist",
-    "aliases": ["data scientist", "data science"],
-    "requiredSkills": ["Python", "Statistics", "SQL", "Machine Learning", "Data Structures"]
+    "aliases": [
+      "data scientist",
+      "data science"
+    ],
+    "requiredSkills": [
+      "Python",
+      "Statistics",
+      "SQL",
+      "Machine Learning",
+      "Data Structures"
+    ]
   },
   {
     "role": "Machine Learning Engineer",
-    "aliases": ["machine learning engineer", "ml engineer", "ai engineer"],
-    "requiredSkills": ["Python", "Statistics", "Machine Learning", "Deep Learning", "Neural Networks", "NLP", "Deployment", "Docker"]
+    "aliases": [
+      "machine learning engineer",
+      "ml engineer",
+      "ai engineer"
+    ],
+    "requiredSkills": [
+      "Python",
+      "Statistics",
+      "Machine Learning",
+      "Deep Learning",
+      "Neural Networks",
+      "NLP",
+      "Deployment",
+      "Docker"
+    ]
   },
   {
     "role": "Data Engineer",
-    "aliases": ["data engineer", "data engineering"],
-    "requiredSkills": ["Python", "SQL", "Data Engineering", "ETL", "Cloud Computing"]
+    "aliases": [
+      "data engineer",
+      "data engineering"
+    ],
+    "requiredSkills": [
+      "Python",
+      "SQL",
+      "Data Engineering",
+      "ETL",
+      "Cloud Computing"
+    ]
   },
   {
     "role": "DevOps Engineer",
-    "aliases": ["devops engineer", "site reliability engineer", "sre"],
-    "requiredSkills": ["Linux", "Git", "Docker", "CI/CD", "DevOps", "Cloud Computing", "AWS"]
+    "aliases": [
+      "devops engineer",
+      "site reliability engineer",
+      "sre"
+    ],
+    "requiredSkills": [
+      "Linux",
+      "Git",
+      "Docker",
+      "CI/CD",
+      "DevOps",
+      "Cloud Computing",
+      "AWS"
+    ]
   },
   {
     "role": "Cybersecurity Analyst",
-    "aliases": ["cybersecurity analyst", "security analyst", "cyber security analyst", "ethical hacker"],
-    "requiredSkills": ["Networking", "Linux", "Cybersecurity Fundamentals", "Penetration Testing"]
+    "aliases": [
+      "cybersecurity analyst",
+      "security analyst",
+      "cyber security analyst",
+      "ethical hacker"
+    ],
+    "requiredSkills": [
+      "Networking",
+      "Linux",
+      "Cybersecurity Fundamentals",
+      "Penetration Testing"
+    ]
   },
   {
     "role": "UI/UX Designer",
-    "aliases": ["ui/ux designer", "ux designer", "ui designer", "product designer"],
-    "requiredSkills": ["UI/UX Design", "Figma", "User Research"]
+    "aliases": [
+      "ui/ux designer",
+      "ux designer",
+      "ui designer",
+      "product designer"
+    ],
+    "requiredSkills": [
+      "UI/UX Design",
+      "Figma",
+      "User Research"
+    ]
   }
 ]
