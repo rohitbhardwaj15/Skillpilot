@@ -13,6 +13,11 @@ const profileSchema = new mongoose.Schema(
       enum: ['beginner', 'intermediate', 'advanced'],
       default: 'beginner',
     },
+    // Courses/certifications the learner completed BEFORE using SkillPilot —
+    // free text since these come from outside our own course catalog and
+    // won't match a Course _id. Captured per the brief's requirement to
+    // profile "previous learning history".
+    priorLearningHistory: [{ type: String }],
     currentSkills: [
       {
         name: String,
