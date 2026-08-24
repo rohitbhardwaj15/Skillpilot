@@ -9,7 +9,8 @@
     "start": "node server.js",
     "test:engine": "node tests/recommendation-engine.test.mjs",
     "test:feedback": "node tests/feedback-adaptation.test.mjs",
-    "test": "npm run test:engine && npm run test:feedback"
+    "test:roles": "node tests/role-matching.test.mjs",
+    "test": "npm run test:engine && npm run test:feedback && npm run test:roles"
   },
   "keywords": [],
   "author": "",
