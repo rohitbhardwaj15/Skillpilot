@@ -1,305 +1,343 @@
-import { useState, useEffect, useCallback } from 'react'
-import { useSelector } from 'react-redux'
-import { motion } from 'framer-motion'
-import { User, Briefcase, Clock, BookOpen, Target, Edit2, Check, Loader2, AlertCircle } from 'lucide-react'
+import { useState, useRef, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { useDispatch, useSelector } from 'react-redux'
+import { motion, AnimatePresence } from 'framer-motion'
+import { Send, User, Briefcase, Clock, BookOpen, ArrowRight, Sparkles, AlertCircle } from 'lucide-react'
+import { setProfile, setOnboarded, addGoal, addInterest, addSkill } from '../store/slices/userSlice'
+import { updateUserProfileId } from '../store/slices/authSlice'
+import { setCurrentPath } from '../store/slices/pathSlice'
 import { api } from '../lib/api'
+import { transformPathResponse } from '../lib/transformPath'
 import GlassCard from '../components/ui/GlassCard'
 import SkillBadge from '../components/ui/SkillBadge'
-import ProgressRing from '../components/ui/ProgressRing'
+import AnimatedButton from '../components/ui/AnimatedButton'
 
-// These match the backend's actual learningStyle enum (server/models/Profile.js) —
-// showing options the system doesn't really support would be dishonest UX.
-const LEARNING_STYLES = [
-  { value: 'projects', label: 'Project-based', desc: 'Learn by building real things' },
-  { value: 'video', label: 'Video courses', desc: 'Learn by watching structured lessons' },
-  { value: 'reading', label: 'Reading/Docs', desc: 'Learn by reading articles and documentation' },
-  { value: 'interactive', label: 'Interactive', desc: 'Learn through hands-on interactive exercises' },
-]
-
-const ALL_INTERESTS = [
+const INTERESTS = [
   'Web Development', 'Data Science', 'Machine Learning', 'Mobile Development',
   'Cloud Computing', 'DevOps', 'Cybersecurity', 'UI/UX Design',
   'Blockchain', 'Game Development', 'Backend Development', 'Frontend Development'
 ]
 
-const ALL_SKILLS = [
+const SKILLS = [
   'JavaScript', 'Python', 'React', 'Node.js', 'SQL', 'AWS',
-  'Docker', 'TypeScript', 'Java', 'Go', 'Rust', 'Figma', 'HTML', 'CSS'
+  'Docker', 'TypeScript', 'Java', 'Go', 'Rust', 'Figma'
 ]
 
-export default function ProfilePage() {
+const EXPERIENCE_LEVELS = [
+  { value: 'beginner', label: 'Beginner', desc: 'Just starting out' },
+  { value: 'intermediate', label: 'Intermediate', desc: 'Some experience' },
+  { value: 'advanced', label: 'Advanced', desc: 'Experienced professional' },
+]
+
+const TIME_OPTIONS = [5, 10, 15, 20, 30, 40]
+
+export default function OnboardingPage() {
+  const navigate = useNavigate()
+  const dispatch = useDispatch()
+  const chatEndRef = useRef(null)
   const { user } = useSelector((state) => state.auth)
-  const [profile, setProfile] = useState(null)
-  const [pathProgress, setPathProgress] = useState(null)
-  const [loading, setLoading] = useState(true)
+
+  const [step, setStep] = useState(0)
+  const [name, setName] = useState(user?.name || '')
+  const [goal, setGoal] = useState('')
+  const [selectedInterests, setSelectedInterests] = useState([])
+  const [selectedSkills, setSelectedSkills] = useState([])
+  const [priorCoursesInput, setPriorCoursesInput] = useState('')
+  const [experience, setExperience] = useState('beginner')
+  const [timePerWeek, setTimePerWeek] = useState(10)
+  const [chatMessages, setChatMessages] = useState([
+    {
+      role: 'assistant',
+      content: user?.name
+        ? `Hi ${user.name}! What is your primary learning goal? For example: "I want to become a full-stack developer."`
+        : "Hi there! I'm your AI Learning Guide. What is your name?",
+    },
+  ])
+  const [inputValue, setInputValue] = useState('')
+  const [isGenerating, setIsGenerating] = useState(false)
   const [error, setError] = useState('')
-  const [isEditing, setIsEditing] = useState(false)
-  const [editForm, setEditForm] = useState({})
-  const [saving, setSaving] = useState(false)
 
-  const load = useCallback(async () => {
-    setLoading(true)
-    try {
-      const prof = await api.getMyProfile()
-      setProfile(prof)
-      setEditForm({
-        name: prof.name,
-        targetRole: prof.targetRole,
-        timelineMonths: prof.timelineMonths,
-        hoursPerWeek: prof.hoursPerWeek,
-      })
+  // If we already know the user's name (they're logged in), skip straight to the goal question
+  const startStep = user?.name ? 1 : 0
+  useEffect(() => {
+    if (user?.name) setStep(1)
+  }, [user])
 
-      const pathId = localStorage.getItem('skillpilot_path_id')
-      if (pathId) {
-        const path = await api.getPath(pathId).catch(() => null)
-        if (path) {
-          const flat = path.phases.flatMap((p) => p.courses)
-          const done = flat.filter((c) => c.status === 'done').length
-          setPathProgress(flat.length ? Math.round((done / flat.length) * 100) : 0)
-        }
-      }
-    } catch (err) {
-      setError(err.message)
-    } finally {
-      setLoading(false)
-    }
-  }, [])
+  const scrollToBottom = () => {
+    chatEndRef.current?.scrollIntoView({ behavior: 'smooth' })
+  }
 
   useEffect(() => {
-    load()
-  }, [load])
+    scrollToBottom()
+  }, [chatMessages])
 
-  async function persist(patch) {
-    if (!profile) return
-    try {
-      const updated = await api.updateProfile(profile._id, patch)
-      setProfile(updated)
-    } catch (err) {
-      setError(err.message)
+  const handleSend = () => {
+    if (!inputValue.trim()) return
+    const userMsg = inputValue.trim()
+    setChatMessages((prev) => [...prev, { role: 'user', content: userMsg }])
+    setInputValue('')
+    setTimeout(() => {
+      let response = ''
+      if (step === 0) {
+        setName(userMsg)
+        response = `Nice to meet you, ${userMsg}! What is your primary learning goal? For example: "I want to become a full-stack developer" or "I want to learn data science."`
+        setStep(1)
+      } else if (step === 1) {
+        setGoal(userMsg)
+        dispatch(addGoal(userMsg))
+        response = "Great goal! Now let's build your profile. Select your areas of interest below."
+        setStep(2)
+      }
+      setChatMessages((prev) => [...prev, { role: 'assistant', content: response }])
+    }, 600)
+  }
+
+  const toggleInterest = (interest) => {
+    if (selectedInterests.includes(interest)) {
+      setSelectedInterests((prev) => prev.filter((i) => i !== interest))
+    } else {
+      setSelectedInterests((prev) => [...prev, interest])
+      dispatch(addInterest(interest))
     }
   }
 
-  async function handleSaveEdit() {
-    setSaving(true)
-    await persist({
-      name: editForm.name,
-      targetRole: editForm.targetRole,
-      timelineMonths: Number(editForm.timelineMonths) || profile.timelineMonths,
-      hoursPerWeek: Number(editForm.hoursPerWeek) || profile.hoursPerWeek,
-    })
-    setSaving(false)
-    setIsEditing(false)
+  const toggleSkill = (skill) => {
+    if (selectedSkills.includes(skill)) {
+      setSelectedSkills((prev) => prev.filter((s) => s !== skill))
+    } else {
+      setSelectedSkills((prev) => [...prev, skill])
+      dispatch(addSkill(skill))
+    }
   }
 
-  function toggleInterest(interest) {
-    const current = profile.interests || []
-    const next = current.includes(interest) ? current.filter((i) => i !== interest) : [...current, interest]
-    setProfile({ ...profile, interests: next })
-    persist({ interests: next })
-  }
+  async function handleComplete() {
+    setError('')
+    setIsGenerating(true)
 
-  function toggleSkill(skillName) {
-    const current = profile.currentSkills || []
-    const exists = current.some((s) => s.name.toLowerCase() === skillName.toLowerCase())
-    const next = exists
-      ? current.filter((s) => s.name.toLowerCase() !== skillName.toLowerCase())
-      : [...current, { name: skillName, level: 'beginner' }]
-    setProfile({ ...profile, currentSkills: next })
-    persist({ currentSkills: next })
-  }
+    try {
+      const priorCourses = priorCoursesInput
+        .split(',')
+        .map((c) => c.trim())
+        .filter(Boolean)
 
-  function toggleLearningStyle(style) {
-    const current = profile.learningStyle || []
-    const next = current.includes(style) ? current.filter((s) => s !== style) : [...current, style]
-    setProfile({ ...profile, learningStyle: next })
-    persist({ learningStyle: next })
-  }
+      // 1. Real AI call: turn the free-text goal into structured data.
+      //    Prior courses are included in the text sent to the AI so it can
+      //    also pick up skills implied by past learning (e.g. "completed
+      //    Python for Everybody" -> Python), not just the stated goal.
+      const analysisText =
+        priorCourses.length > 0
+          ? `${goal}. I have already completed these courses/certifications: ${priorCourses.join(', ')}.`
+          : goal
+      const extracted = await api.analyzeGoal(analysisText)
 
-  if (loading) {
-    return (
-      <div className="min-h-screen pt-24 flex items-center justify-center">
-        <Loader2 className="animate-spin text-accent-orange" size={32} />
-      </div>
-    )
-  }
+      // 2. Merge the AI-extracted skills with the badges the learner picked by hand.
+      //    Badge-selected skills default to "beginner" unless the AI already found
+      //    a more specific level for that same skill.
+      const skillMap = new Map(
+        extracted.currentSkills.map((s) => [s.name.toLowerCase(), s])
+      )
+      selectedSkills.forEach((skillName) => {
+        const key = skillName.toLowerCase()
+        if (!skillMap.has(key)) {
+          skillMap.set(key, { name: skillName, level: 'beginner' })
+        }
+      })
 
-  if (error && !profile) {
-    return (
-      <div className="min-h-screen pt-24 flex items-center justify-center px-6">
-        <GlassCard className="p-8 max-w-md text-center">
-          <AlertCircle className="mx-auto mb-3 text-accent-orange" size={28} />
-          <p className="text-gray-300">{error}</p>
-        </GlassCard>
-      </div>
-    )
-  }
+      // 3. Create the real profile in the database
+      const profile = await api.createProfile({
+        name,
+        goal,
+        targetRole: extracted.targetRole,
+        timelineMonths: extracted.timelineMonths,
+        currentSkills: Array.from(skillMap.values()),
+        interests: selectedInterests,
+        experienceLevel: experience,
+        priorLearningHistory: priorCourses,
+        hoursPerWeek: timePerWeek,
+        learningStyle: ['projects'],
+      })
 
-  const skillNames = (profile?.currentSkills || []).map((s) => s.name)
+      dispatch(updateUserProfileId(profile._id))
+      dispatch(
+        setProfile({
+          name,
+          goals: [goal],
+          interests: selectedInterests,
+          skills: selectedSkills,
+          experience,
+          timePerWeek,
+        })
+      )
+            dispatch(setOnboarded(true))
+
+      // 4. Generate the real roadmap from the recommendation engine
+      const path = await api.generatePath(profile._id)
+      localStorage.setItem('skillpilot_path_id', path._id)
+      dispatch(setCurrentPath(transformPathResponse(path)))
+
+      navigate('/dashboard')
+    } catch (err) {
+      setError(err.message || 'Something went wrong building your path. Please try again.')
+      setIsGenerating(false)
+    }
+  }
 
   return (
     <div className="min-h-screen pt-24 pb-12 section-padding">
       <div className="max-w-4xl mx-auto">
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
-          className="mb-8 flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl lg:text-4xl font-bold font-display text-white mb-2">
-              Your <span className="gradient-text">Profile</span>
-            </h1>
-            <p className="text-gray-400">Manage your learning preferences and goals.</p>
-          </div>
-          <button onClick={() => (isEditing ? handleSaveEdit() : setIsEditing(true))}
-            disabled={saving}
-            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all disabled:opacity-50 ${
-              isEditing ? 'bg-accent-teal text-dark-900' : 'bg-white/5 text-gray-300 hover:bg-white/10'}`}>
-            {isEditing ? <Check size={16} /> : <Edit2 size={16} />}
-            {saving ? 'Saving...' : isEditing ? 'Save Changes' : 'Edit Profile'}
-          </button>
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-10">
+          <h1 className="text-4xl lg:text-5xl font-bold font-display text-white mb-2">
+            Let us build your <span className="gradient-text">learning profile</span>
+          </h1>
+          <p className="text-gray-400">Tell us about yourself and our AI will craft the perfect path for you.</p>
         </motion.div>
 
-        {error && <p className="text-red-400 text-sm mb-4">{error}</p>}
-
-        <GlassCard className="mb-6">
-          <div className="p-6 flex flex-col sm:flex-row items-center gap-6">
-            <div className="w-24 h-24 rounded-full bg-gradient-to-br from-accent-orange to-accent-purple flex items-center justify-center text-3xl font-bold text-white">
-              {profile?.name ? profile.name[0].toUpperCase() : 'U'}
-            </div>
-            <div className="flex-1 text-center sm:text-left">
-              {isEditing ? (
-                <div className="space-y-3">
-                  <input type="text" value={editForm.name || ''}
-                    onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
-                    className="w-full sm:w-auto bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-white focus:outline-none focus:border-accent-orange/50"
-                    placeholder="Your name" />
-                  <input type="text" value={editForm.targetRole || ''}
-                    onChange={(e) => setEditForm({ ...editForm, targetRole: e.target.value })}
-                    className="w-full sm:w-auto bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-white focus:outline-none focus:border-accent-orange/50 sm:ml-3"
-                    placeholder="Target role" />
+        <GlassCard className="mb-8">
+          <div className="h-[300px] overflow-y-auto p-6 space-y-4">
+            {chatMessages.map((msg, i) => (
+              <motion.div key={i} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
+                className={`flex gap-3 ${msg.role === 'user' ? 'flex-row-reverse' : ''}`}>
+                <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
+                  msg.role === 'assistant' ? 'bg-accent-orange/20' : 'bg-accent-purple/20'}`}>
+                  {msg.role === 'assistant' ? <Sparkles size={16} className="text-accent-orange" /> : <User size={16} className="text-accent-purple" />}
                 </div>
-              ) : (
-                <>
-                  <h2 className="text-2xl font-bold text-white mb-1">{profile?.name || 'Learner'}</h2>
-                  <p className="text-gray-400 text-sm mb-3">{user?.email}</p>
-                </>
-              )}
-              <div className="flex flex-wrap items-center justify-center sm:justify-start gap-3">
-                {profile?.experienceLevel && (
-                  <span className="px-3 py-1 bg-accent-orange/10 text-accent-orange text-xs font-medium rounded-full capitalize">
-                    {profile.experienceLevel}
-                  </span>
-                )}
-                {profile?.targetRole && (
-                  <span className="px-3 py-1 bg-accent-teal/10 text-accent-teal text-xs font-medium rounded-full">
-                    {profile.targetRole}
-                  </span>
-                )}
-                <span className="px-3 py-1 bg-accent-purple/10 text-accent-purple text-xs font-medium rounded-full">
-                  {profile?.hoursPerWeek || 0} hrs/week
-                </span>
-              </div>
-            </div>
-            {pathProgress !== null && (
-              <ProgressRing progress={pathProgress} size={90} strokeWidth={8} label="Path" />
-            )}
+                <div className={`max-w-[80%] p-3 rounded-xl text-sm ${
+                  msg.role === 'assistant' ? 'bg-white/5 text-gray-200' : 'bg-accent-purple/20 text-white'}`}>
+                  {msg.content}
+                </div>
+              </motion.div>
+            ))}
+            <div ref={chatEndRef} />
           </div>
+          {step < 2 && (
+            <div className="p-4 border-t border-white/10 flex gap-3">
+              <input type="text" value={inputValue} onChange={(e) => setInputValue(e.target.value)}
+                onKeyPress={(e) => e.key === 'Enter' && handleSend()}
+                placeholder="Type your response..."
+                className="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-accent-orange/50 transition-colors" />
+              <button onClick={handleSend}
+                className="w-12 h-12 rounded-xl bg-accent-orange flex items-center justify-center text-dark-900 hover:bg-accent-amber transition-colors">
+                <Send size={18} />
+              </button>
+            </div>
+          )}
         </GlassCard>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <GlassCard delay={0.1}>
-            <div className="p-6">
-              <div className="flex items-center gap-2 mb-4">
-                <Target size={20} className="text-accent-orange" />
-                <h3 className="text-lg font-semibold text-white">Interests</h3>
-              </div>
-              <div className="flex flex-wrap gap-2">
-                {ALL_INTERESTS.map(interest => (
-                  <SkillBadge key={interest} skill={interest}
-                    selected={profile?.interests?.includes(interest)} selectable
-                    onAdd={toggleInterest} onRemove={toggleInterest} />
-                ))}
-              </div>
-            </div>
-          </GlassCard>
-
-          <GlassCard delay={0.2}>
-            <div className="p-6">
-              <div className="flex items-center gap-2 mb-4">
-                <Briefcase size={20} className="text-accent-teal" />
-                <h3 className="text-lg font-semibold text-white">Skills</h3>
-              </div>
-              <div className="flex flex-wrap gap-2">
-                {ALL_SKILLS.map(skill => (
-                  <SkillBadge key={skill} skill={skill}
-                    selected={skillNames.some((s) => s.toLowerCase() === skill.toLowerCase())} selectable
-                    onAdd={toggleSkill} onRemove={toggleSkill} />
-                ))}
-              </div>
-            </div>
-          </GlassCard>
-
-          <GlassCard delay={0.3}>
-            <div className="p-6">
-              <div className="flex items-center gap-2 mb-4">
-                <BookOpen size={20} className="text-accent-cyan" />
-                <h3 className="text-lg font-semibold text-white">Learning Style</h3>
-                <span className="text-xs text-gray-500">(tap to toggle — you can pick more than one)</span>
-              </div>
-              <div className="space-y-3">
-                {LEARNING_STYLES.map(style => (
-                  <button key={style.value} onClick={() => toggleLearningStyle(style.value)}
-                    className={`w-full p-3 rounded-xl border text-left transition-all ${
-                      profile?.learningStyle?.includes(style.value)
-                        ? 'border-accent-cyan/50 bg-accent-cyan/10'
-                        : 'border-white/10 bg-white/5 hover:border-white/20'
-                    }`}>
-                    <div className="font-medium text-white text-sm">{style.label}</div>
-                    <div className="text-xs text-gray-500">{style.desc}</div>
-                  </button>
-                ))}
-              </div>
-            </div>
-          </GlassCard>
-
-          <GlassCard delay={0.4}>
-            <div className="p-6">
-              <div className="flex items-center gap-2 mb-4">
-                <Target size={20} className="text-accent-purple" />
-                <h3 className="text-lg font-semibold text-white">Your Goal</h3>
-              </div>
-              {profile?.goal ? (
-                <div className="p-3 rounded-xl bg-white/5 border border-white/10">
-                  <p className="text-sm text-gray-300">{profile.goal}</p>
-                  {profile.timelineMonths && (
-                    <p className="text-xs text-gray-500 mt-2 flex items-center gap-1">
-                      <Clock size={12} /> Target: {profile.timelineMonths} months
-                    </p>
-                  )}
+        <AnimatePresence>
+          {step >= 2 && (
+            <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} className="space-y-8">
+              <GlassCard>
+                <div className="p-6">
+                  <div className="flex items-center gap-2 mb-4">
+                    <BookOpen size={20} className="text-accent-orange" />
+                    <h3 className="text-lg font-semibold text-white">Your Interests</h3>
+                  </div>
+                  <p className="text-sm text-gray-400 mb-4">Select topics you are interested in learning</p>
+                  <div className="flex flex-wrap gap-2">
+                    {INTERESTS.map(interest => (
+                      <SkillBadge key={interest} skill={interest}
+                        selected={selectedInterests.includes(interest)} selectable
+                        onAdd={toggleInterest} onRemove={toggleInterest} />
+                    ))}
+                  </div>
                 </div>
-              ) : (
-                <p className="text-sm text-gray-500">No goal set yet.</p>
-              )}
-            </div>
-          </GlassCard>
+              </GlassCard>
 
-          <GlassCard delay={0.5}>
-            <div className="p-6">
-              <div className="flex items-center gap-2 mb-4">
-                <BookOpen size={20} className="text-accent-teal" />
-                <h3 className="text-lg font-semibold text-white">Previous Learning</h3>
-              </div>
-              {profile?.priorLearningHistory?.length > 0 ? (
-                <ul className="space-y-2">
-                  {profile.priorLearningHistory.map((course, i) => (
-                    <li key={i} className="text-sm text-gray-300 px-3 py-2 rounded-lg bg-white/5 border border-white/10">
-                      {course}
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <p className="text-sm text-gray-500">Nothing recorded yet.</p>
+              <GlassCard>
+                <div className="p-6">
+                  <div className="flex items-center gap-2 mb-4">
+                    <Briefcase size={20} className="text-accent-teal" />
+                    <h3 className="text-lg font-semibold text-white">Current Skills</h3>
+                  </div>
+                  <p className="text-sm text-gray-400 mb-4">What do you already know?</p>
+                  <div className="flex flex-wrap gap-2">
+                    {SKILLS.map(skill => (
+                      <SkillBadge key={skill} skill={skill}
+                        selected={selectedSkills.includes(skill)} selectable
+                        onAdd={toggleSkill} onRemove={toggleSkill} />
+                    ))}
+                  </div>
+                </div>
+              </GlassCard>
+
+              <GlassCard>
+                <div className="p-6">
+                  <div className="flex items-center gap-2 mb-4">
+                    <User size={20} className="text-accent-cyan" />
+                    <h3 className="text-lg font-semibold text-white">Experience Level</h3>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    {EXPERIENCE_LEVELS.map(level => (
+                      <button key={level.value} onClick={() => setExperience(level.value)}
+                        className={`p-4 rounded-xl border text-left transition-all ${
+                          experience === level.value
+                            ? 'border-accent-orange/50 bg-accent-orange/10'
+                            : 'border-white/10 bg-white/5 hover:border-white/20'}`}>
+                        <div className="font-semibold text-white mb-1">{level.label}</div>
+                        <div className="text-xs text-gray-400">{level.desc}</div>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </GlassCard>
+
+              <GlassCard>
+                <div className="p-6">
+                  <div className="flex items-center gap-2 mb-4">
+                    <BookOpen size={20} className="text-accent-teal" />
+                    <h3 className="text-lg font-semibold text-white">Previous Learning</h3>
+                  </div>
+                  <p className="text-sm text-gray-400 mb-4">
+                    Have you completed any courses or certifications before (on any platform)?
+                    Optional — this helps us avoid recommending things you already know.
+                  </p>
+                  <input
+                    type="text"
+                    value={priorCoursesInput}
+                    onChange={(e) => setPriorCoursesInput(e.target.value)}
+                    placeholder="e.g. Python for Everybody (Coursera), CS50 (edX) — separate with commas"
+                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-accent-orange/50 transition-colors"
+                  />
+                </div>
+              </GlassCard>
+
+              <GlassCard>
+                <div className="p-6">
+                  <div className="flex items-center gap-2 mb-4">
+                    <Clock size={20} className="text-accent-purple" />
+                    <h3 className="text-lg font-semibold text-white">Weekly Time Commitment</h3>
+                  </div>
+                  <p className="text-sm text-gray-400 mb-4">How many hours can you dedicate per week?</p>
+                  <div className="flex flex-wrap gap-3">
+                    {TIME_OPTIONS.map(hours => (
+                      <button key={hours} onClick={() => setTimePerWeek(hours)}
+                        className={`px-6 py-3 rounded-xl border font-semibold transition-all ${
+                          timePerWeek === hours
+                            ? 'border-accent-orange/50 bg-accent-orange/10 text-accent-orange'
+                            : 'border-white/10 bg-white/5 text-gray-300 hover:border-white/20'}`}>
+                        {hours} hrs
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </GlassCard>
+
+              {error && (
+                <div className="flex items-start gap-2 text-red-400 text-sm bg-red-400/10 border border-red-400/20 rounded-xl p-4 max-w-2xl mx-auto">
+                  <AlertCircle size={16} className="mt-0.5 shrink-0" />
+                  <span>{error}</span>
+                </div>
               )}
-            </div>
-          </GlassCard>
-        </div>
+
+              <div className="flex justify-center pb-8">
+                <AnimatedButton onClick={handleComplete} loading={isGenerating} size="lg" disabled={!goal}>
+                  {isGenerating ? 'Generating Your Path...' : 'Generate My Learning Path'}
+                  {!isGenerating && <ArrowRight size={20} />}
+                </AnimatedButton>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </div>
   )
