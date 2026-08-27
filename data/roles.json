@@ -15,15 +15,15 @@
       "CSS",
       "JavaScript",
       "ES6",
-      "DOM",
-      "Async JavaScript",
       "React",
       "State Management",
       "Node.js",
       "Express",
       "REST APIs",
       "MongoDB",
+      "SQL",
       "Git",
+      "TypeScript",
       "Deployment"
     ]
   },
@@ -43,11 +43,14 @@
       "CSS",
       "JavaScript",
       "ES6",
-      "DOM",
       "React",
+      "TypeScript",
       "State Management",
+      "CSS Grid",
+      "Tailwind CSS",
       "Git",
-      "TypeScript"
+      "Web Performance",
+      "Testing"
     ]
   },
   {
@@ -59,7 +62,7 @@
       "api developer",
       "backend dev",
       "back-end dev",
-      "back end dev"
+      "server-side developer"
     ],
     "requiredSkills": [
       "JavaScript",
@@ -68,9 +71,280 @@
       "REST APIs",
       "MongoDB",
       "SQL",
-      "Git",
+      "PostgreSQL",
       "Authentication",
-      "Deployment"
+      "Docker",
+      "Git",
+      "Redis",
+      "Testing"
+    ]
+  },
+  {
+    "role": "React Developer",
+    "aliases": [
+      "react developer",
+      "react dev",
+      "reactjs developer"
+    ],
+    "requiredSkills": [
+      "JavaScript",
+      "React",
+      "TypeScript",
+      "Redux",
+      "React Router",
+      "REST APIs",
+      "Testing",
+      "Git",
+      "Next.js",
+      "State Management"
+    ]
+  },
+  {
+    "role": "Vue.js Developer",
+    "aliases": [
+      "vue developer",
+      "vuejs developer",
+      "vue.js developer",
+      "vue dev"
+    ],
+    "requiredSkills": [
+      "JavaScript",
+      "Vue.js",
+      "TypeScript",
+      "Pinia",
+      "Vue Router",
+      "REST APIs",
+      "Git",
+      "Nuxt.js",
+      "Testing"
+    ]
+  },
+  {
+    "role": "Angular Developer",
+    "aliases": [
+      "angular developer",
+      "angular dev",
+      "angularjs developer"
+    ],
+    "requiredSkills": [
+      "TypeScript",
+      "Angular",
+      "RxJS",
+      "NgRx",
+      "REST APIs",
+      "Testing",
+      "Git",
+      "Angular Material"
+    ]
+  },
+  {
+    "role": "Next.js Developer",
+    "aliases": [
+      "nextjs developer",
+      "next.js developer",
+      "next developer"
+    ],
+    "requiredSkills": [
+      "React",
+      "Next.js",
+      "TypeScript",
+      "SSR",
+      "REST APIs",
+      "Prisma",
+      "Authentication",
+      "Deployment",
+      "Tailwind CSS"
+    ]
+  },
+  {
+    "role": "Node.js Developer",
+    "aliases": [
+      "nodejs developer",
+      "node developer",
+      "node.js developer",
+      "node dev"
+    ],
+    "requiredSkills": [
+      "JavaScript",
+      "Node.js",
+      "Express",
+      "REST APIs",
+      "MongoDB",
+      "PostgreSQL",
+      "Redis",
+      "Authentication",
+      "Docker",
+      "Testing"
+    ]
+  },
+  {
+    "role": "Python Developer",
+    "aliases": [
+      "python developer",
+      "python dev",
+      "python programmer",
+      "python engineer"
+    ],
+    "requiredSkills": [
+      "Python",
+      "OOP",
+      "REST APIs",
+      "FastAPI",
+      "Django",
+      "SQL",
+      "PostgreSQL",
+      "Docker",
+      "Git",
+      "Testing"
+    ]
+  },
+  {
+    "role": "Django Developer",
+    "aliases": [
+      "django developer",
+      "django dev"
+    ],
+    "requiredSkills": [
+      "Python",
+      "Django",
+      "REST APIs",
+      "SQL",
+      "PostgreSQL",
+      "Authentication",
+      "Docker",
+      "Testing",
+      "Celery"
+    ]
+  },
+  {
+    "role": "FastAPI Developer",
+    "aliases": [
+      "fastapi developer",
+      "fastapi dev"
+    ],
+    "requiredSkills": [
+      "Python",
+      "FastAPI",
+      "REST APIs",
+      "SQL",
+      "Async Programming",
+      "Docker",
+      "Authentication",
+      "Testing"
+    ]
+  },
+  {
+    "role": "Java Developer",
+    "aliases": [
+      "java developer",
+      "java dev",
+      "java programmer",
+      "java engineer"
+    ],
+    "requiredSkills": [
+      "Java",
+      "OOP",
+      "Spring Boot",
+      "REST APIs",
+      "SQL",
+      "Hibernate",
+      "Maven",
+      "Docker",
+      "Git",
+      "Testing"
+    ]
+  },
+  {
+    "role": "Spring Boot Developer",
+    "aliases": [
+      "spring boot developer",
+      "spring developer",
+      "spring dev"
+    ],
+    "requiredSkills": [
+      "Java",
+      "Spring Boot",
+      "REST APIs",
+      "Hibernate",
+      "SQL",
+      "Authentication",
+      "Docker",
+      "Kafka",
+      "Testing"
+    ]
+  },
+  {
+    "role": "Kotlin Developer",
+    "aliases": [
+      "kotlin developer",
+      "kotlin dev"
+    ],
+    "requiredSkills": [
+      "Kotlin",
+      "Android",
+      "Jetpack",
+      "Coroutines",
+      "REST APIs",
+      "SQL",
+      "Testing",
+      "Git"
+    ]
+  },
+  {
+    "role": ".NET Developer",
+    "aliases": [
+      ".net developer",
+      "dotnet developer",
+      "c# developer",
+      "csharp developer",
+      "asp.net developer"
+    ],
+    "requiredSkills": [
+      "C#",
+      "ASP.NET Core",
+      "REST APIs",
+      "Entity Framework",
+      "SQL",
+      "Authentication",
+      "Docker",
+      "Git",
+      "Testing"
+    ]
+  },
+  {
+    "role": "Go Developer",
+    "aliases": [
+      "go developer",
+      "golang developer",
+      "go dev",
+      "golang dev"
+    ],
+    "requiredSkills": [
+      "Go",
+      "REST APIs",
+      "Concurrency",
+      "Docker",
+      "PostgreSQL",
+      "Git",
+      "Microservices",
+      "gRPC"
+    ]
+  },
+  {
+    "role": "Rust Developer",
+    "aliases": [
+      "rust developer",
+      "rust dev",
+      "rust programmer"
+    ],
+    "requiredSkills": [
+      "Rust",
+      "Systems Programming",
+      "Concurrency",
+      "WebAssembly",
+      "REST APIs",
+      "Git",
+      "Docker"
     ]
   },
   {
@@ -84,7 +358,12 @@
       "Statistics",
       "SQL",
       "Machine Learning",
-      "Data Structures"
+      "Pandas",
+      "NumPy",
+      "Data Visualization",
+      "Scikit-Learn",
+      "Deep Learning",
+      "Git"
     ]
   },
   {
@@ -92,48 +371,384 @@
     "aliases": [
       "machine learning engineer",
       "ml engineer",
-      "ai engineer"
+      "ai engineer",
+      "mlops engineer"
     ],
     "requiredSkills": [
       "Python",
-      "Statistics",
       "Machine Learning",
       "Deep Learning",
-      "Neural Networks",
+      "PyTorch",
+      "TensorFlow",
       "NLP",
-      "Deployment",
-      "Docker"
+      "Docker",
+      "MLOps",
+      "REST APIs",
+      "Git",
+      "Feature Engineering"
     ]
   },
   {
     "role": "Data Engineer",
     "aliases": [
       "data engineer",
-      "data engineering"
+      "data engineering",
+      "etl developer",
+      "etl engineer"
     ],
     "requiredSkills": [
       "Python",
       "SQL",
       "Data Engineering",
       "ETL",
-      "Cloud Computing"
+      "Airflow",
+      "Kafka",
+      "PySpark",
+      "Cloud Computing",
+      "dbt",
+      "Data Warehousing"
+    ]
+  },
+  {
+    "role": "Data Analyst",
+    "aliases": [
+      "data analyst",
+      "business analyst",
+      "analytics engineer",
+      "bi analyst"
+    ],
+    "requiredSkills": [
+      "SQL",
+      "Python",
+      "Data Analysis",
+      "Statistics",
+      "Data Visualization",
+      "Power BI",
+      "Tableau",
+      "Excel",
+      "A/B Testing"
+    ]
+  },
+  {
+    "role": "AI Engineer",
+    "aliases": [
+      "ai engineer",
+      "llm engineer",
+      "generative ai engineer",
+      "ai developer"
+    ],
+    "requiredSkills": [
+      "Python",
+      "LLMs",
+      "Prompt Engineering",
+      "LangChain",
+      "RAG",
+      "Vector Databases",
+      "REST APIs",
+      "Docker",
+      "Fine-Tuning",
+      "AI Agents"
+    ]
+  },
+  {
+    "role": "NLP Engineer",
+    "aliases": [
+      "nlp engineer",
+      "natural language processing engineer",
+      "nlp developer"
+    ],
+    "requiredSkills": [
+      "Python",
+      "NLP",
+      "Machine Learning",
+      "Deep Learning",
+      "Transformers",
+      "Hugging Face",
+      "BERT",
+      "LLMs",
+      "Docker",
+      "Git"
+    ]
+  },
+  {
+    "role": "Computer Vision Engineer",
+    "aliases": [
+      "computer vision engineer",
+      "cv engineer",
+      "vision engineer"
+    ],
+    "requiredSkills": [
+      "Python",
+      "Computer Vision",
+      "OpenCV",
+      "Deep Learning",
+      "PyTorch",
+      "YOLO",
+      "Image Processing",
+      "Docker",
+      "Git"
+    ]
+  },
+  {
+    "role": "MLOps Engineer",
+    "aliases": [
+      "mlops engineer",
+      "ml platform engineer",
+      "ml infrastructure engineer"
+    ],
+    "requiredSkills": [
+      "Python",
+      "Machine Learning",
+      "Docker",
+      "Kubernetes",
+      "MLflow",
+      "CI/CD",
+      "Cloud Computing",
+      "Monitoring",
+      "Git",
+      "MLOps"
+    ]
+  },
+  {
+    "role": "Analytics Engineer",
+    "aliases": [
+      "analytics engineer",
+      "dbt developer",
+      "data transformation engineer"
+    ],
+    "requiredSkills": [
+      "SQL",
+      "dbt",
+      "Data Warehousing",
+      "Snowflake",
+      "Python",
+      "Data Analysis",
+      "Airflow",
+      "Git",
+      "Data Modeling"
+    ]
+  },
+  {
+    "role": "Quantitative Analyst",
+    "aliases": [
+      "quantitative analyst",
+      "quant",
+      "quant developer",
+      "quant analyst"
+    ],
+    "requiredSkills": [
+      "Python",
+      "Statistics",
+      "Mathematics",
+      "Algorithmic Trading",
+      "Quantitative Finance",
+      "SQL",
+      "Machine Learning",
+      "Time Series"
     ]
   },
   {
     "role": "DevOps Engineer",
     "aliases": [
       "devops engineer",
-      "site reliability engineer",
-      "sre"
+      "devops dev",
+      "platform engineer",
+      "infrastructure engineer"
     ],
     "requiredSkills": [
       "Linux",
       "Git",
       "Docker",
+      "Kubernetes",
       "CI/CD",
-      "DevOps",
+      "Terraform",
+      "Ansible",
+      "Monitoring",
       "Cloud Computing",
-      "AWS"
+      "AWS",
+      "IaC"
+    ]
+  },
+  {
+    "role": "Site Reliability Engineer",
+    "aliases": [
+      "site reliability engineer",
+      "sre",
+      "reliability engineer"
+    ],
+    "requiredSkills": [
+      "Linux",
+      "Docker",
+      "Kubernetes",
+      "Monitoring",
+      "SRE",
+      "Incident Response",
+      "Cloud Computing",
+      "Python",
+      "Prometheus",
+      "Grafana"
+    ]
+  },
+  {
+    "role": "Cloud Engineer",
+    "aliases": [
+      "cloud engineer",
+      "cloud developer",
+      "cloud architect"
+    ],
+    "requiredSkills": [
+      "Cloud Computing",
+      "AWS",
+      "Terraform",
+      "Docker",
+      "Kubernetes",
+      "Networking",
+      "Linux",
+      "IaC",
+      "CI/CD",
+      "Security"
+    ]
+  },
+  {
+    "role": "AWS Engineer",
+    "aliases": [
+      "aws engineer",
+      "aws developer",
+      "aws architect",
+      "aws solutions architect"
+    ],
+    "requiredSkills": [
+      "AWS",
+      "Cloud Computing",
+      "Terraform",
+      "Docker",
+      "Networking",
+      "IAM",
+      "Lambda",
+      "S3",
+      "EC2",
+      "RDS",
+      "CI/CD"
+    ]
+  },
+  {
+    "role": "GCP Engineer",
+    "aliases": [
+      "gcp engineer",
+      "google cloud engineer",
+      "gcp developer"
+    ],
+    "requiredSkills": [
+      "GCP",
+      "Cloud Computing",
+      "Terraform",
+      "Docker",
+      "Kubernetes",
+      "BigQuery",
+      "Networking",
+      "CI/CD",
+      "Python"
+    ]
+  },
+  {
+    "role": "Azure Engineer",
+    "aliases": [
+      "azure engineer",
+      "microsoft azure engineer",
+      "azure developer",
+      "azure architect"
+    ],
+    "requiredSkills": [
+      "Azure",
+      "Cloud Computing",
+      "Terraform",
+      "Docker",
+      "Kubernetes",
+      "Networking",
+      "CI/CD",
+      "Python",
+      "Authentication"
+    ]
+  },
+  {
+    "role": "Kubernetes Engineer",
+    "aliases": [
+      "kubernetes engineer",
+      "k8s engineer",
+      "kubernetes admin",
+      "k8s admin"
+    ],
+    "requiredSkills": [
+      "Kubernetes",
+      "Docker",
+      "Linux",
+      "Helm",
+      "CI/CD",
+      "Monitoring",
+      "Prometheus",
+      "Grafana",
+      "Terraform",
+      "Networking"
+    ]
+  },
+  {
+    "role": "Platform Engineer",
+    "aliases": [
+      "platform engineer",
+      "internal developer platform engineer",
+      "idp engineer"
+    ],
+    "requiredSkills": [
+      "Kubernetes",
+      "Docker",
+      "Terraform",
+      "CI/CD",
+      "Platform Engineering",
+      "Linux",
+      "Go",
+      "Monitoring",
+      "GitOps",
+      "ArgoCD"
+    ]
+  },
+  {
+    "role": "GitOps Engineer",
+    "aliases": [
+      "gitops engineer",
+      "argocd engineer",
+      "flux engineer"
+    ],
+    "requiredSkills": [
+      "GitOps",
+      "Kubernetes",
+      "ArgoCD",
+      "Flux",
+      "CI/CD",
+      "Helm",
+      "Terraform",
+      "Git",
+      "Docker",
+      "Linux"
+    ]
+  },
+  {
+    "role": "DevSecOps Engineer",
+    "aliases": [
+      "devsecops engineer",
+      "devsecops dev",
+      "security devops"
+    ],
+    "requiredSkills": [
+      "CI/CD",
+      "Security",
+      "Docker",
+      "Kubernetes",
+      "DevSecOps",
+      "Cybersecurity Fundamentals",
+      "SAST",
+      "DAST",
+      "Trivy",
+      "Linux"
     ]
   },
   {
@@ -142,13 +757,188 @@
       "cybersecurity analyst",
       "security analyst",
       "cyber security analyst",
-      "ethical hacker"
+      "information security analyst"
     ],
     "requiredSkills": [
       "Networking",
       "Linux",
       "Cybersecurity Fundamentals",
-      "Penetration Testing"
+      "Penetration Testing",
+      "SIEM",
+      "Incident Response",
+      "Web Security"
+    ]
+  },
+  {
+    "role": "Penetration Tester",
+    "aliases": [
+      "penetration tester",
+      "pentester",
+      "ethical hacker",
+      "red teamer",
+      "red team engineer",
+      "security researcher"
+    ],
+    "requiredSkills": [
+      "Linux",
+      "Networking",
+      "Cybersecurity Fundamentals",
+      "Penetration Testing",
+      "Web Security",
+      "OWASP",
+      "Python",
+      "Metasploit",
+      "Burp Suite"
+    ]
+  },
+  {
+    "role": "Security Engineer",
+    "aliases": [
+      "security engineer",
+      "application security engineer",
+      "appsec engineer",
+      "product security engineer"
+    ],
+    "requiredSkills": [
+      "Cybersecurity Fundamentals",
+      "Web Security",
+      "Secure Coding",
+      "Cloud Security",
+      "Authentication",
+      "Cryptography",
+      "Docker",
+      "CI/CD"
+    ]
+  },
+  {
+    "role": "SOC Analyst",
+    "aliases": [
+      "soc analyst",
+      "security operations analyst",
+      "threat analyst"
+    ],
+    "requiredSkills": [
+      "SIEM",
+      "Networking",
+      "Cybersecurity Fundamentals",
+      "Incident Response",
+      "Threat Intelligence",
+      "Linux",
+      "Digital Forensics",
+      "Splunk"
+    ]
+  },
+  {
+    "role": "Malware Analyst",
+    "aliases": [
+      "malware analyst",
+      "malware researcher",
+      "threat intelligence analyst"
+    ],
+    "requiredSkills": [
+      "Malware Analysis",
+      "Reverse Engineering",
+      "Cybersecurity Fundamentals",
+      "Digital Forensics",
+      "Python",
+      "Linux",
+      "Assembly"
+    ]
+  },
+  {
+    "role": "Cloud Security Engineer",
+    "aliases": [
+      "cloud security engineer",
+      "cloud security architect",
+      "devsecops architect"
+    ],
+    "requiredSkills": [
+      "Cloud Security",
+      "AWS",
+      "Cybersecurity Fundamentals",
+      "Docker",
+      "Kubernetes",
+      "IAM",
+      "Zero Trust",
+      "Threat Modeling",
+      "CI/CD"
+    ]
+  },
+  {
+    "role": "iOS Developer",
+    "aliases": [
+      "ios developer",
+      "iphone developer",
+      "apple developer",
+      "swift developer",
+      "ios dev",
+      "swiftui developer"
+    ],
+    "requiredSkills": [
+      "Swift",
+      "iOS",
+      "SwiftUI",
+      "Core Data",
+      "Networking",
+      "Git",
+      "Testing",
+      "Firebase"
+    ]
+  },
+  {
+    "role": "Android Developer",
+    "aliases": [
+      "android developer",
+      "android dev",
+      "kotlin android developer"
+    ],
+    "requiredSkills": [
+      "Kotlin",
+      "Android",
+      "Jetpack Compose",
+      "REST APIs",
+      "Room",
+      "Coroutines",
+      "Git",
+      "Testing",
+      "Firebase"
+    ]
+  },
+  {
+    "role": "React Native Developer",
+    "aliases": [
+      "react native developer",
+      "react native dev",
+      "cross-platform mobile developer"
+    ],
+    "requiredSkills": [
+      "React Native",
+      "JavaScript",
+      "TypeScript",
+      "REST APIs",
+      "Navigation",
+      "Git",
+      "Expo",
+      "Testing",
+      "Firebase"
+    ]
+  },
+  {
+    "role": "Flutter Developer",
+    "aliases": [
+      "flutter developer",
+      "flutter dev",
+      "dart developer"
+    ],
+    "requiredSkills": [
+      "Flutter",
+      "Dart",
+      "State Management",
+      "REST APIs",
+      "Firebase",
+      "Git",
+      "Testing",
+      "Mobile Development"
     ]
   },
   {
@@ -157,12 +947,341 @@
       "ui/ux designer",
       "ux designer",
       "ui designer",
-      "product designer"
+      "product designer",
+      "interaction designer",
+      "ux researcher"
     ],
     "requiredSkills": [
       "UI/UX Design",
       "Figma",
-      "User Research"
+      "User Research",
+      "Prototyping",
+      "Design Systems",
+      "Interaction Design",
+      "Usability Testing",
+      "Information Architecture",
+      "Design Principles"
+    ]
+  },
+  {
+    "role": "Product Designer",
+    "aliases": [
+      "product designer",
+      "senior ux designer",
+      "lead designer"
+    ],
+    "requiredSkills": [
+      "UI/UX Design",
+      "Figma",
+      "User Research",
+      "Design Systems",
+      "Prototyping",
+      "Design Thinking",
+      "Product Management",
+      "Motion Design",
+      "Accessibility"
+    ]
+  },
+  {
+    "role": "Game Developer",
+    "aliases": [
+      "game developer",
+      "game dev",
+      "unity developer",
+      "unreal developer",
+      "game programmer"
+    ],
+    "requiredSkills": [
+      "Unity",
+      "C#",
+      "Game Development",
+      "Game Design",
+      "3D Games",
+      "Physics",
+      "Game AI",
+      "Git"
+    ]
+  },
+  {
+    "role": "Unity Developer",
+    "aliases": [
+      "unity developer",
+      "unity dev",
+      "unity engineer"
+    ],
+    "requiredSkills": [
+      "Unity",
+      "C#",
+      "Game Development",
+      "Physics",
+      "Shaders",
+      "Git",
+      "Testing",
+      "Game Design"
+    ]
+  },
+  {
+    "role": "Unreal Engine Developer",
+    "aliases": [
+      "unreal developer",
+      "unreal engine developer",
+      "ue developer",
+      "ue5 developer"
+    ],
+    "requiredSkills": [
+      "Unreal Engine",
+      "C++",
+      "Game Development",
+      "Blueprint",
+      "Shaders",
+      "Game Design",
+      "Git",
+      "Graphics Programming"
+    ]
+  },
+  {
+    "role": "Blockchain Developer",
+    "aliases": [
+      "blockchain developer",
+      "web3 developer",
+      "smart contract developer",
+      "solidity developer",
+      "defi developer",
+      "dapp developer"
+    ],
+    "requiredSkills": [
+      "Solidity",
+      "Ethereum",
+      "Blockchain",
+      "Smart Contracts",
+      "Hardhat",
+      "JavaScript",
+      "React",
+      "Web3.js",
+      "Testing"
+    ]
+  },
+  {
+    "role": "Embedded Systems Engineer",
+    "aliases": [
+      "embedded developer",
+      "embedded engineer",
+      "firmware developer",
+      "firmware engineer",
+      "embedded systems developer"
+    ],
+    "requiredSkills": [
+      "C",
+      "Embedded Systems",
+      "RTOS",
+      "ARM",
+      "Linux",
+      "Signal Processing",
+      "Git",
+      "Debugging"
+    ]
+  },
+  {
+    "role": "IoT Developer",
+    "aliases": [
+      "iot developer",
+      "iot engineer",
+      "iot architect",
+      "connected devices developer"
+    ],
+    "requiredSkills": [
+      "IoT",
+      "MQTT",
+      "Python",
+      "C",
+      "Embedded Systems",
+      "Networking",
+      "Cloud Computing",
+      "Edge Computing",
+      "Linux"
+    ]
+  },
+  {
+    "role": "Systems Programmer",
+    "aliases": [
+      "systems programmer",
+      "systems developer",
+      "low-level developer",
+      "systems engineer",
+      "kernel developer"
+    ],
+    "requiredSkills": [
+      "C",
+      "C++",
+      "Rust",
+      "Linux",
+      "Operating Systems",
+      "Concurrency",
+      "Memory Management",
+      "Networking",
+      "Debugging",
+      "Assembly"
+    ]
+  },
+  {
+    "role": "High Performance Computing Engineer",
+    "aliases": [
+      "hpc engineer",
+      "high performance computing developer",
+      "parallel computing engineer"
+    ],
+    "requiredSkills": [
+      "C++",
+      "CUDA",
+      "MPI",
+      "HPC",
+      "Mathematics",
+      "Linux",
+      "Parallel Programming",
+      "OpenCL",
+      "Optimization"
+    ]
+  },
+  {
+    "role": "Product Manager",
+    "aliases": [
+      "product manager",
+      "pm",
+      "technical product manager",
+      "senior product manager"
+    ],
+    "requiredSkills": [
+      "Product Management",
+      "Agile",
+      "Product Strategy",
+      "User Research",
+      "Product Analytics",
+      "Prioritization",
+      "Roadmapping",
+      "OKRs",
+      "Communication",
+      "Go-to-Market"
+    ]
+  },
+  {
+    "role": "Software Architect",
+    "aliases": [
+      "software architect",
+      "solutions architect",
+      "enterprise architect",
+      "technical architect",
+      "principal engineer"
+    ],
+    "requiredSkills": [
+      "Software Architecture",
+      "Microservices",
+      "Design Patterns",
+      "System Design",
+      "Cloud Computing",
+      "DDD",
+      "API Design",
+      "Documentation",
+      "Security",
+      "Distributed Systems"
+    ]
+  },
+  {
+    "role": "Engineering Manager",
+    "aliases": [
+      "engineering manager",
+      "engineering lead",
+      "tech lead",
+      "technical lead",
+      "team lead",
+      "development manager"
+    ],
+    "requiredSkills": [
+      "Leadership",
+      "Agile",
+      "Software Engineering",
+      "Communication",
+      "Project Management",
+      "Career Development",
+      "System Design",
+      "OKRs"
+    ]
+  },
+  {
+    "role": "Quantum Computing Engineer",
+    "aliases": [
+      "quantum engineer",
+      "quantum developer",
+      "quantum computing developer"
+    ],
+    "requiredSkills": [
+      "Quantum Computing",
+      "Qiskit",
+      "Python",
+      "Mathematics",
+      "Linear Algebra",
+      "Machine Learning",
+      "Cryptography"
+    ]
+  },
+  {
+    "role": "Robotics Engineer",
+    "aliases": [
+      "robotics engineer",
+      "robotics developer",
+      "robot software engineer"
+    ],
+    "requiredSkills": [
+      "ROS",
+      "Python",
+      "C++",
+      "Robotics",
+      "Computer Vision",
+      "SLAM",
+      "Control Systems",
+      "Embedded Systems",
+      "Linux"
+    ]
+  },
+  {
+    "role": "AI Research Scientist",
+    "aliases": [
+      "ai researcher",
+      "research scientist",
+      "ml researcher",
+      "machine learning researcher",
+      "deep learning researcher"
+    ],
+    "requiredSkills": [
+      "Python",
+      "Deep Learning",
+      "PyTorch",
+      "Mathematics",
+      "Statistics",
+      "NLP",
+      "Computer Vision",
+      "Research",
+      "Transformers",
+      "JAX"
+    ]
+  },
+  {
+    "role": "Technical Writer",
+    "aliases": [
+      "technical writer",
+      "documentation engineer",
+      "devrel engineer",
+      "developer advocate",
+      "developer relations engineer"
+    ],
+    "requiredSkills": [
+      "Technical Writing",
+      "Documentation",
+      "Markdown",
+      "API Design",
+      "Git",
+      "Communication",
+      "REST APIs",
+      "HTML"
     ]
   }
 ]
