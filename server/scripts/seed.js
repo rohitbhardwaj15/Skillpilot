@@ -1,5 +1,9 @@
-// Run with: node scripts/seed.js
-// Loads data/courses.json + data/roles.json into MongoDB.
+/**
+ * Seed Script — run ONCE manually: node scripts/seed.js
+ * Uses a DB flag so it NEVER wipes data on server restart.
+ *
+ * Force re-seed:  FORCE_SEED=true node scripts/seed.js
+ */
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import fs from 'fs';
@@ -12,6 +16,10 @@ dotenv.config();
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const dataDir   = path.join(__dirname, '../../data');
 
+// ── Tiny "migration flag" collection ─────────────────────────────────────
+const flagSchema = new mongoose.Schema({ key: String, seededAt: Date });
+const SeedFlag   = mongoose.models.SeedFlag || mongoose.model('SeedFlag', flagSchema);
+
 async function seed() {
   if (!process.env.MONGODB_URI) {
     console.error('❌  Set MONGODB_URI in server/.env before seeding.');
@@ -21,11 +29,23 @@ async function seed() {
   await mongoose.connect(process.env.MONGODB_URI);
   console.log('✅  Connected to MongoDB');
 
-  /* ── COURSES ─────────────────────────────────────────────────────────── */
-  const coursesPath = path.join(dataDir, 'courses.json');
-  const rawCourses  = JSON.parse(fs.readFileSync(coursesPath, 'utf-8'));
+  // ── Check if already seeded ───────────────────────────────────────────
+  const force = process.env.FORCE_SEED === 'true';
+  const flag  = await SeedFlag.findOne({ key: 'courses_seeded' });
 
-  // Normalise & fill defaults so mongoose doesn't reject old-format entries
+  if (flag && !force) {
+    const count = await Course.countDocuments();
+    console.log(`⏭   Already seeded on ${flag.seededAt.toISOString()} (${count} courses). Skipping.`);
+    console.log('    To force re-seed: FORCE_SEED=true node scripts/seed.js');
+    await mongoose.disconnect();
+    return;
+  }
+
+  // ── Seed courses ──────────────────────────────────────────────────────
+  const rawCourses = JSON.parse(
+    fs.readFileSync(path.join(dataDir, 'courses.json'), 'utf-8')
+  );
+
   const courses = rawCourses.map((c) => ({
     title:             c.title,
     provider:          c.provider          ?? '',
@@ -44,9 +64,12 @@ async function seed() {
 
   await Course.deleteMany({});
   await Course.insertMany(courses, { ordered: false });
-  console.log(`📚  Seeded ${courses.length} courses`);
 
-  /* ── STATS ────────────────────────────────────────────────────────────── */
+  // ── Save flag ─────────────────────────────────────────────────────────
+  await SeedFlag.deleteMany({ key: 'courses_seeded' });
+  await SeedFlag.create({ key: 'courses_seeded', seededAt: new Date() });
+
+  // ── Stats ─────────────────────────────────────────────────────────────
   const langs  = {};
   const levels = {};
   let freeCount = 0, ytCount = 0, docCount = 0;
@@ -57,15 +80,14 @@ async function seed() {
     if (c.youtube_url)       ytCount++;
     if (c.documentation_url) docCount++;
   }
+
+  console.log(`📚  Seeded ${courses.length} courses`);
   console.log('   Languages :', langs);
   console.log('   Levels    :', levels);
   console.log(`   Free: ${freeCount}  |  YouTube: ${ytCount}  |  Docs: ${docCount}`);
+  console.log('✅  Done — MongoDB disconnected');
 
   await mongoose.disconnect();
-  console.log('✅  Done — MongoDB disconnected');
 }
 
-seed().catch((err) => {
-  console.error(err);
-  process.exit(1);
-});
+seed().catch((err) => { console.error(err); process.exit(1); });
