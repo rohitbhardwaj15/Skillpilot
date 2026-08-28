@@ -179,6 +179,17 @@ export default function OnboardingPage() {
         addMsg([{ role: 'assistant', content: `Nice to meet you, ${userMsg}! 🎯 What is your primary learning goal? e.g. "I want to become a data scientist" or "I want to crack UPSC exam"` }])
         setStep(1)
       } else if (step === 1) {
+        // Guard: reject too-short / low-effort answers instead of silently
+        // accepting them as the learner's goal. Without this, a stray
+        // fragment (e.g. accidental early Enter) becomes `goal` and only
+        // fails much later, confusingly, when generating the path.
+        if (userMsg.length < 10) {
+          addMsg([{
+            role: 'assistant',
+            content: "That's a bit short — could you describe your goal a little more? e.g. \"I want to become a full-stack developer\" or \"I want to crack UPSC exam\"",
+          }])
+          return
+        }
         setGoal(userMsg)
         dispatch(addGoal(userMsg))
         addMsg([{ role: 'assistant', content: '🌐 In which language are you most comfortable studying?' }])
