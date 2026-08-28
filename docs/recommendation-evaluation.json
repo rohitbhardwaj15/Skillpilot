@@ -1,8 +1,21 @@
 {
   "cases": 64,
   "roleMatchAccuracy": 0.875,
-  "precisionAt10": 0.906,
-  "skillCoverageAt10": 0.966,
-  "recommendationDiversity": 0.759,
-  "prerequisiteViolationRate": 0
+  "baseline": {
+    "precisionAt10": 0.994,
+    "skillCoverageAt10": 0.806,
+    "recommendationDiversity": 0.641
+  },
+  "enhanced": {
+    "precisionAt10": 0.922,
+    "skillCoverageAt10": 0.931,
+    "recommendationDiversity": 0.744
+  },
+  "improvement": {
+    "precisionAt10": "+-7.2 pts",
+    "skillCoverageAt10": "+12.5 pts",
+    "recommendationDiversity": "+10.2 pts"
+  },
+  "prerequisiteViolationRate": 0,
+  "methodology": "Baseline = gap/role-fit ranking. Enhanced = prerequisite-aware hybrid semantic + quality + learner-personalization ranking. Precision/Coverage use proxy relevance labels from role skill gaps."
 }
