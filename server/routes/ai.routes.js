@@ -8,7 +8,7 @@ const router = Router();
 // Returns structured profile data extracted from free text.
 router.post('/analyze-goal', async (req, res) => {
   const { goalText } = req.body;
-  if (!goalText || typeof goalText !== 'string' || goalText.trim().length < 5) {
+  if (!goalText || typeof goalText !== 'string' || goalText.trim().length < 2) {
     return res.status(400).json({ error: 'goalText is required and must be a meaningful sentence.' });
   }
 
