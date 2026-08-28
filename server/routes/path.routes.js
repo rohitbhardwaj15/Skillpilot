@@ -9,8 +9,10 @@ import {
   rankCourses,
 } from '../services/recommendation.service.js';
 
-import { orderByPrerequisites } from '../services/pathgen.service.js';
+import { orderByPrerequisites, groupIntoPhases } from '../services/pathgen.service.js';
 import Course from '../models/Course.js';
+import Profile from '../models/Profile.js';
+import { requireAuth } from '../middleware/auth.middleware.js';
 
 const router = express.Router();
 
@@ -63,20 +65,21 @@ function findTargetRole(targetRoleText) {
  * POST /api/path/generate
  * ─────────────────────────────────────────────── */
 
-router.post('/generate', async (req, res) => {
+router.post('/generate', requireAuth, async (req, res) => {
   try {
-    const profile =
-      req.body?.profile || {};
+    let profile = req.body?.profile || null;
 
-    /*
-     * Backward compatibility:
-     * If frontend sends profileId instead of profile,
-     * try to use the supplied profile object only.
-     */
-    if (!profile.targetRole) {
+    // Frontend sends profileId — fetch full profile from DB
+    if (!profile && req.body?.profileId) {
+      profile = await Profile.findById(req.body.profileId).lean();
+      if (!profile) {
+        return res.status(404).json({ message: 'Profile not found.' });
+      }
+    }
+
+    if (!profile || !profile.targetRole) {
       return res.status(400).json({
-        message:
-          'Profile with targetRole is required.',
+        message: 'Profile with targetRole is required.',
       });
     }
 
@@ -103,20 +106,19 @@ router.post('/generate', async (req, res) => {
       role
     );
 
-    const roadmap =
-      orderByPrerequisites(
-        ranked,
-        profile
-      );
+    const roadmap = orderByPrerequisites(ranked, profile);
+    const phases  = groupIntoPhases(roadmap);
+    const estimatedDurationWeeks = phases.reduce((sum, p) => sum + (p.durationWeeks || 0), 0);
 
     return res.json({
       targetRole: role.role,
       skillGaps,
+      phases,
+      estimatedDurationWeeks,
       roadmap,
       recommendations: ranked,
       model,
-      generatedAt:
-        new Date().toISOString(),
+      generatedAt: new Date().toISOString(),
     });
   } catch (error) {
     console.error(
