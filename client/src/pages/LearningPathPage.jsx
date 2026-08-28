@@ -1,66 +1,71 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import {
   Clock, BookOpen, Loader2, AlertCircle, Copy, Check,
   Youtube, FileText, ExternalLink, ChevronDown, ChevronUp,
+  ThumbsUp, ThumbsDown, CheckCircle, Star, Zap, Trophy,
 } from 'lucide-react'
 import { setCurrentPath } from '../store/slices/pathSlice'
 import { api } from '../lib/api'
 import { transformPathResponse } from '../lib/transformPath'
-import SkillTree3D from '../components/3d/SkillTree3D'
 import GlassCard from '../components/ui/GlassCard'
-import TimelineNode from '../components/ui/TimelineNode'
 
-/* ── tiny markdown renderer (no extra library needed) ─────────────────── */
+/* ── Markdown renderer ────────────────────────────────────────────────── */
 function renderMarkdown(text = '') {
   if (!text) return ''
   return text
-    // headings
     .replace(/^### (.+)$/gm, '<h3 class="text-base font-bold text-white mt-4 mb-1">$1</h3>')
     .replace(/^## (.+)$/gm,  '<h2 class="text-lg font-bold text-accent-orange mt-5 mb-2">$1</h2>')
     .replace(/^# (.+)$/gm,   '<h1 class="text-xl font-bold text-white mt-6 mb-2">$1</h1>')
-    // bold + italic
     .replace(/\*\*\*(.+?)\*\*\*/g, '<strong><em>$1</em></strong>')
     .replace(/\*\*(.+?)\*\*/g,     '<strong class="text-white">$1</strong>')
     .replace(/\*(.+?)\*/g,         '<em class="text-gray-300">$1</em>')
-    // inline code
     .replace(/`([^`]+)`/g, '<code class="px-1.5 py-0.5 bg-white/10 rounded text-accent-teal text-xs font-mono">$1</code>')
-    // links
     .replace(/\[(.+?)\]\((.+?)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer" class="text-accent-orange hover:underline">$1</a>')
-    // unordered list
     .replace(/^\- (.+)$/gm, '<li class="flex gap-2 text-gray-300 text-sm"><span class="text-accent-orange mt-0.5">•</span><span>$1</span></li>')
-    // ordered list
     .replace(/^\d+\. (.+)$/gm, '<li class="flex gap-2 text-gray-300 text-sm"><span class="text-accent-orange font-bold">→</span><span>$1</span></li>')
-    // blockquote
     .replace(/^> (.+)$/gm, '<blockquote class="border-l-2 border-accent-orange pl-4 italic text-gray-400 text-sm my-2">$1</blockquote>')
-    // horizontal rule
     .replace(/^---$/gm, '<hr class="border-white/10 my-4" />')
-    // paragraphs — blank lines
     .replace(/\n\n/g, '</p><p class="text-gray-400 text-sm mb-3">')
-    // newlines
     .replace(/\n/g, '<br />')
 }
 
-/* ── MarkdownNote component ────────────────────────────────────────────── */
-function MarkdownNote({ node }) {
-  const [notes, setNotes]       = useState(node.notes || '')
-  const [editing, setEditing]   = useState(false)
-  const [preview, setPreview]   = useState(false)
-  const [copied,  setCopied]    = useState(false)
+/* ── MarkdownNote — saves to DB ───────────────────────────────────────── */
+function MarkdownNote({ node, profileId, initialNote }) {
+  const [notes,   setNotes]   = useState(initialNote?.content || '')
+  const [preview, setPreview] = useState(false)
+  const [saving,  setSaving]  = useState(false)
+  const [saved,   setSaved]   = useState(false)
+  const [copied,  setCopied]  = useState(false)
 
-  const storageKey = `skillpilot_notes_${node.id}`
-
+  // Load default template if no saved note
   useEffect(() => {
-    const saved = localStorage.getItem(storageKey)
-    if (saved) setNotes(saved)
-    else if (node.description) setNotes(`## ${node.title}\n\n${node.description}\n\n### My Notes\n\n- `)
+    if (!initialNote?.content && node.description) {
+      setNotes(`## ${node.title}\n\n${node.description}\n\n### My Notes\n\n- `)
+    }
   }, [node.id])
 
-  const save = () => {
-    localStorage.setItem(storageKey, notes)
-    setEditing(false)
-  }
+  const save = useCallback(async () => {
+    if (!profileId) return
+    setSaving(true)
+    try {
+      await api.saveNote(profileId, node.id, notes, node.title)
+      setSaved(true)
+      setTimeout(() => setSaved(false), 2000)
+    } catch (e) {
+      console.error('Note save failed:', e.message)
+    } finally {
+      setSaving(false)
+    }
+  }, [profileId, node.id, node.title, notes])
+
+  // Auto-save after 2s of inactivity
+  useEffect(() => {
+    if (!notes) return
+    const timer = setTimeout(save, 2000)
+    return () => clearTimeout(timer)
+  }, [notes])
 
   const copy = () => {
     navigator.clipboard.writeText(notes)
@@ -68,64 +73,48 @@ function MarkdownNote({ node }) {
     setTimeout(() => setCopied(false), 2000)
   }
 
+  const insertTag = (tag) => setNotes((n) => n + '\n' + tag)
+
   return (
     <div className="mt-4">
-      {/* toolbar */}
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center gap-2">
           <span className="text-xs text-gray-500 font-medium uppercase tracking-wide">📝 Notes</span>
-          <span className="text-xs text-gray-600">— Markdown supported</span>
+          <span className="text-xs text-gray-600">— Markdown • Auto-saved to cloud</span>
+          {saving && <span className="text-[10px] text-accent-orange animate-pulse">saving…</span>}
+          {saved  && <span className="text-[10px] text-green-400 flex items-center gap-1"><Check size={10} /> Saved</span>}
         </div>
         <div className="flex items-center gap-2">
           <button onClick={() => setPreview(!preview)}
             className="px-2 py-1 text-xs rounded bg-white/5 text-gray-400 hover:text-white transition-colors">
-            {preview ? 'Edit' : 'Preview'}
+            {preview ? '✏️ Edit' : '👁 Preview'}
           </button>
           <button onClick={copy}
             className="flex items-center gap-1 px-2 py-1 text-xs rounded bg-white/5 text-gray-400 hover:text-white transition-colors">
             {copied ? <Check size={12} className="text-green-400" /> : <Copy size={12} />}
             {copied ? 'Copied!' : 'Copy'}
           </button>
-          {editing && (
-            <button onClick={save}
-              className="px-3 py-1 text-xs rounded bg-accent-orange text-dark-900 font-semibold hover:bg-accent-amber transition-colors">
-              Save
-            </button>
-          )}
+          <button onClick={save}
+            className="px-3 py-1 text-xs rounded bg-accent-orange text-dark-900 font-semibold hover:bg-accent-amber transition-colors">
+            Save
+          </button>
         </div>
       </div>
 
       {preview ? (
-        /* Preview mode */
-        <div
-          className="min-h-[120px] bg-white/5 border border-white/10 rounded-xl p-4 prose prose-invert max-w-none"
-          dangerouslySetInnerHTML={{ __html: `<p class="text-gray-400 text-sm mb-3">${renderMarkdown(notes)}</p>` }}
-        />
+        <div className="min-h-[120px] bg-white/5 border border-white/10 rounded-xl p-4"
+          dangerouslySetInnerHTML={{ __html: `<p class="text-gray-400 text-sm mb-3">${renderMarkdown(notes)}</p>` }} />
       ) : (
-        /* Edit mode */
-        <textarea
-          value={notes}
-          onChange={(e) => { setNotes(e.target.value); setEditing(true) }}
-          placeholder="Write your notes in Markdown...&#10;## Heading&#10;**Bold**, *italic*, `code`&#10;- Bullet point"
+        <textarea value={notes} onChange={(e) => setNotes(e.target.value)}
+          placeholder={"Write your notes in Markdown…\n## Heading\n**Bold**, *italic*, `code`\n- Bullet"}
           rows={6}
           className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-sm text-gray-300
-            placeholder-gray-600 font-mono focus:outline-none focus:border-accent-orange/50
-            transition-colors resize-y"
-        />
+            placeholder-gray-600 font-mono focus:outline-none focus:border-accent-orange/50 transition-colors resize-y" />
       )}
 
-      {/* Quick markdown cheatsheet */}
-      <div className="flex flex-wrap gap-3 mt-2">
-        {[
-          ['## Heading', '## Title'],
-          ['**Bold**',   '**text**'],
-          ['*Italic*',   '*text*'],
-          ['`Code`',     '`code`'],
-          ['- List',     '- item'],
-          ['> Quote',    '> text'],
-        ].map(([label, insert]) => (
-          <button key={label}
-            onClick={() => { setNotes((n) => n + '\n' + insert); setEditing(true) }}
+      <div className="flex flex-wrap gap-2 mt-2">
+        {[['## Heading','## '],['**Bold**','**text**'],['*Italic*','*text*'],['`Code`','`code`'],['- List','- item'],['> Quote','> text'],['---','---']].map(([label, ins]) => (
+          <button key={label} onClick={() => insertTag(ins)}
             className="px-2 py-0.5 text-[10px] bg-white/5 text-gray-500 rounded hover:text-white hover:bg-white/10 font-mono transition-colors">
             {label}
           </button>
@@ -135,70 +124,187 @@ function MarkdownNote({ node }) {
   )
 }
 
-/* ── CourseLinks component ─────────────────────────────────────────────── */
-function CourseLinks({ node }) {
-  const [open, setOpen] = useState(false)
-  const course = node.course || {}
+/* ── Feedback widget — thumbs up/down with adaptive re-ranking ────────── */
+function FeedbackWidget({ node, pathId, onAdaptation }) {
+  const [selected, setSelected] = useState(null)
+  const [loading,  setLoading]  = useState(false)
+  const [message,  setMessage]  = useState('')
 
-  const hasLinks = course.url || course.youtube_url || course.documentation_url
-  if (!hasLinks) return null
+  const RATINGS = [
+    { id: 'too_easy', label: 'Too Easy',  emoji: '😴', color: 'text-blue-400' },
+    { id: 'good',     label: 'Good',      emoji: '👍', color: 'text-green-400' },
+    { id: 'perfect',  label: 'Perfect!',  emoji: '🌟', color: 'text-yellow-400' },
+    { id: 'too_hard', label: 'Too Hard',  emoji: '😤', color: 'text-red-400' },
+  ]
+
+  const send = async (rating) => {
+    if (!pathId || !node.courseId) return
+    setSelected(rating)
+    setLoading(true)
+    try {
+      const res = await api.giveFeedback(pathId, node.courseId, rating)
+      setMessage(res.adaptation?.message || 'Thanks for the feedback!')
+      if (onAdaptation) onAdaptation(res.learningPath)
+    } catch (e) {
+      setMessage('Feedback saved locally.')
+    } finally {
+      setLoading(false)
+    }
+  }
 
   return (
-    <div className="mt-3">
-      <button onClick={() => setOpen(!open)}
-        className="flex items-center gap-1 text-xs text-accent-orange hover:underline">
-        {open ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
-        {open ? 'Hide resources' : 'View resources'}
-      </button>
-
-      {open && (
-        <div className="flex flex-col gap-2 mt-2">
-          {course.url && (
-            <a href={course.url} target="_blank" rel="noopener noreferrer"
-              className="flex items-center gap-2 px-3 py-2 rounded-lg bg-accent-orange/10
-                text-accent-orange hover:bg-accent-orange hover:text-dark-900 transition-all text-xs font-medium">
-              <ExternalLink size={12} /> View Course
-            </a>
-          )}
-          {course.youtube_url && (
-            <a href={course.youtube_url} target="_blank" rel="noopener noreferrer"
-              className="flex items-center gap-2 px-3 py-2 rounded-lg bg-red-500/10
-                text-red-400 hover:bg-red-500 hover:text-white transition-all text-xs font-medium">
-              <Youtube size={12} /> Watch on YouTube
-            </a>
-          )}
-          {course.documentation_url && (
-            <a href={course.documentation_url} target="_blank" rel="noopener noreferrer"
-              className="flex items-center gap-2 px-3 py-2 rounded-lg bg-blue-500/10
-                text-blue-400 hover:bg-blue-500 hover:text-white transition-all text-xs font-medium">
-              <FileText size={12} /> Read Documentation
-            </a>
-          )}
-        </div>
+    <div className="mt-4 pt-3 border-t border-white/5">
+      <p className="text-xs text-gray-500 mb-2">How was this course?</p>
+      <div className="flex flex-wrap gap-2">
+        {RATINGS.map((r) => (
+          <button key={r.id} onClick={() => send(r.id)} disabled={loading || !!selected}
+            className={`flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-medium border transition-all
+              ${selected === r.id
+                ? 'border-accent-orange bg-accent-orange/10 text-accent-orange'
+                : 'border-white/10 bg-white/5 text-gray-400 hover:border-white/20 hover:text-white'
+              } disabled:opacity-50`}>
+            {r.emoji} {r.label}
+          </button>
+        ))}
+      </div>
+      {message && (
+        <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+          className="text-xs text-accent-teal mt-2 italic">{message}</motion.p>
       )}
     </div>
   )
 }
 
-/* ── Main component ────────────────────────────────────────────────────── */
-export default function LearningPathPage() {
-  const dispatch     = useDispatch()
-  const { currentPath } = useSelector((state) => state.path)
-  const [viewMode,      setViewMode]      = useState('timeline')
-  const [selectedNode,  setSelectedNode]  = useState(null)
-  const [expandedNode,  setExpandedNode]  = useState(null)
-  const [loading,       setLoading]       = useState(!currentPath)
-  const [error,         setError]         = useState('')
+/* ── Course resource links — always visible ──────────────────────────── */
+function CourseLinks({ node }) {
+  const course = node.course || {}
+  const hasAny = course.url || course.youtube_url || course.documentation_url || node.url || node.youtube_url || node.documentation_url
 
-  useEffect(() => {
-    if (currentPath) { setLoading(false); return }
-    const pathId = localStorage.getItem('skillpilot_path_id')
-    if (!pathId) { setLoading(false); return }
-    api.getPath(pathId)
-      .then((path) => dispatch(setCurrentPath(transformPathResponse(path))))
-      .catch((err) => setError(err.message))
-      .finally(() => setLoading(false))
-  }, [currentPath, dispatch])
+  const url      = course.url      || node.url
+  const ytUrl    = course.youtube_url    || node.youtube_url
+  const docUrl   = course.documentation_url || node.documentation_url
+
+  if (!hasAny) return null
+
+  return (
+    <div className="flex flex-wrap gap-2 mt-3">
+      {url && (
+        <a href={url} target="_blank" rel="noopener noreferrer"
+          className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-accent-orange/10
+            text-accent-orange hover:bg-accent-orange hover:text-dark-900 transition-all text-xs font-medium">
+          <ExternalLink size={12} /> View Course
+        </a>
+      )}
+      {ytUrl && (
+        <a href={ytUrl} target="_blank" rel="noopener noreferrer"
+          className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-red-500/10
+            text-red-400 hover:bg-red-500 hover:text-white transition-all text-xs font-medium">
+          <Youtube size={12} /> Watch on YouTube
+        </a>
+      )}
+      {docUrl && (
+        <a href={docUrl} target="_blank" rel="noopener noreferrer"
+          className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-blue-500/10
+            text-blue-400 hover:bg-blue-500 hover:text-white transition-all text-xs font-medium">
+          <FileText size={12} /> Read Docs
+        </a>
+      )}
+    </div>
+  )
+}
+
+/* ── Progress Stats Bar ───────────────────────────────────────────────── */
+function StatsBar({ nodes, streakDays }) {
+  const total    = nodes.length
+  const done     = nodes.filter((n) => n.completed).length
+  const pct      = total ? Math.round((done / total) * 100) : 0
+  const totalWks = nodes.reduce((s, n) => s + (n.durationWeeks || 2), 0)
+  const doneWks  = nodes.filter((n) => n.completed).reduce((s, n) => s + (n.durationWeeks || 2), 0)
+
+  return (
+    <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
+      {[
+        { icon: CheckCircle, label: 'Completed',      value: `${done} / ${total}`,    color: 'text-accent-teal' },
+        { icon: Trophy,      label: 'Progress',       value: `${pct}%`,               color: 'text-accent-orange' },
+        { icon: Clock,       label: 'Weeks Done',     value: `${doneWks} / ${totalWks}w`, color: 'text-accent-purple' },
+        { icon: Zap,         label: 'Day Streak 🔥',  value: `${streakDays || 0}`,    color: 'text-yellow-400' },
+      ].map(({ icon: Icon, label, value, color }) => (
+        <GlassCard key={label}>
+          <div className="p-4 flex items-center gap-3">
+            <Icon size={20} className={color} />
+            <div>
+              <p className="text-xs text-gray-500">{label}</p>
+              <p className={`text-lg font-bold ${color}`}>{value}</p>
+            </div>
+          </div>
+        </GlassCard>
+      ))}
+    </div>
+  )
+}
+
+/* ── Main Page ────────────────────────────────────────────────────────── */
+export default function LearningPathPage() {
+  const dispatch = useDispatch()
+  const { currentPath } = useSelector((state) => state.path)
+
+  const [rawPath,      setRawPath]      = useState(null)
+  const [profile,      setProfile]      = useState(null)
+  const [notes,        setNotes]        = useState([])
+  const [loading,      setLoading]      = useState(true)
+  const [error,        setError]        = useState('')
+  const [expandedNode, setExpandedNode] = useState(null)
+  const [marking,      setMarking]      = useState(null)
+
+  const pathId    = localStorage.getItem('skillpilot_path_id')
+  const streakDays = profile?.streakDays || 0
+
+  const load = useCallback(async () => {
+    setLoading(true)
+    try {
+      const prof = await api.getMyProfile().catch(() => null)
+      setProfile(prof)
+
+      if (prof?._id) {
+        api.getNotes(prof._id).then(setNotes).catch(() => {})
+        api.updateStreak(prof._id).catch(() => {})
+      }
+
+      if (pathId) {
+        const path = await api.getPath(pathId)
+        setRawPath(path)
+        dispatch(setCurrentPath(transformPathResponse(path)))
+      }
+    } catch (err) {
+      setError(err.message)
+    } finally {
+      setLoading(false)
+    }
+  }, [dispatch, pathId])
+
+  useEffect(() => { load() }, [load])
+
+  // Mark course done
+  const handleMarkDone = async (node) => {
+    if (!pathId || !node.courseId || marking) return
+    setMarking(node.id)
+    try {
+      const updated = await api.markCourseDone(pathId, node.courseId)
+      setRawPath(updated)
+      dispatch(setCurrentPath(transformPathResponse(updated)))
+    } catch (e) {
+      console.error(e)
+    } finally {
+      setMarking(null)
+    }
+  }
+
+  // After adaptive re-ranking from feedback
+  const handleAdaptation = (updatedPath) => {
+    if (!updatedPath) return
+    setRawPath(updatedPath)
+    dispatch(setCurrentPath(transformPathResponse(updatedPath)))
+  }
 
   if (loading) {
     return (
@@ -214,7 +320,7 @@ export default function LearningPathPage() {
         <GlassCard className="p-8 max-w-md text-center">
           <AlertCircle className="mx-auto mb-3 text-accent-orange" size={28} />
           <p className="text-gray-300">
-            {error || "You don't have a learning path yet — complete onboarding to generate one."}
+            {error || "No learning path yet — complete onboarding first."}
           </p>
         </GlassCard>
       </div>
@@ -222,98 +328,115 @@ export default function LearningPathPage() {
   }
 
   const activePath = currentPath
+  const allNodes   = activePath.nodes || []
 
-  const get3DNodes = (path) =>
-    path.nodes.map((node, i) => ({
-      id:        node.id,
-      position:  [0, (path.nodes.length - 1 - i) * 2 - 4, 0],
-      color:     node.completed ? '#00d4aa' : i === 0 || path.nodes[i - 1]?.completed ? '#f5a623' : '#666',
-      label:     node.title,
-      completed: node.completed,
-    }))
-
-  const get3DConnections = (path) => {
-    const connections = []
-    for (let i = 0; i < path.nodes.length - 1; i++) {
-      connections.push({
-        start:    [0, (path.nodes.length - 1 - i) * 2 - 4, 0],
-        end:      [0, (path.nodes.length - 1 - (i + 1)) * 2 - 4, 0],
-        color:    path.nodes[i].completed ? '#00d4aa' : '#f5a623',
-        animated: !path.nodes[i].completed,
-      })
-    }
-    return connections
-  }
+  // Progress bar
+  const doneCount = allNodes.filter((n) => n.completed).length
+  const progress  = allNodes.length ? Math.round((doneCount / allNodes.length) * 100) : 0
 
   return (
     <div className="min-h-screen pt-24 pb-12 section-padding">
-      <div className="max-w-7xl mx-auto">
+      <div className="max-w-4xl mx-auto">
 
         {/* Header */}
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-8">
-          <h1 className="text-3xl lg:text-4xl font-bold font-display text-white mb-2">
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-6">
+          <h1 className="text-3xl lg:text-4xl font-bold font-display text-white mb-1">
             Your <span className="gradient-text">Learning Path</span>
           </h1>
-          <p className="text-gray-400">{activePath.description}</p>
-          <div className="flex items-center gap-4 mt-3 text-sm text-gray-400">
+          <p className="text-gray-400 text-sm">{activePath.description}</p>
+          <div className="flex items-center gap-4 mt-2 text-sm text-gray-400">
             <span className="flex items-center gap-1"><Clock size={14} /> ~{activePath.estimatedWeeks} weeks</span>
-            <span className="flex items-center gap-1"><BookOpen size={14} /> {activePath.nodes.length} steps</span>
+            <span className="flex items-center gap-1"><BookOpen size={14} /> {allNodes.length} steps</span>
+          </div>
+
+          {/* Overall progress bar */}
+          <div className="mt-4">
+            <div className="flex justify-between text-xs text-gray-500 mb-1">
+              <span>Overall Progress</span>
+              <span>{progress}%</span>
+            </div>
+            <div className="h-2 bg-white/10 rounded-full overflow-hidden">
+              <motion.div className="h-full bg-gradient-to-r from-accent-orange to-accent-teal rounded-full"
+                initial={{ width: 0 }} animate={{ width: `${progress}%` }} transition={{ duration: 0.8 }} />
+            </div>
           </div>
         </motion.div>
 
-        {/* View toggle */}
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-semibold text-white">{activePath.title}</h2>
-          <div className="flex bg-white/5 rounded-lg p-1 border border-white/10">
-            {['timeline', '3d'].map((mode) => (
-              <button key={mode} onClick={() => setViewMode(mode)}
-                className={`px-4 py-2 rounded-md text-sm font-medium capitalize transition-all ${
-                  viewMode === mode ? 'bg-accent-orange text-dark-900' : 'text-gray-400 hover:text-white'}`}>
-                {mode === 'timeline' ? 'Timeline' : '3D View'}
-              </button>
-            ))}
-          </div>
+        {/* Stats */}
+        <StatsBar nodes={allNodes} streakDays={streakDays} />
+
+        {/* Adaptive notice */}
+        <div className="mb-6 px-4 py-3 rounded-xl bg-accent-purple/10 border border-accent-purple/20 text-sm text-accent-purple flex items-center gap-2">
+          <Zap size={14} />
+          <span>This path adapts based on your feedback — rate each course to improve your recommendations!</span>
         </div>
 
-        {viewMode === 'timeline' ? (
-          <div className="space-y-4 max-w-3xl">
-            {activePath.nodes?.map((node, i) => {
-              const isExpanded = expandedNode === node.id
-              const isActive   = !node.completed && (i === 0 || activePath.nodes[i - 1]?.completed)
-              return (
-                <motion.div key={node.id} initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: i * 0.05 }}>
-                  <GlassCard className={`transition-all ${isActive ? 'border-accent-orange/30' : ''}`}>
-                    <div className="p-5">
-                      {/* Node header */}
-                      <div className="flex items-start justify-between gap-3">
-                        <div className="flex items-start gap-3 flex-1">
-                          {/* Step number */}
-                          <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold shrink-0 ${
-                            node.completed ? 'bg-accent-teal/20 text-accent-teal' :
-                            isActive       ? 'bg-accent-orange/20 text-accent-orange' :
-                                             'bg-white/5 text-gray-500'
-                          }`}>
-                            {node.completed ? '✓' : i + 1}
-                          </div>
-                          <div className="flex-1">
-                            <h3 className="text-white font-semibold">{node.title}</h3>
-                            <p className="text-xs text-gray-500 mt-0.5">{node.subtitle || node.phase}</p>
-                          </div>
-                        </div>
-                        <button onClick={() => setExpandedNode(isExpanded ? null : node.id)}
-                          className="text-gray-500 hover:text-white transition-colors shrink-0">
-                          {isExpanded ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+        {/* Timeline */}
+        <div className="space-y-4">
+          {allNodes.map((node, i) => {
+            const isExpanded = expandedNode === node.id
+            const isActive   = !node.completed && (i === 0 || allNodes[i - 1]?.completed)
+            const savedNote  = notes.find((n) => n.nodeId === node.id)
+
+            return (
+              <motion.div key={node.id} initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: Math.min(i * 0.04, 0.4) }}>
+                <GlassCard className={`transition-all ${isActive ? 'border-accent-orange/30' : node.completed ? 'border-accent-teal/20' : ''}`}>
+                  <div className="p-5">
+
+                    {/* Node header */}
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="flex items-start gap-3 flex-1 min-w-0">
+
+                        {/* Step circle / done button */}
+                        <button
+                          onClick={() => !node.completed && handleMarkDone(node)}
+                          disabled={!!marking || node.completed}
+                          className={`w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold shrink-0 transition-all
+                            ${node.completed
+                              ? 'bg-accent-teal/20 text-accent-teal cursor-default'
+                              : isActive
+                              ? 'bg-accent-orange/20 text-accent-orange hover:bg-accent-orange hover:text-dark-900 cursor-pointer'
+                              : 'bg-white/5 text-gray-500 cursor-default'
+                            }`}
+                          title={node.completed ? 'Completed' : isActive ? 'Mark as done' : 'Complete previous steps first'}>
+                          {marking === node.id
+                            ? <Loader2 size={14} className="animate-spin" />
+                            : node.completed ? '✓' : i + 1
+                          }
                         </button>
+
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <h3 className="text-white font-semibold text-sm">{node.title}</h3>
+                            {node.completed && (
+                              <span className="px-2 py-0.5 text-[10px] bg-accent-teal/20 text-accent-teal rounded-full">Done ✓</span>
+                            )}
+                            {isActive && !node.completed && (
+                              <span className="px-2 py-0.5 text-[10px] bg-accent-orange/20 text-accent-orange rounded-full animate-pulse">Current</span>
+                            )}
+                          </div>
+                          <p className="text-xs text-gray-500 mt-0.5">{node.subtitle || node.phase}</p>
+
+                          {/* Resource links — ALWAYS visible */}
+                          <CourseLinks node={node} />
+                        </div>
                       </div>
 
-                      {/* Expanded content */}
+                      <button onClick={() => setExpandedNode(isExpanded ? null : node.id)}
+                        className="text-gray-500 hover:text-white transition-colors shrink-0 mt-1">
+                        {isExpanded ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+                      </button>
+                    </div>
+
+                    {/* Expanded section */}
+                    <AnimatePresence>
                       {isExpanded && (
                         <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }}
-                          className="mt-4 pl-11">
+                          exit={{ opacity: 0, height: 0 }} className="mt-4 pl-12 overflow-hidden">
+
                           <p className="text-sm text-gray-400 mb-3">{node.description}</p>
 
-                          {/* Skills */}
                           {node.skills?.length > 0 && (
                             <div className="flex flex-wrap gap-1 mb-4">
                               {node.skills.map((skill) => (
@@ -324,35 +447,29 @@ export default function LearningPathPage() {
                             </div>
                           )}
 
-                          {/* Course resource links */}
-                          <CourseLinks node={node} />
+                          {/* Feedback widget */}
+                          <FeedbackWidget node={node} pathId={pathId} onAdaptation={handleAdaptation} />
 
-                          {/* Markdown Notes */}
-                          <MarkdownNote node={node} />
+                          {/* Markdown notes — saved to DB */}
+                          <MarkdownNote node={node} profileId={profile?._id} initialNote={savedNote} />
                         </motion.div>
                       )}
-                    </div>
-                  </GlassCard>
-                </motion.div>
-              )
-            })}
-          </div>
-        ) : (
-          <div className="space-y-6">
-            <SkillTree3D
-              nodes={get3DNodes(activePath)}
-              connections={get3DConnections(activePath)}
-              onNodeClick={(node) => setSelectedNode(node)}
-              activeNode={selectedNode?.id} />
-            {selectedNode && (
-              <GlassCard>
-                <div className="p-6">
-                  <h3 className="text-lg font-semibold text-white mb-2">{selectedNode.label}</h3>
-                  <p className="text-gray-400 text-sm">{selectedNode.description}</p>
-                </div>
-              </GlassCard>
-            )}
-          </div>
+                    </AnimatePresence>
+                  </div>
+                </GlassCard>
+              </motion.div>
+            )
+          })}
+        </div>
+
+        {/* Completion message */}
+        {progress === 100 && (
+          <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }}
+            className="mt-8 text-center p-8 rounded-2xl bg-gradient-to-r from-accent-orange/10 to-accent-teal/10 border border-accent-orange/20">
+            <Trophy size={48} className="mx-auto mb-4 text-yellow-400" />
+            <h2 className="text-2xl font-bold text-white mb-2">🎉 Path Complete!</h2>
+            <p className="text-gray-400">Congratulations! You have completed your entire learning path.</p>
+          </motion.div>
         )}
       </div>
     </div>
