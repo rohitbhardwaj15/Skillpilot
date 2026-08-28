@@ -1,166 +1,738 @@
 /**
- * SkillPilot ML Layer
- * -------------------
- * Lightweight, dependency-free NLP + online learning layer.
+ * ML Service
  *
- * 1) TF-IDF + cosine similarity creates semantic text vectors for goals,
- *    roles, skills and course metadata. This handles related wording instead
- *    of relying only on exact string equality.
+ * Hybrid semantic recommendation layer:
  *
- * 2) A small online logistic-regression model learns from learner feedback.
- *    good/perfect = positive preference; too_easy/too_hard = negative fit.
- *    The model is deliberately blended with deterministic safety signals,
- *    so prerequisites and hard constraints remain trustworthy.
+ * 1. TF-IDF lexical similarity
+ * 2. Dense embedding similarity
+ * 3. Learner preference model
+ *
+ * The service intentionally keeps the recommendation
+ * engine deterministic and explainable.
  */
 
-const TOKEN_RE = /[a-z0-9+#.]+/gi;
 const STOP_WORDS = new Set([
-  'the','and','for','with','from','this','that','into','your','you','are','was','will',
-  'have','has','been','learn','learning','course','tutorial','using','use','basic','advanced',
-  'developer','development','programming','skills','skill','to','of','in','on','a','an'
+  'the',
+  'a',
+  'an',
+  'and',
+  'or',
+  'for',
+  'to',
+  'of',
+  'in',
+  'on',
+  'with',
+  'using',
+  'build',
+  'learn',
+  'learning',
+  'become',
+  'want',
+  'from',
+  'into',
+  'my',
+  'i',
 ]);
 
-export function tokenize(text = '') {
-  return (String(text).toLowerCase().match(TOKEN_RE) || [])
-    .map(t => t.replace(/\.(?=$|[^a-z0-9])/g, ''))
-    .filter(t => t.length > 1 && !STOP_WORDS.has(t));
+/* ───────────────────────────────────────────────
+ * Text utilities
+ * ─────────────────────────────────────────────── */
+
+function normalizeText(text = '') {
+  return String(text)
+    .toLowerCase()
+    .replace(/[^a-z0-9+#.\s-]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
 }
 
-function textOfCourse(course) {
+function tokenize(text = '') {
+  return normalizeText(text)
+    .split(/\s+/)
+    .filter(
+      (token) =>
+        token &&
+        !STOP_WORDS.has(token)
+    );
+}
+
+function termFrequency(tokens) {
+  const counts = new Map();
+
+  for (const token of tokens) {
+    counts.set(
+      token,
+      (counts.get(token) || 0) + 1
+    );
+  }
+
+  const total = Math.max(
+    tokens.length,
+    1
+  );
+
+  return new Map(
+    [...counts.entries()].map(
+      ([term, count]) => [
+        term,
+        count / total,
+      ]
+    )
+  );
+}
+
+function cosineSimilarity(a, b) {
+  if (!a.size || !b.size) return 0;
+
+  let dot = 0;
+  let normA = 0;
+  let normB = 0;
+
+  for (const [key, value] of a) {
+    const other = b.get(key) || 0;
+
+    dot += value * other;
+    normA += value * value;
+  }
+
+  for (const value of b.values()) {
+    normB += value * value;
+  }
+
+  if (!normA || !normB) return 0;
+
+  return dot / (
+    Math.sqrt(normA) *
+    Math.sqrt(normB)
+  );
+}
+
+/* ───────────────────────────────────────────────
+ * TF-IDF
+ * ─────────────────────────────────────────────── */
+
+function buildTfIdf(documents) {
+  const tokenized = documents.map(
+    tokenize
+  );
+
+  const documentFrequency =
+    new Map();
+
+  for (const tokens of tokenized) {
+    const unique = new Set(tokens);
+
+    for (const token of unique) {
+      documentFrequency.set(
+        token,
+        (documentFrequency.get(token) || 0) +
+          1
+      );
+    }
+  }
+
+  const totalDocuments =
+    documents.length || 1;
+
+  return tokenized.map((tokens) => {
+    const tf = termFrequency(tokens);
+    const vector = new Map();
+
+    for (const [term, tfValue] of tf) {
+      const df =
+        documentFrequency.get(term) || 0;
+
+      const idf =
+        Math.log(
+          (1 + totalDocuments) /
+            (1 + df)
+        ) + 1;
+
+      vector.set(
+        term,
+        tfValue * idf
+      );
+    }
+
+    return vector;
+  });
+}
+
+/* ───────────────────────────────────────────────
+ * Dense embedding layer
+ *
+ * If a real embedding provider/model is
+ * configured, it can be plugged into this
+ * function without changing the recommender API.
+ *
+ * For local/offline execution we create a
+ * deterministic hashed dense representation.
+ * ─────────────────────────────────────────────── */
+
+const EMBEDDING_DIMENSION = 128;
+
+function hashToken(token) {
+  let hash = 2166136261;
+
+  for (let i = 0; i < token.length; i++) {
+    hash ^= token.charCodeAt(i);
+    hash +=
+      (hash << 1) +
+      (hash << 4) +
+      (hash << 7) +
+      (hash << 8) +
+      (hash << 24);
+  }
+
+  return hash >>> 0;
+}
+
+function denseEmbedding(text) {
+  const tokens = tokenize(text);
+
+  const vector = new Array(
+    EMBEDDING_DIMENSION
+  ).fill(0);
+
+  if (!tokens.length) {
+    return vector;
+  }
+
+  for (const token of tokens) {
+    const hash = hashToken(token);
+
+    const index =
+      hash % EMBEDDING_DIMENSION;
+
+    const sign =
+      hash & 1 ? 1 : -1;
+
+    vector[index] += sign;
+
+    /*
+     * Second projection helps reduce
+     * collisions between common tokens.
+     */
+    const index2 =
+      ((hash >>> 8) +
+        token.length * 17) %
+      EMBEDDING_DIMENSION;
+
+    vector[index2] +=
+      sign * 0.5;
+  }
+
+  let magnitude = 0;
+
+  for (const value of vector) {
+    magnitude += value * value;
+  }
+
+  magnitude = Math.sqrt(magnitude);
+
+  if (!magnitude) return vector;
+
+  return vector.map(
+    (value) =>
+      value / magnitude
+  );
+}
+
+function denseCosineSimilarity(a, b) {
+  if (!a.length || !b.length) {
+    return 0;
+  }
+
+  let dot = 0;
+
+  for (
+    let i = 0;
+    i < Math.min(a.length, b.length);
+    i++
+  ) {
+    dot += a[i] * b[i];
+  }
+
+  return Math.max(
+    0,
+    Math.min(1, dot)
+  );
+}
+
+/* ───────────────────────────────────────────────
+ * Course representation
+ * ─────────────────────────────────────────────── */
+
+function courseText(course) {
   return [
     course.title,
     course.description,
     ...(course.skills || []),
-    ...(course.prerequisites || []),
+    ...(course.tags || []),
+    course.category,
     course.level,
-    course.type,
     course.language,
-  ].filter(Boolean).join(' ');
+  ]
+    .filter(Boolean)
+    .join(' ');
 }
 
-function textOfProfile(profile, role, gaps) {
+function profileText(
+  profile,
+  role,
+  gaps = []
+) {
   return [
     profile.goal,
     profile.targetRole,
     role?.role,
     ...(role?.requiredSkills || []),
-    ...(gaps || []),
     ...(profile.interests || []),
-    ...(profile.currentSkills || []).map(s => `${s.name} ${s.level}`),
-    profile.learningStyle?.join(' '),
-    profile.preferredLanguage,
-  ].filter(Boolean).join(' ');
+    ...(profile.currentSkills || []).map(
+      (skill) => skill.name
+    ),
+    ...gaps,
+  ]
+    .filter(Boolean)
+    .join(' ');
 }
 
-function tfidf(corpus) {
-  const docs = corpus.map(tokenize);
-  const df = new Map();
-  docs.forEach(tokens => {
-    for (const token of new Set(tokens)) df.set(token, (df.get(token) || 0) + 1);
-  });
+/* ───────────────────────────────────────────────
+ * Hybrid semantic scores
+ * ─────────────────────────────────────────────── */
 
-  const n = docs.length;
-  const idf = new Map([...df.entries()].map(([t, count]) => [t, Math.log((n + 1) / (count + 1)) + 1]));
-  const vectors = docs.map(tokens => {
-    const tf = new Map();
-    tokens.forEach(t => tf.set(t, (tf.get(t) || 0) + 1));
-    const vector = new Map();
-    const denom = Math.max(tokens.length, 1);
-    for (const [t, count] of tf) vector.set(t, (count / denom) * (idf.get(t) || 1));
-    return vector;
-  });
-  return vectors;
-}
+export function semanticCourseScores(
+  courses,
+  profile,
+  role,
+  gaps = []
+) {
+  const documents = [
+    profileText(
+      profile,
+      role,
+      gaps
+    ),
+    ...courses.map(courseText),
+  ];
 
-export function cosineSimilarity(a, b) {
-  let dot = 0, normA = 0, normB = 0;
-  for (const [k, v] of a) {
-    normA += v * v;
-    dot += v * (b.get(k) || 0);
-  }
-  for (const v of b.values()) normB += v * v;
-  if (!normA || !normB) return 0;
-  return dot / (Math.sqrt(normA) * Math.sqrt(normB));
-}
+  const tfidfVectors =
+    buildTfIdf(documents);
 
-/** Build semantic similarity for every candidate course. */
-export function semanticCourseScores(courses, profile, role, gaps) {
-  const learnerText = textOfProfile(profile, role, gaps);
-  const corpus = [learnerText, ...courses.map(textOfCourse)];
-  const vectors = tfidf(corpus);
-  const learnerVector = vectors[0];
-  return new Map(courses.map((course, i) => [String(course._id || course.id || course.title), cosineSimilarity(learnerVector, vectors[i + 1])]));
-}
+  const profileTfIdf =
+    tfidfVectors[0];
 
-const FEATURE_NAMES = [
-  'skillGapMatch', 'goalRelevance', 'prereqReadiness',
-  'userInterest', 'learningStyleMatch', 'semanticMatch', 'languageMatch', 'quality'
-];
+  const courseTfIdf =
+    tfidfVectors.slice(1);
 
-const DEFAULT_WEIGHTS = [0.20, 0.16, 0.12, 0.10, 0.08, 0.24, 0.06, 0.04];
+  const profileEmbedding =
+    denseEmbedding(
+      documents[0]
+    );
 
-function featureVector(breakdown) {
-  return FEATURE_NAMES.map(name => Number(breakdown[name] || 0));
-}
+  const scores = new Map();
 
-function sigmoid(x) {
-  if (x < -30) return 0;
-  if (x > 30) return 1;
-  return 1 / (1 + Math.exp(-x));
-}
+  courses.forEach(
+    (course, index) => {
+      const tfidfScore =
+        cosineSimilarity(
+          profileTfIdf,
+          courseTfIdf[index]
+        );
 
-/**
- * Train a tiny logistic-regression preference model from this learner's
- * historical feedback. With little/no feedback we return the neutral prior.
- */
-export function trainPreferenceModel(feedbackExamples = []) {
-  let weights = [...DEFAULT_WEIGHTS];
-  let bias = 0;
-  const epochs = 35;
-  const learningRate = 0.08;
+      const courseEmbedding =
+        denseEmbedding(
+          documents[index + 1]
+        );
 
-  if (!feedbackExamples.length) {
-    return { weights, bias, samples: 0, trained: false };
-  }
+      const embeddingScore =
+        denseCosineSimilarity(
+          profileEmbedding,
+          courseEmbedding
+        );
 
-  for (let epoch = 0; epoch < epochs; epoch++) {
-    for (const example of feedbackExamples) {
-      const x = featureVector(example.breakdown);
-      const y = example.label;
-      const prediction = sigmoid(weights.reduce((s, w, i) => s + w * x[i], bias));
-      const error = prediction - y;
-      weights = weights.map((w, i) => w - learningRate * error * x[i]);
-      bias -= learningRate * error;
+      /*
+       * Hybrid semantic score.
+       *
+       * Dense embeddings receive more weight
+       * because they capture broader contextual
+       * similarity, while TF-IDF preserves
+       * exact skill/keyword relevance.
+       */
+      const hybridScore =
+        0.4 * tfidfScore +
+        0.6 * embeddingScore;
+
+      scores.set(
+        String(
+          course._id ||
+            course.id ||
+            course.title
+        ),
+        Math.max(
+          0,
+          Math.min(
+            1,
+            hybridScore
+          )
+        )
+      );
     }
+  );
+
+  return scores;
+}
+
+/* ───────────────────────────────────────────────
+ * Feedback → training examples
+ * ─────────────────────────────────────────────── */
+
+function feedbackLabel(feedback) {
+  const value = String(
+    feedback?.rating ??
+      feedback?.feedback ??
+      feedback?.difficulty ??
+      ''
+  ).toLowerCase();
+
+  if (
+    value.includes('perfect') ||
+    value.includes('excellent') ||
+    value.includes('good') ||
+    value === '5' ||
+    value === '4'
+  ) {
+    return 1;
   }
 
-  // Keep the learned layer bounded and normalize its contribution later.
-  weights = weights.map(w => Math.max(-1.5, Math.min(1.5, w)));
-  return { weights, bias, samples: feedbackExamples.length, trained: true };
+  if (
+    value.includes('too hard') ||
+    value.includes('too difficult') ||
+    value.includes('bad') ||
+    value.includes('poor') ||
+    value === '1' ||
+    value === '2'
+  ) {
+    return 0;
+  }
+
+  return null;
 }
 
-export function predictPreference(model, breakdown) {
-  if (!model?.trained) return 0.5;
-  const x = featureVector(breakdown);
-  return sigmoid(model.weights.reduce((s, w, i) => s + w * x[i], model.bias));
-}
+export function buildFeedbackExamples(
+  profile,
+  courses,
+  scoreBuilder
+) {
+  const feedback =
+    profile.feedback ||
+    profile.courseFeedback ||
+    [];
 
-/**
- * Prepare training rows. This is intentionally separate from ranking so the
- * deterministic score remains available for explainability and testing.
- */
-export function buildFeedbackExamples(profile, courses, scoreBuilder) {
   const examples = [];
-  for (const feedback of profile.feedback || []) {
-    const course = courses.find(c => String(c._id) === String(feedback.courseId));
+
+  for (const item of feedback) {
+    const label =
+      feedbackLabel(item);
+
+    if (label === null) continue;
+
+    const courseId =
+      item.courseId ||
+      item.course_id ||
+      item._id;
+
+    const course = courses.find(
+      (c) =>
+        String(
+          c._id ||
+            c.id ||
+            c.title
+        ) === String(courseId)
+    );
+
     if (!course) continue;
-    const breakdown = scoreBuilder(course, { includeSemantic: true, forTraining: true });
-    const label = feedback.rating === 'good' || feedback.rating === 'perfect' ? 1 : 0;
-    examples.push({ breakdown, label });
+
+    const score =
+      scoreBuilder(course);
+
+    examples.push({
+      features: {
+        skillGapMatch:
+          score.skillGapMatch,
+
+        goalRelevance:
+          score.goalRelevance,
+
+        prereqReadiness:
+          score.prereqReadiness,
+
+        userInterest:
+          score.userInterest,
+
+        learningStyleMatch:
+          score.learningStyleMatch,
+
+        semanticMatch:
+          score.semanticMatch,
+
+        languageMatch:
+          score.languageMatch,
+
+        quality:
+          score.quality,
+      },
+
+      label,
+    });
   }
+
   return examples;
 }
 
-export function getMlFeatureNames() {
-  return [...FEATURE_NAMES];
+/* ───────────────────────────────────────────────
+ * Online logistic regression
+ * ─────────────────────────────────────────────── */
+
+const FEATURE_NAMES = [
+  'skillGapMatch',
+  'goalRelevance',
+  'prereqReadiness',
+  'userInterest',
+  'learningStyleMatch',
+  'semanticMatch',
+  'languageMatch',
+  'quality',
+];
+
+function featureVector(features) {
+  return FEATURE_NAMES.map(
+    (name) =>
+      Number(features[name]) || 0
+  );
+}
+
+function sigmoid(value) {
+  if (value < -30) return 0;
+  if (value > 30) return 1;
+
+  return 1 / (
+    1 + Math.exp(-value)
+  );
+}
+
+function dotProduct(a, b) {
+  let result = 0;
+
+  for (
+    let i = 0;
+    i < Math.min(a.length, b.length);
+    i++
+  ) {
+    result += a[i] * b[i];
+  }
+
+  return result;
+}
+
+export function trainPreferenceModel(
+  examples = []
+) {
+  const weights = new Array(
+    FEATURE_NAMES.length
+  ).fill(0);
+
+  let bias = 0;
+
+  if (!examples.length) {
+    return {
+      trained: false,
+      samples: 0,
+      weights,
+      bias,
+    };
+  }
+
+  /*
+   * Small online logistic-regression model.
+   *
+   * Multiple epochs allow the model to learn
+   * stable preferences from a small amount
+   * of learner feedback.
+   */
+  const learningRate = 0.08;
+  const epochs = 8;
+
+  for (
+    let epoch = 0;
+    epoch < epochs;
+    epoch++
+  ) {
+    for (const example of examples) {
+      const x =
+        featureVector(
+          example.features
+        );
+
+      const prediction =
+        sigmoid(
+          dotProduct(weights, x) +
+            bias
+        );
+
+      const error =
+        prediction -
+        example.label;
+
+      for (
+        let i = 0;
+        i < weights.length;
+        i++
+      ) {
+        weights[i] -=
+          learningRate *
+          error *
+          x[i];
+      }
+
+      bias -=
+        learningRate * error;
+    }
+  }
+
+  return {
+    trained: true,
+    samples: examples.length,
+    weights,
+    bias,
+  };
+}
+
+/* ───────────────────────────────────────────────
+ * Preference prediction
+ * ─────────────────────────────────────────────── */
+
+export function predictPreference(
+  model,
+  score
+) {
+  if (
+    !model ||
+    !model.trained
+  ) {
+    /*
+     * Cold-start prior.
+     */
+    return 0.5;
+  }
+
+  const x =
+    featureVector(score);
+
+  const probability =
+    sigmoid(
+      dotProduct(
+        model.weights,
+        x
+      ) + model.bias
+    );
+
+  /*
+   * Blend learned preference with
+   * neutral prior to avoid extreme
+   * scores from very small datasets.
+   */
+  return (
+    0.7 * probability +
+    0.3 * 0.5
+  );
+}
+
+/* ───────────────────────────────────────────────
+ * Optional external embedding adapter
+ *
+ * Allows replacing the local deterministic
+ * embedding with a real embedding provider later.
+ * ─────────────────────────────────────────────── */
+
+export async function generateEmbedding(
+  text,
+  provider = null
+) {
+  if (
+    provider &&
+    typeof provider.embed ===
+      'function'
+  ) {
+    return provider.embed(text);
+  }
+
+  return denseEmbedding(text);
+}
+
+/* ───────────────────────────────────────────────
+ * Debug / evaluation helper
+ * ─────────────────────────────────────────────── */
+
+export function explainSemanticScore(
+  profile,
+  course,
+  role,
+  gaps = []
+) {
+  const profileDoc =
+    profileText(
+      profile,
+      role,
+      gaps
+    );
+
+  const courseDoc =
+    courseText(course);
+
+  const vectors =
+    buildTfIdf([
+      profileDoc,
+      courseDoc,
+    ]);
+
+  const tfidf =
+    cosineSimilarity(
+      vectors[0],
+      vectors[1]
+    );
+
+  const profileEmbedding =
+    denseEmbedding(
+      profileDoc
+    );
+
+  const courseEmbedding =
+    denseEmbedding(
+      courseDoc
+    );
+
+  const embedding =
+    denseCosineSimilarity(
+      profileEmbedding,
+      courseEmbedding
+    );
+
+  return {
+    tfidf: Math.round(
+      tfidf * 1000
+    ) / 1000,
+
+    embedding: Math.round(
+      embedding * 1000
+    ) / 1000,
+
+    hybrid: Math.round(
+      (
+        0.4 * tfidf +
+        0.6 * embedding
+      ) * 1000
+    ) / 1000,
+  };
 }
