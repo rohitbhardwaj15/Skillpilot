@@ -1,4 +1,7 @@
 import express from 'express';
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
 import {
   matchRole,
@@ -6,25 +9,61 @@ import {
   rankCourses,
 } from '../services/recommendation.service.js';
 
-import { orderByPrerequisites } from '../services/pathgen.service.js';
+import {
+  orderByPrerequisites,
+} from '../services/pathgen.service.js';
 
-import Role from '../models/Role.js';
 import Course from '../models/Course.js';
+import Profile from '../models/Profile.js';
 
 const router = express.Router();
 
+const __dirname = path.dirname(
+  fileURLToPath(import.meta.url)
+);
+
+// Roles are stored in data/roles.json
+const roles = JSON.parse(
+  fs.readFileSync(
+    path.join(
+      __dirname,
+      '../../data/roles.json'
+    ),
+    'utf-8'
+  )
+);
+
 /* ───────────────────────────────────────────────
  * Existing learning-path endpoint
+ * POST /api/path/generate
  * ─────────────────────────────────────────────── */
 
 router.post('/generate', async (req, res) => {
   try {
-    const {
-      profile = {},
-    } = req.body;
+    let profile = req.body.profile || {};
 
-    const roles = await Role.find();
-    const courses = await Course.find();
+    /*
+     * Existing frontend sends profileId.
+     * If profileId is provided, load the saved
+     * learner profile from MongoDB.
+     */
+    if (
+      req.body.profileId &&
+      Object.keys(profile).length === 0
+    ) {
+      const savedProfile =
+        await Profile.findById(
+          req.body.profileId
+        );
+
+      if (savedProfile) {
+        profile =
+          savedProfile.toObject();
+      }
+    }
+
+    const courses =
+      await Course.find();
 
     const role = matchRole(
       profile.targetRole,
@@ -55,13 +94,16 @@ router.post('/generate', async (req, res) => {
       );
 
     return res.json({
-      targetRole: role.role,
+      targetRole:
+        role.role,
 
       skillGaps,
 
-      roadmap: ordered,
+      roadmap:
+        ordered,
 
-      recommendations: ranked,
+      recommendations:
+        ranked,
 
       model,
 
@@ -84,21 +126,25 @@ router.post('/generate', async (req, res) => {
 /* ───────────────────────────────────────────────
  * What-If Career Simulator
  *
+ * POST /api/path/simulate-career
+ *
  * Example:
  *
- * Current:
+ * Current Role:
  * Full Stack Developer
  *
- * Target:
+ * Target Role:
  * AI Engineer
  *
  * Returns:
+ * - current role
  * - target role
+ * - readiness
+ * - required skills
  * - current skills
  * - skill gaps
- * - readiness
- * - recommended roadmap
- * - simulation summary
+ * - roadmap
+ * - recommendations
  * ─────────────────────────────────────────────── */
 
 router.post(
@@ -120,8 +166,8 @@ router.post(
         });
       }
 
-      const roles = await Role.find();
-      const courses = await Course.find();
+      const courses =
+        await Course.find();
 
       /* ── Find target role ─────────────── */
 
@@ -331,6 +377,8 @@ router.post(
 
 /* ───────────────────────────────────────────────
  * Career readiness endpoint
+ *
+ * POST /api/path/readiness
  * ─────────────────────────────────────────────── */
 
 router.post(
@@ -341,8 +389,6 @@ router.post(
         profile = {},
         targetRole,
       } = req.body;
-
-      const roles = await Role.find();
 
       const role = matchRole(
         targetRole ||
