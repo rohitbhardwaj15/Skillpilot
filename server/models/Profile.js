@@ -1,5 +1,12 @@
 import mongoose from 'mongoose';
 
+const noteSchema = new mongoose.Schema({
+  nodeId:    { type: String, required: true },
+  nodeTitle: { type: String },
+  content:   { type: String, default: '' },
+  updatedAt: { type: Date, default: Date.now },
+}, { _id: false });
+
 const profileSchema = new mongoose.Schema(
   {
     userId:    { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
@@ -13,14 +20,16 @@ const profileSchema = new mongoose.Schema(
       enum:    ['beginner', 'intermediate', 'advanced'],
       default: 'beginner',
     },
-    // Preferred study language — used by recommendation engine to filter
-    // and rank courses in the learner's comfortable language.
     preferredLanguage: {
       type:    String,
       enum:    ['English','Hindi','Marathi','Tamil','Kannada','Telugu','Bengali','Gujarati','Punjabi','Others'],
       default: 'English',
     },
-    // Courses/certifications completed BEFORE using SkillPilot (free text)
+    courseTypeFilter: {
+      type:    String,
+      enum:    ['both', 'free', 'paid'],
+      default: 'both',
+    },
     priorLearningHistory: [{ type: String }],
     currentSkills: [
       {
@@ -42,6 +51,11 @@ const profileSchema = new mongoose.Schema(
         createdAt: { type: Date, default: Date.now },
       },
     ],
+    // Notes saved per learning path node — persisted in DB not localStorage
+    notes: [noteSchema],
+    // Progress streak tracking
+    lastActiveDate: { type: Date },
+    streakDays:     { type: Number, default: 0 },
   },
   { timestamps: true }
 );
