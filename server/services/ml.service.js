@@ -94,10 +94,10 @@ export function semanticCourseScores(courses, profile, role, gaps) {
 
 const FEATURE_NAMES = [
   'skillGapMatch', 'goalRelevance', 'prereqReadiness',
-  'userInterest', 'learningStyleMatch', 'semanticMatch', 'languageMatch'
+  'userInterest', 'learningStyleMatch', 'semanticMatch', 'languageMatch', 'quality'
 ];
 
-const DEFAULT_WEIGHTS = [0.20, 0.16, 0.12, 0.10, 0.08, 0.26, 0.08];
+const DEFAULT_WEIGHTS = [0.20, 0.16, 0.12, 0.10, 0.08, 0.24, 0.06, 0.04];
 
 function featureVector(breakdown) {
   return FEATURE_NAMES.map(name => Number(breakdown[name] || 0));
