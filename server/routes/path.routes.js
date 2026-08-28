@@ -86,6 +86,34 @@ router.get('/:id/insights', requireAuth, async (req, res) => {
   } catch (err) { res.status(400).json({ error: err.message }); }
 });
 
+// POST /api/path/:id/adapt — explicitly rebuild the remaining roadmap from
+// the latest evidence (assessments, completions, feedback and preferences).
+router.post('/:id/adapt', requireAuth, async (req, res) => {
+  try {
+    const learningPath = await LearningPath.findById(req.params.id);
+    if (!learningPath) return res.status(404).json({ error: 'Learning path not found' });
+    const profile = await Profile.findById(learningPath.profileId);
+    if (!profile || String(profile.userId) !== String(req.auth.userId)) return res.status(403).json({ error: 'Forbidden' });
+
+    const doneIds = new Set(learningPath.phases.flatMap(p => p.courses || [])
+      .filter(c => c.status === 'done').map(c => String(c.courseId)));
+    const courses = await Course.find({});
+    const remaining = courses.filter(c => !doneIds.has(String(c._id)));
+    const { role, skillGaps, phases, estimatedDurationWeeks } = buildRoadmap(profile, remaining);
+    const completed = learningPath.phases.flatMap(p => p.courses || []).filter(c => c.status === 'done');
+    const completedPhase = completed.length ? [{ phaseNumber: 0, title: 'Completed', durationWeeks: 0, courses: completed }] : [];
+    learningPath.targetRole = role.role;
+    learningPath.skillGaps = skillGaps;
+    learningPath.phases = [...completedPhase, ...phases];
+    learningPath.estimatedDurationWeeks = estimatedDurationWeeks;
+    learningPath.markModified('phases');
+    await learningPath.save();
+    res.json({ learningPath, adapted: true, reason: 'Re-ranked from latest learner evidence' });
+  } catch (err) {
+    res.status(422).json({ error: err.message });
+  }
+});
+
 // GET /api/path/:id
 router.get('/:id', requireAuth, async (req, res) => {
   try {
