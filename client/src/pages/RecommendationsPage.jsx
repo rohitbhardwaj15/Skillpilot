@@ -42,8 +42,9 @@ export default function RecommendationsPage() {
   useEffect(() => {
     async function load() {
       try {
-        const data = await api.getCourses()
-        setCourses(data)
+        const data = await api.getRecommendedCourses(36)
+        setCourses(data.courses || [])
+        setSkillGaps(data.skillGaps || [])
         const pathId = localStorage.getItem('skillpilot_path_id')
         if (pathId) {
           const path = await api.getPath(pathId).catch(() => null)
@@ -295,6 +296,11 @@ export default function RecommendationsPage() {
                             <Target size={10} /> {tag.label}
                           </span>
                         )}
+                        {course.recommendationRank && (
+                          <span className="px-2 py-0.5 text-[10px] font-bold rounded-lg bg-accent-purple/20 text-accent-purple">
+                            #{course.recommendationRank} · {Math.round((course.recommendationScore || 0) * 100)}% match
+                          </span>
+                        )}
                       </div>
 
                       <h3 className="text-base font-semibold text-white mb-1">{course.title}</h3>
@@ -303,8 +309,8 @@ export default function RecommendationsPage() {
                       <button onClick={() => setWhyOpen(whyOpen === course._id ? null : course._id)} className="flex items-center gap-1.5 text-xs text-accent-teal hover:text-white transition-colors mb-3"><Info size={13}/> Why this / Why not?</button>
                       <AnimatePresence>{whyOpen === course._id && (<motion.div initial={{opacity:0,height:0}} animate={{opacity:1,height:'auto'}} exit={{opacity:0,height:0}} className="mb-3 rounded-xl bg-white/5 border border-white/10 p-3 text-xs">
                         <p className="text-green-400 font-semibold mb-1">✓ Why this course?</p>
-                        <ul className="text-gray-400 space-y-1">{(course.skills || []).filter(s => gapSet.has(s.toLowerCase())).slice(0,3).map(s=><li key={s}>• Covers {s}, one of your skill gaps</li>)}{course.prerequisites?.length ? <li>• Prerequisites: {course.prerequisites.join(', ')}</li> : <li>• No prerequisites listed</li>}</ul>
-                        <p className="text-red-400 font-semibold mt-2 mb-1">✕ Why not?</p><ul className="text-gray-500 space-y-1"><li>• This is a catalog comparison; higher-ranked roadmap resources may cover more of your gaps.</li>{course.prerequisites?.filter(p => !knownSet.has(p.toLowerCase())).slice(0,2).map(p=><li key={p}>• Requires {p}, which is not yet mastered</li>)}</ul>
+                        <ul className="text-gray-400 space-y-1">{(course.explanation?.why || []).map((reason, i)=><li key={i}>• {reason}</li>)}{!(course.explanation?.why || []).length && (course.skills || []).filter(s => gapSet.has(s.toLowerCase())).slice(0,3).map(s=><li key={s}>• Covers {s}, one of your skill gaps</li>)}</ul>
+                        <p className="text-red-400 font-semibold mt-2 mb-1">✕ Why not?</p><ul className="text-gray-500 space-y-1">{(course.explanation?.whyNot || []).map((reason, i)=><li key={i}>• {reason}</li>)}{!(course.explanation?.whyNot || []).length && <li>• Lower-ranked alternatives may cover fewer of your priority gaps.</li>}</ul>
                       </motion.div>)}</AnimatePresence>
 
                       <div className="flex items-center gap-4 text-xs text-gray-500 mb-4">
