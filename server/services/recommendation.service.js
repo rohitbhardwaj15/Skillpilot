@@ -15,9 +15,9 @@ const WEIGHTS = {
   prereqReadiness:   0.12,
   userInterest:      0.10,
   learningStyleMatch:0.08,
-  semanticMatch:     0.26,
+  semanticMatch:     0.24,
   languageMatch:     0.06,
-  quality:           0.03,
+  quality:           0.04,
 };
 
 import {
@@ -167,6 +167,7 @@ function explainWhy(course, breakdown, profile, role, gaps) {
   if (breakdown.semanticMatch >= 0.18) reasons.push('Semantically aligned with your goal');
   if (breakdown.prereqReadiness >= 0.99) reasons.push('Prerequisites are satisfied');
   if (breakdown.quality >= 0.75) reasons.push('High resource quality score');
+  if (breakdown.learnedPreference >= 0.65) reasons.push('Matches patterns from your previous feedback');
   if (profile.preferredLanguage && course.language === profile.preferredLanguage) reasons.push(`Matches your ${course.language} preference`);
   for (const p of course.prerequisites || []) {
     const known = getKnownSkillSet(profile.currentSkills, profile.knowledgeState);
@@ -233,43 +234,45 @@ export function rankCourses(courses, profile, role) {
     .filter(Boolean)
     .sort((a, b) => b.breakdown.totalScore - a.breakdown.totalScore);
 
-  // Diversity pass: maximize uncovered skill gaps instead of returning near-duplicates.
-  const coveredGapSkills = new Set();
+  // MMR-style diversity pass: keep high relevance while deliberately exposing
+  // new skill gaps. Unlike the previous hard filter, this does not throw away
+  // high-quality candidates merely because they overlap with an earlier course.
+  const pool = [...scored];
   const diverse = [];
-  for (const item of scored) {
-    const cs      = item.course.skills.map((s) => s.toLowerCase());
-    const addsNew = cs.some((s) => gapSet.has(s) && !coveredGapSkills.has(s));
-    if (addsNew || item.course.type === 'project' || coveredGapSkills.size === 0) {
-      diverse.push(item);
-      cs.forEach((s) => coveredGapSkills.add(s));
+  const coveredGapSkills = new Set();
+  while (pool.length) {
+    let bestIndex = 0;
+    let bestAdjusted = -Infinity;
+    for (let i = 0; i < pool.length; i++) {
+      const item = pool[i];
+      const skills = item.course.skills.map(s => s.toLowerCase());
+      const newGaps = skills.filter(s => gapSet.has(s) && !coveredGapSkills.has(s)).length;
+      const gapCount = Math.max(1, skills.filter(s => gapSet.has(s)).length);
+      const novelty = newGaps / gapCount;
+      const overlap = diverse.length ? Math.max(...diverse.slice(-8).map(d => {
+        const other = new Set(d.course.skills.map(s => s.toLowerCase()));
+        return skills.filter(s => other.has(s)).length / Math.max(1, new Set([...skills, ...other]).size);
+      })) : 0;
+      const adjusted = item.breakdown.totalScore + 0.08 * novelty - 0.03 * overlap;
+      if (adjusted > bestAdjusted) { bestAdjusted = adjusted; bestIndex = i; }
     }
+    const [chosen] = pool.splice(bestIndex, 1);
+    diverse.push(chosen);
+    chosen.course.skills.forEach(s => { if (gapSet.has(s.toLowerCase())) coveredGapSkills.add(s.toLowerCase()); });
   }
 
-  // Preserve prerequisite providers even when the diversity pass would otherwise
-  // remove them. This prevents a high-scoring advanced course from hiding the
-  // foundational resource needed to reach it.
-  const selectedIds = new Set(diverse.map(item => String(item.course._id || item.course.id || item.course.title)));
-  for (const item of scored) {
-    if (selectedIds.has(String(item.course._id || item.course.id || item.course.title))) continue;
-    const providesPrerequisite = diverse.some(selected =>
-      (selected.course.prerequisites || []).some(prereq =>
-        item.course.skills.some(skill => skill.toLowerCase() === prereq.toLowerCase())
-      )
-    );
-    if (providesPrerequisite) {
-      diverse.push(item);
-      selectedIds.add(String(item.course._id || item.course.id || item.course.title));
-    }
-  }
+  // Return a bounded candidate set for fast client rendering while retaining
+  // enough alternatives for prerequisite planning and adaptive re-ranking.
+  const finalRanked = diverse.slice(0, Math.max(24, Math.min(60, diverse.length)));
 
   return {
-    ranked: diverse,
+    ranked: finalRanked,
     skillGaps: gaps,
     model: {
-      semantic: 'TF-IDF + cosine similarity',
+      semantic: 'TF-IDF + cosine similarity + quality-aware hybrid ranking',
       personalization: preferenceModel.trained ? 'online logistic regression from feedback' : 'cold-start prior',
       feedbackSamples: preferenceModel.samples,
-      features: ['skill gap', 'goal relevance', 'prerequisite readiness', 'learning preference', 'semantic similarity', 'language'],
+      features: ['skill gap', 'goal relevance', 'prerequisite readiness', 'learning preference', 'semantic similarity', 'language', 'resource quality'],
     },
   };
 }
