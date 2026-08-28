@@ -14,6 +14,7 @@ import AIAssistantPage from './pages/AIAssistantPage'
 import RecommendationsPage from './pages/RecommendationsPage'
 import ProfilePage from './pages/ProfilePage'
 import AssessmentPage from './pages/AssessmentPage'
+import CareerSimulatorPage from './pages/CareerSimulatorPage'
 
 function PageWrapper({ children }) {
   return (
@@ -45,21 +46,38 @@ export default function App() {
             <Route path="/onboarding" element={
               <ProtectedRoute><PageWrapper><OnboardingPage /></PageWrapper></ProtectedRoute>
             } />
+
             <Route path="/dashboard" element={
               <ProtectedRoute><PageWrapper><DashboardPage /></PageWrapper></ProtectedRoute>
             } />
+
             <Route path="/paths" element={
               <ProtectedRoute><PageWrapper><LearningPathPage /></PageWrapper></ProtectedRoute>
             } />
+
             <Route path="/assistant" element={
               <ProtectedRoute><PageWrapper><AIAssistantPage /></PageWrapper></ProtectedRoute>
             } />
+
             <Route path="/recommendations" element={
               <ProtectedRoute><PageWrapper><RecommendationsPage /></PageWrapper></ProtectedRoute>
             } />
-            <Route path="/assessment" element={<ProtectedRoute><PageWrapper><AssessmentPage /></PageWrapper></ProtectedRoute>} />
+
+            <Route path="/assessment" element={
+              <ProtectedRoute><PageWrapper><AssessmentPage /></PageWrapper></ProtectedRoute>
+            } />
+
             <Route path="/profile" element={
               <ProtectedRoute><PageWrapper><ProfilePage /></PageWrapper></ProtectedRoute>
+            } />
+
+            {/* NEW: What-If Career Simulator */}
+            <Route path="/career-simulator" element={
+              <ProtectedRoute>
+                <PageWrapper>
+                  <CareerSimulatorPage />
+                </PageWrapper>
+              </ProtectedRoute>
             } />
           </Routes>
         </AnimatePresence>
