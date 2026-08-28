@@ -9,12 +9,8 @@ import {
   rankCourses,
 } from '../services/recommendation.service.js';
 
-import {
-  orderByPrerequisites,
-} from '../services/pathgen.service.js';
-
+import { orderByPrerequisites } from '../services/pathgen.service.js';
 import Course from '../models/Course.js';
-import Profile from '../models/Profile.js';
 
 const router = express.Router();
 
@@ -22,52 +18,72 @@ const __dirname = path.dirname(
   fileURLToPath(import.meta.url)
 );
 
-// Roles are stored in data/roles.json
-const roles = JSON.parse(
-  fs.readFileSync(
-    path.join(
-      __dirname,
-      '../../data/roles.json'
-    ),
-    'utf-8'
-  )
+/*
+ * Roles are loaded from the same roles.json used
+ * by the recommendation/evaluation system.
+ *
+ * This avoids depending on an empty MongoDB Role
+ * collection for career simulation.
+ */
+const rolesPath = path.join(
+  __dirname,
+  '../../data/roles.json'
 );
 
+let roles = [];
+
+try {
+  roles = JSON.parse(
+    fs.readFileSync(rolesPath, 'utf-8')
+  );
+} catch (error) {
+  console.error(
+    'Failed to load roles.json:',
+    error.message
+  );
+}
+
 /* ───────────────────────────────────────────────
- * Existing learning-path endpoint
+ * Helper: validate role data
+ * ─────────────────────────────────────────────── */
+
+function findTargetRole(targetRoleText) {
+  if (!targetRoleText || !roles.length) {
+    return null;
+  }
+
+  return matchRole(
+    String(targetRoleText).trim(),
+    roles
+  );
+}
+
+/* ───────────────────────────────────────────────
+ * Generate Learning Path
  * POST /api/path/generate
  * ─────────────────────────────────────────────── */
 
 router.post('/generate', async (req, res) => {
   try {
-    let profile = req.body.profile || {};
+    const profile =
+      req.body?.profile || {};
 
     /*
-     * Existing frontend sends profileId.
-     * If profileId is provided, load the saved
-     * learner profile from MongoDB.
+     * Backward compatibility:
+     * If frontend sends profileId instead of profile,
+     * try to use the supplied profile object only.
      */
-    if (
-      req.body.profileId &&
-      Object.keys(profile).length === 0
-    ) {
-      const savedProfile =
-        await Profile.findById(
-          req.body.profileId
-        );
-
-      if (savedProfile) {
-        profile =
-          savedProfile.toObject();
-      }
+    if (!profile.targetRole) {
+      return res.status(400).json({
+        message:
+          'Profile with targetRole is required.',
+      });
     }
 
-    const courses =
-      await Course.find();
+    const courses = await Course.find({});
 
-    const role = matchRole(
-      profile.targetRole,
-      roles
+    const role = findTargetRole(
+      profile.targetRole
     );
 
     if (!role) {
@@ -87,26 +103,18 @@ router.post('/generate', async (req, res) => {
       role
     );
 
-    const ordered =
+    const roadmap =
       orderByPrerequisites(
         ranked,
         profile
       );
 
     return res.json({
-      targetRole:
-        role.role,
-
+      targetRole: role.role,
       skillGaps,
-
-      roadmap:
-        ordered,
-
-      recommendations:
-        ranked,
-
+      roadmap,
+      recommendations: ranked,
       model,
-
       generatedAt:
         new Date().toISOString(),
     });
@@ -119,6 +127,10 @@ router.post('/generate', async (req, res) => {
     return res.status(500).json({
       message:
         'Failed to generate learning path.',
+      error:
+        process.env.NODE_ENV !== 'production'
+          ? error.message
+          : undefined,
     });
   }
 });
@@ -127,24 +139,6 @@ router.post('/generate', async (req, res) => {
  * What-If Career Simulator
  *
  * POST /api/path/simulate-career
- *
- * Example:
- *
- * Current Role:
- * Full Stack Developer
- *
- * Target Role:
- * AI Engineer
- *
- * Returns:
- * - current role
- * - target role
- * - readiness
- * - required skills
- * - current skills
- * - skill gaps
- * - roadmap
- * - recommendations
  * ─────────────────────────────────────────────── */
 
 router.post(
@@ -154,7 +148,7 @@ router.post(
       const {
         targetRole,
         profile = {},
-      } = req.body;
+      } = req.body || {};
 
       if (
         !targetRole ||
@@ -166,72 +160,74 @@ router.post(
         });
       }
 
-      const courses =
-        await Course.find();
-
-      /* ── Find target role ─────────────── */
-
-      const target = matchRole(
-        String(targetRole),
-        roles
-      );
+      /*
+       * Use roles.json rather than MongoDB Role
+       * collection.
+       */
+      const target =
+        findTargetRole(targetRole);
 
       if (!target) {
         return res.status(404).json({
           message:
-            'Target career role was not found.',
+            `Target career role "${targetRole}" was not found.`,
         });
       }
 
-      /* ── Current learner skills ───────── */
+      const courses =
+        await Course.find({});
+
+      /* ── Current learner state ─────────── */
 
       const currentSkills =
-        profile.currentSkills || [];
+        Array.isArray(profile.currentSkills)
+          ? profile.currentSkills
+          : [];
 
       const knowledgeState =
-        profile.knowledgeState || [];
+        Array.isArray(profile.knowledgeState)
+          ? profile.knowledgeState
+          : [];
 
-      /* ── Calculate skill gaps ─────────── */
+      /* ── Calculate skill gaps ──────────── */
 
       const skillGaps =
         computeSkillGaps(
-          target.requiredSkills,
+          target.requiredSkills || [],
           currentSkills,
           knowledgeState
         );
 
-      /* ── Calculate readiness ─────────── */
+      /* ── Calculate readiness ───────────── */
 
       const totalRequired =
-        target.requiredSkills.length;
+        (target.requiredSkills || [])
+          .length;
 
       const gapCount =
         skillGaps.length;
 
+      const masteredSkills =
+        Math.max(
+          0,
+          totalRequired - gapCount
+        );
+
       const readiness =
         totalRequired > 0
-          ? Math.max(
-              0,
-              Math.min(
-                1,
-                (
-                  totalRequired -
-                  gapCount
-                ) /
-                  totalRequired
-              )
-            )
+          ? masteredSkills /
+            totalRequired
           : 1;
 
-      /* ── Build simulated profile ─────── */
+      /* ── Build simulated learner profile ─ */
 
       const simulatedProfile = {
         ...profile,
 
-        targetRole:
-          target.role,
+        targetRole: target.role,
 
         goal:
+          profile.goal ||
           `Become a ${target.role}`,
 
         currentSkills,
@@ -247,19 +243,28 @@ router.post(
           'both',
 
         learningStyle:
-          profile.learningStyle ||
-          [],
+          Array.isArray(
+            profile.learningStyle
+          )
+            ? profile.learningStyle
+            : [],
 
         feedback:
-          profile.feedback ||
-          [],
+          Array.isArray(
+            profile.feedback
+          )
+            ? profile.feedback
+            : [],
 
         interests:
-          profile.interests ||
-          [],
+          Array.isArray(
+            profile.interests
+          )
+            ? profile.interests
+            : [],
       };
 
-      /* ── Generate recommendations ────── */
+      /* ── Generate recommendations ──────── */
 
       const {
         ranked,
@@ -270,7 +275,7 @@ router.post(
         target
       );
 
-      /* ── Prerequisite-aware roadmap ───── */
+      /* ── Prerequisite-aware roadmap ────── */
 
       const roadmap =
         orderByPrerequisites(
@@ -278,7 +283,7 @@ router.post(
           simulatedProfile
         );
 
-      /* ── Detailed gap information ────── */
+      /* ── Detailed skill gaps ───────────── */
 
       const gapDetails =
         skillGaps.map(
@@ -293,16 +298,24 @@ router.post(
           })
         );
 
-      /* ── Simulation summary ──────────── */
+      /* ── Simulation summary ────────────── */
 
-      const summary =
-        readiness >= 0.8
-          ? `You are already well prepared for ${target.role}. Focus on the remaining skill gaps and advanced practice.`
-          : readiness >= 0.5
-          ? `You have a solid foundation for ${target.role}, but several important skills still need to be developed.`
-          : `This is a significant career transition. Follow the recommended roadmap to systematically close your ${target.role} skill gaps.`;
+      let summary;
+
+      if (readiness >= 0.8) {
+        summary =
+          `You are already well prepared for ${target.role}. Focus on the remaining skill gaps and advanced practice.`;
+      } else if (readiness >= 0.5) {
+        summary =
+          `You have a solid foundation for ${target.role}, but several important skills still need to be developed.`;
+      } else {
+        summary =
+          `This is a significant career transition. Follow the recommended roadmap to systematically close your ${target.role} skill gaps.`;
+      }
 
       return res.json({
+        success: true,
+
         currentRole:
           profile.currentRole ||
           profile.targetRole ||
@@ -319,7 +332,7 @@ router.post(
           ),
 
         requiredSkills:
-          target.requiredSkills,
+          target.requiredSkills || [],
 
         currentSkills,
 
@@ -350,9 +363,7 @@ router.post(
           totalRequiredSkills:
             totalRequired,
 
-          masteredSkills:
-            totalRequired -
-            gapCount,
+          masteredSkills,
 
           remainingSkills:
             gapCount,
@@ -370,13 +381,17 @@ router.post(
       return res.status(500).json({
         message:
           'Failed to simulate career path.',
+        error:
+          process.env.NODE_ENV !== 'production'
+            ? error.message
+            : undefined,
       });
     }
   }
 );
 
 /* ───────────────────────────────────────────────
- * Career readiness endpoint
+ * Career Readiness
  *
  * POST /api/path/readiness
  * ─────────────────────────────────────────────── */
@@ -388,13 +403,13 @@ router.post(
       const {
         profile = {},
         targetRole,
-      } = req.body;
+      } = req.body || {};
 
-      const role = matchRole(
-        targetRole ||
-          profile.targetRole,
-        roles
-      );
+      const role =
+        findTargetRole(
+          targetRole ||
+          profile.targetRole
+        );
 
       if (!role) {
         return res.status(404).json({
@@ -405,13 +420,14 @@ router.post(
 
       const gaps =
         computeSkillGaps(
-          role.requiredSkills,
+          role.requiredSkills || [],
           profile.currentSkills || [],
           profile.knowledgeState || []
         );
 
       const total =
-        role.requiredSkills.length;
+        (role.requiredSkills || [])
+          .length;
 
       const mastered =
         Math.max(
@@ -420,11 +436,13 @@ router.post(
         );
 
       const readiness =
-        total
+        total > 0
           ? mastered / total
           : 1;
 
       return res.json({
+        success: true,
+
         targetRole:
           role.role,
 
@@ -453,6 +471,10 @@ router.post(
       return res.status(500).json({
         message:
           'Failed to calculate career readiness.',
+        error:
+          process.env.NODE_ENV !== 'production'
+            ? error.message
+            : undefined,
       });
     }
   }
