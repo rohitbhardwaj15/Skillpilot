@@ -1,39 +1,67 @@
-const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+const API_BASE =
+  import.meta.env.VITE_API_URL ||
+  'http://localhost:5000/api';
 
-async function request(path, options = {}, retried = false) {
-  const token = localStorage.getItem('skillpilot_token');
-  const headers = { 'Content-Type': 'application/json', ...options.headers };
-  if (token) headers.Authorization = `Bearer ${token}`;
+async function request(
+  path,
+  options = {},
+  retried = false
+) {
+  const token =
+    localStorage.getItem('skillpilot_token');
 
-  const res = await fetch(`${API_BASE}${path}`, { ...options, headers });
-  const data = await res.json().catch(() => ({}));
+  const headers = {
+    'Content-Type': 'application/json',
+    ...options.headers
+  };
+
+  if (token) {
+    headers.Authorization = `Bearer ${token}`;
+  }
+
+  const res = await fetch(
+    `${API_BASE}${path}`,
+    {
+      ...options,
+      headers
+    }
+  );
+
+  const data =
+    await res.json().catch(() => ({}));
 
   if (!res.ok) {
+    // Refresh access token if expired
     if (
       res.status === 401 &&
       !retried &&
       path !== '/auth/refresh' &&
-      localStorage.getItem('skillpilot_refresh_token')
+      localStorage.getItem(
+        'skillpilot_refresh_token'
+      )
     ) {
       try {
-        const refreshRes = await fetch(
-          `${API_BASE}/auth/refresh`,
-          {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-              refreshToken:
-                localStorage.getItem(
-                  'skillpilot_refresh_token'
-                )
-            })
-          }
-        );
+        const refreshRes =
+          await fetch(
+            `${API_BASE}/auth/refresh`,
+            {
+              method: 'POST',
+              headers: {
+                'Content-Type':
+                  'application/json'
+              },
+              body: JSON.stringify({
+                refreshToken:
+                  localStorage.getItem(
+                    'skillpilot_refresh_token'
+                  )
+              })
+            }
+          );
 
         const refreshed =
-          await refreshRes.json();
+          await refreshRes
+            .json();
 
         if (
           refreshRes.ok &&
@@ -44,10 +72,14 @@ async function request(path, options = {}, retried = false) {
             refreshed.accessToken
           );
 
-          localStorage.setItem(
-            'skillpilot_refresh_token',
+          if (
             refreshed.refreshToken
-          );
+          ) {
+            localStorage.setItem(
+              'skillpilot_refresh_token',
+              refreshed.refreshToken
+            );
+          }
 
           return request(
             path,
@@ -55,9 +87,15 @@ async function request(path, options = {}, retried = false) {
             true
           );
         }
-      } catch {}
+      } catch (error) {
+        console.error(
+          'Token refresh failed:',
+          error
+        );
+      }
     }
 
+    // Clear authentication if unauthorized
     if (res.status === 401) {
       localStorage.removeItem(
         'skillpilot_token'
@@ -83,96 +121,162 @@ async function request(path, options = {}, retried = false) {
 }
 
 export const api = {
-  // Auth
-  register: (name, email, password) =>
-    request('/auth/register', {
-      method: 'POST',
-      body: JSON.stringify({
-        name,
-        email,
-        password
-      })
-    }),
 
-  login: (email, password) =>
-    request('/auth/login', {
-      method: 'POST',
-      body: JSON.stringify({
-        email,
-        password
-      })
-    }),
+  // ==========================================
+  // AUTH
+  // ==========================================
+
+  register: (
+    name,
+    email,
+    password
+  ) =>
+    request(
+      '/auth/register',
+      {
+        method: 'POST',
+        body: JSON.stringify({
+          name,
+          email,
+          password
+        })
+      }
+    ),
+
+  login: (
+    email,
+    password
+  ) =>
+    request(
+      '/auth/login',
+      {
+        method: 'POST',
+        body: JSON.stringify({
+          email,
+          password
+        })
+      }
+    ),
 
   me: () =>
     request('/auth/me'),
 
-  refresh: (refreshToken) =>
-    request('/auth/refresh', {
-      method: 'POST',
-      body: JSON.stringify({
-        refreshToken
-      })
-    }),
+  refresh: (
+    refreshToken
+  ) =>
+    request(
+      '/auth/refresh',
+      {
+        method: 'POST',
+        body: JSON.stringify({
+          refreshToken
+        })
+      }
+    ),
 
   logout: () =>
-    request('/auth/logout', {
-      method: 'POST'
-    }),
+    request(
+      '/auth/logout',
+      {
+        method: 'POST'
+      }
+    ),
 
+
+  // ==========================================
   // AI
-  analyzeGoal: (goalText) =>
-    request('/ai/analyze-goal', {
-      method: 'POST',
-      body: JSON.stringify({
-        goalText
-      })
-    }),
+  // ==========================================
+
+  analyzeGoal: (
+    goalText
+  ) =>
+    request(
+      '/ai/analyze-goal',
+      {
+        method: 'POST',
+        body: JSON.stringify({
+          goalText
+        })
+      }
+    ),
 
   explain: ({
     courseTitle,
     scoreBreakdown,
     learnerGoal
   }) =>
-    request('/ai/explain', {
-      method: 'POST',
-      body: JSON.stringify({
-        courseTitle,
-        scoreBreakdown,
-        learnerGoal
-      })
-    }),
+    request(
+      '/ai/explain',
+      {
+        method: 'POST',
+        body: JSON.stringify({
+          courseTitle,
+          scoreBreakdown,
+          learnerGoal
+        })
+      }
+    ),
 
-  chat: (message, context) =>
-    request('/ai/chat', {
-      method: 'POST',
-      body: JSON.stringify({
-        message,
-        context
-      })
-    }),
+  chat: (
+    message,
+    context
+  ) =>
+    request(
+      '/ai/chat',
+      {
+        method: 'POST',
+        body: JSON.stringify({
+          message,
+          context
+        })
+      }
+    ),
 
-  // Profile
-  createProfile: (profileData) =>
-    request('/profile', {
-      method: 'POST',
-      body: JSON.stringify(
-        profileData
-      )
-    }),
+
+  // ==========================================
+  // PROFILE
+  // ==========================================
+
+  createProfile: (
+    profileData
+  ) =>
+    request(
+      '/profile',
+      {
+        method: 'POST',
+        body: JSON.stringify(
+          profileData
+        )
+      }
+    ),
 
   getMyProfile: () =>
     request('/profile/me'),
 
-  getProfile: (id) =>
-    request(`/profile/${id}`),
+  getProfile: (
+    id
+  ) =>
+    request(
+      `/profile/${id}`
+    ),
 
-  updateProfile: (id, data) =>
-    request(`/profile/${id}`, {
-      method: 'PUT',
-      body: JSON.stringify(data)
-    }),
+  updateProfile: (
+    id,
+    data
+  ) =>
+    request(
+      `/profile/${id}`,
+      {
+        method: 'PUT',
+        body: JSON.stringify(data)
+      }
+    ),
 
-  // Notes
+
+  // ==========================================
+  // NOTES
+  // ==========================================
+
   saveNote: (
     profileId,
     nodeId,
@@ -190,13 +294,21 @@ export const api = {
       }
     ),
 
-  getNotes: (profileId) =>
+  getNotes: (
+    profileId
+  ) =>
     request(
       `/profile/${profileId}/notes`
     ),
 
-  // Streak
-  updateStreak: (profileId) =>
+
+  // ==========================================
+  // STREAK
+  // ==========================================
+
+  updateStreak: (
+    profileId
+  ) =>
     request(
       `/profile/${profileId}/streak`,
       {
@@ -205,8 +317,14 @@ export const api = {
       }
     ),
 
-  // Courses
-  getCourses: (skill) =>
+
+  // ==========================================
+  // COURSES
+  // ==========================================
+
+  getCourses: (
+    skill
+  ) =>
     request(
       skill
         ? `/courses?skill=${encodeURIComponent(
@@ -222,42 +340,73 @@ export const api = {
       `/courses/recommended?limit=${limit}`
     ),
 
-  // Path
-  generatePath: (profileId) =>
-    request('/path/generate', {
-      method: 'POST',
-      body: JSON.stringify({
-        profileId
-      })
-    }),
 
-  getPath: (id) =>
-    request(`/path/${id}`),
+  // ==========================================
+  // LEARNING PATH
+  // ==========================================
 
-  getPathInsights: (id) =>
+  generatePath: (
+    profileId
+  ) =>
+    request(
+      '/path/generate',
+      {
+        method: 'POST',
+        body: JSON.stringify({
+          profileId
+        })
+      }
+    ),
+
+  getPath: (
+    id
+  ) =>
+    request(
+      `/path/${id}`
+    ),
+
+  getPathInsights: (
+    id
+  ) =>
     request(
       `/path/${id}/insights`
     ),
 
-  adaptPath: (id) =>
-    request(`/path/${id}/adapt`, {
-      method: 'POST'
-    }),
+  adaptPath: (
+    id
+  ) =>
+    request(
+      `/path/${id}/adapt`,
+      {
+        method: 'POST'
+      }
+    ),
 
-  // NEW: What-If Career Simulator
-  simulateCareerPath: ({
+
+  // ==========================================
+  // WHAT-IF CAREER SIMULATOR
+  // ==========================================
+
+  simulateCareer: (
     targetRole,
     profile = {}
-  }) =>
-    request('/path/simulate-career', {
-      method: 'POST',
-      body: JSON.stringify({
-        targetRole,
-        profile
-      })
-    }),
+  ) =>
+    request(
+      '/path/simulate-career',
+      {
+        method: 'POST',
+        body: JSON.stringify({
+          targetRole,
+          profile
+        })
+      }
+    ),
 
-  // Course completion
+
+  // ==========================================
+  // COURSE COMPLETION
+  // ==========================================
+
   markCourseDone: (
     pathId,
     courseId,
@@ -275,20 +424,27 @@ export const api = {
       }
     ),
 
-  // Feedback
+
+  // ==========================================
+  // ASSESSMENT
+  // ==========================================
+
   startAssessment: (
     profileId,
     skill,
     difficulty
   ) =>
-    request('/assessment/start', {
-      method: 'POST',
-      body: JSON.stringify({
-        profileId,
-        skill,
-        difficulty
-      })
-    }),
+    request(
+      '/assessment/start',
+      {
+        method: 'POST',
+        body: JSON.stringify({
+          profileId,
+          skill,
+          difficulty
+        })
+      }
+    ),
 
   submitAssessment: (
     assessmentId,
@@ -303,6 +459,11 @@ export const api = {
         })
       }
     ),
+
+
+  // ==========================================
+  // FEEDBACK
+  // ==========================================
 
   giveFeedback: (
     pathId,
