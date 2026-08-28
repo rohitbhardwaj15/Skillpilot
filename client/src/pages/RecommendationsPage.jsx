@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
-  Clock, BookOpen, Filter, Search, ExternalLink, Target,
+  Clock, BookOpen, Filter, Search, ExternalLink, Target, Info,
   Loader2, Youtube, FileText, DollarSign, Gift, Globe,
 } from 'lucide-react'
 import { api } from '../lib/api'
@@ -37,6 +37,7 @@ export default function RecommendationsPage() {
   const [activeCategory, setActiveCategory] = useState('all')
   const [activeLang,     setActiveLang]     = useState('All')
   const [searchQuery,    setSearchQuery]    = useState('')
+  const [whyOpen,        setWhyOpen]        = useState(null)
 
   useEffect(() => {
     async function load() {
@@ -298,7 +299,13 @@ export default function RecommendationsPage() {
 
                       <h3 className="text-base font-semibold text-white mb-1">{course.title}</h3>
                       <p className="text-xs text-gray-500 mb-3">{course.provider}</p>
-                      <p className="text-sm text-gray-400 mb-4 line-clamp-2 flex-1">{course.description}</p>
+                      <p className="text-sm text-gray-400 mb-3 line-clamp-2 flex-1">{course.description}</p>
+                      <button onClick={() => setWhyOpen(whyOpen === course._id ? null : course._id)} className="flex items-center gap-1.5 text-xs text-accent-teal hover:text-white transition-colors mb-3"><Info size={13}/> Why this / Why not?</button>
+                      <AnimatePresence>{whyOpen === course._id && (<motion.div initial={{opacity:0,height:0}} animate={{opacity:1,height:'auto'}} exit={{opacity:0,height:0}} className="mb-3 rounded-xl bg-white/5 border border-white/10 p-3 text-xs">
+                        <p className="text-green-400 font-semibold mb-1">✓ Why this course?</p>
+                        <ul className="text-gray-400 space-y-1">{(course.skills || []).filter(s => gapSet.has(s.toLowerCase())).slice(0,3).map(s=><li key={s}>• Covers {s}, one of your skill gaps</li>)}{course.prerequisites?.length ? <li>• Prerequisites: {course.prerequisites.join(', ')}</li> : <li>• No prerequisites listed</li>}</ul>
+                        <p className="text-red-400 font-semibold mt-2 mb-1">✕ Why not?</p><ul className="text-gray-500 space-y-1"><li>• This is a catalog comparison; higher-ranked roadmap resources may cover more of your gaps.</li>{course.prerequisites?.filter(p => !knownSet.has(p.toLowerCase())).slice(0,2).map(p=><li key={p}>• Requires {p}, which is not yet mastered</li>)}</ul>
+                      </motion.div>)}</AnimatePresence>
 
                       <div className="flex items-center gap-4 text-xs text-gray-500 mb-4">
                         <span className="flex items-center gap-1"><Clock size={12} /> {course.durationWeeks}w</span>

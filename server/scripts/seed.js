@@ -46,6 +46,22 @@ async function seed() {
     fs.readFileSync(path.join(dataDir, 'courses.json'), 'utf-8')
   );
 
+  const providerReliability = {
+    'freeCodeCamp': 0.98, 'MDN': 0.98, 'Microsoft Learn': 0.96, 'Google': 0.96,
+    'AWS': 0.96, 'Coursera': 0.93, 'Udemy': 0.88, 'YouTube': 0.82,
+  };
+  const qualityFor = (c) => {
+    const reliability = Object.entries(providerReliability).find(([name]) =>
+      String(c.provider || '').toLowerCase().includes(name.toLowerCase())
+    )?.[1] ?? 0.78;
+    const rating = Number(c.rating ?? 0) || 0;
+    const ratingScore = rating ? rating / 5 : 0.72;
+    const recency = 0.85;
+    const completion = Number(c.completionRate ?? 0) || 0.65;
+    const coverage = Math.min(1, (c.skills?.length || 0) / 5);
+    return Number((0.30 * reliability + 0.20 * ratingScore + 0.15 * recency + 0.15 * completion + 0.20 * coverage).toFixed(3));
+  };
+
   const courses = rawCourses.map((c) => ({
     title:             c.title,
     provider:          c.provider          ?? '',
@@ -60,6 +76,10 @@ async function seed() {
     documentation_url: c.documentation_url ?? '',
     language:          c.language          ?? 'English',
     is_free:           c.is_free           ?? false,
+    rating:            c.rating             ?? 0,
+    completionRate:    c.completionRate     ?? 0,
+    lastVerified:      c.lastVerified       ? new Date(c.lastVerified) : new Date(),
+    qualityScore:      c.qualityScore       ?? qualityFor(c),
   }));
 
   await Course.deleteMany({});

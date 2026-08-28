@@ -1,5 +1,13 @@
 import mongoose from 'mongoose';
 
+const knowledgeStateSchema = new mongoose.Schema({
+  skill: { type: String, required: true },
+  level: { type: Number, min: 0, max: 1, default: 0.25 },
+  confidence: { type: Number, min: 0, max: 1, default: 0.35 },
+  evidence: [{ type: String }],
+  lastUpdated: { type: Date, default: Date.now },
+}, { _id: false });
+
 const noteSchema = new mongoose.Schema({
   nodeId:    { type: String, required: true },
   nodeTitle: { type: String },
@@ -51,6 +59,7 @@ const profileSchema = new mongoose.Schema(
         createdAt: { type: Date, default: Date.now },
       },
     ],
+    knowledgeState: [knowledgeStateSchema],
     // Notes saved per learning path node — persisted in DB not localStorage
     notes: [noteSchema],
     // Progress streak tracking

@@ -1,14 +1,20 @@
 import { Router } from 'express';
 import { extractGoalProfile, explainRecommendation, chatWithAssistant } from '../services/llm.service.js';
+import { requireAuth } from '../middleware/auth.middleware.js';
+import { rateLimit } from '../middleware/security.middleware.js';
 
 const router = Router();
+const goalCache = new Map();
+const CACHE_TTL_MS = 10 * 60_000;
+function cacheGet(key) { const hit = goalCache.get(key); if (!hit || Date.now() - hit.at > CACHE_TTL_MS) { goalCache.delete(key); return null; } return hit.value; }
+function cacheSet(key, value) { if (goalCache.size > 500) goalCache.delete(goalCache.keys().next().value); goalCache.set(key, { value, at: Date.now() }); }
 
 // POST /api/ai/analyze-goal
 // Body: { goalText: string }
 // Returns structured profile data extracted from free text.
-router.post('/analyze-goal', async (req, res) => {
+router.post('/analyze-goal', requireAuth, rateLimit({ windowMs: 60_000, max: 8 }), async (req, res) => {
   const { goalText } = req.body;
-  if (!goalText || typeof goalText !== 'string' || goalText.trim().length < 1) {
+  if (!goalText || typeof goalText !== 'string' || goalText.trim().length < 1 || goalText.length > 2000) {
     return res.status(400).json({ error: 'goalText is required.' });
   }
 
@@ -61,8 +67,12 @@ router.post('/analyze-goal', async (req, res) => {
   if (expanded) req.body.goalText = expanded
 
   try {
-    const profileData = await extractGoalProfile(goalText);
-    res.json(profileData);
+    const cacheKey = req.body.goalText.trim().toLowerCase();
+    const cached = cacheGet(cacheKey);
+    if (cached) return res.json({ ...cached, cached: true });
+    const profileData = await extractGoalProfile(req.body.goalText);
+    cacheSet(cacheKey, profileData);
+    res.json({ ...profileData, cached: false });
   } catch (err) {
     console.error('analyze-goal failed:', err.message);
     res.status(500).json({ error: err.message });
@@ -73,7 +83,7 @@ router.post('/analyze-goal', async (req, res) => {
 // Body: { courseTitle, scoreBreakdown, learnerGoal }
 // TODO (Day 9-10): wired up once the recommendation engine (Day 6-8) produces
 // real score breakdowns to explain.
-router.post('/explain', async (req, res) => {
+router.post('/explain', requireAuth, rateLimit({ windowMs: 60_000, max: 15 }), async (req, res) => {
   const { courseTitle, scoreBreakdown, learnerGoal } = req.body;
   if (!courseTitle || !scoreBreakdown) {
     return res.status(400).json({ error: 'courseTitle and scoreBreakdown are required.' });
@@ -92,9 +102,9 @@ router.post('/explain', async (req, res) => {
 // Body: { message: string, context: object }
 // General-purpose Q&A for the AI Assistant page, grounded in the learner's
 // real profile/path context passed from the frontend.
-router.post('/chat', async (req, res) => {
+router.post('/chat', requireAuth, rateLimit({ windowMs: 60_000, max: 12 }), async (req, res) => {
   const { message, context } = req.body;
-  if (!message || typeof message !== 'string') {
+  if (!message || typeof message !== 'string' || message.length > 4000) {
     return res.status(400).json({ error: 'message is required.' });
   }
 

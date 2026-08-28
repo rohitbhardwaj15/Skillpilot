@@ -1,13 +1,8 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { motion } from 'framer-motion'
-import {
-  Clock, Target, BookOpen, Award, Zap, Loader2, AlertCircle, TrendingUp
-} from 'lucide-react'
-import {
-  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
-  RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, Cell
-} from 'recharts'
+import { Brain, Clock, Target, BookOpen, Award, Zap, Loader2, AlertCircle, TrendingUp, ArrowRight, ShieldCheck } from 'lucide-react'
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, Cell } from 'recharts'
 import { setCurrentPath } from '../store/slices/pathSlice'
 import { api } from '../lib/api'
 import { transformPathResponse } from '../lib/transformPath'
@@ -25,6 +20,7 @@ export default function DashboardPage() {
   const [rawPath, setRawPath] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+  const [insights, setInsights] = useState(null)
 
   const load = useCallback(async () => {
     setLoading(true)
@@ -37,6 +33,7 @@ export default function DashboardPage() {
       if (pathId) {
         const path = await api.getPath(pathId)
         setRawPath(path)
+        try { setInsights(await api.getPathInsights(pathId)) } catch {}
         dispatch(setCurrentPath(transformPathResponse(path)))
       }
     } catch (err) {
@@ -173,6 +170,52 @@ export default function DashboardPage() {
             </div>
           </GlassCard>
         </div>
+
+        <div className="mb-8">
+          <GlassCard>
+            <div className="p-6">
+              <div className="flex items-center justify-between gap-4 mb-5">
+                <div>
+                  <h3 className="text-lg font-semibold text-white flex items-center gap-2"><Brain size={18} className="text-accent-orange" /> Evidence-backed Skill Knowledge</h3>
+                  <p className="text-sm text-gray-500">Your mastery estimate now combines self-report, assessments, completion and feedback.</p>
+                </div>
+                <a href="/assessment" className="px-4 py-2 rounded-lg bg-accent-orange text-dark-900 text-xs font-semibold">Assess a Skill</a>
+              </div>
+              <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                {(profile?.knowledgeState || []).slice(0, 8).map((k) => (
+                  <div key={k.skill} className="rounded-xl bg-white/5 border border-white/10 p-3">
+                    <div className="flex justify-between gap-2 text-sm text-white"><span className="truncate">{k.skill}</span><span>{Math.round(k.level * 100)}%</span></div>
+                    <div className="h-1.5 mt-2 bg-white/5 rounded-full overflow-hidden"><div className="h-full bg-accent-teal rounded-full" style={{width:`${Math.round(k.level*100)}%`}} /></div>
+                    <div className="text-[10px] text-gray-500 mt-2">Confidence {Math.round(k.confidence*100)}%</div>
+                  </div>
+                ))}
+                {(!profile?.knowledgeState || profile.knowledgeState.length === 0) && <p className="text-sm text-gray-500">Take an assessment to create your first evidence-backed skill estimate.</p>}
+              </div>
+            </div>
+          </GlassCard>
+        </div>
+
+        {insights && <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+          <GlassCard className="lg:col-span-2">
+            <div className="p-6">
+              <div className="flex items-start justify-between gap-4">
+                <div><div className="flex items-center gap-2"><ShieldCheck size={19} className="text-accent-teal"/><h3 className="text-lg font-semibold text-white">Career Readiness</h3></div>
+                  <p className="text-sm text-gray-500 mt-1">Evidence-backed readiness for {insights.role}</p></div>
+                <span className="text-3xl font-bold text-accent-teal">{insights.readinessScore}%</span>
+              </div>
+              <div className="h-3 mt-5 bg-white/5 rounded-full overflow-hidden"><motion.div initial={{width:0}} animate={{width:`${insights.readinessScore}%`}} transition={{duration:1}} className="h-full bg-accent-teal rounded-full"/></div>
+              <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3 mt-5">
+                {insights.skills.slice(0,9).map(s => <div key={s.skill} className="rounded-xl bg-white/5 border border-white/10 p-3"><div className="flex justify-between text-xs text-gray-300"><span>{s.skill}</span><span>{Math.round(s.level*100)}%</span></div><div className="h-1.5 mt-2 bg-white/5 rounded-full"><div className="h-full bg-accent-orange rounded-full" style={{width:`${Math.round(s.level*100)}%`}}/></div><span className={`text-[10px] mt-1 inline-block ${s.status==='mastered'?'text-accent-teal':s.status==='learning'?'text-accent-orange':'text-red-400'}`}>{s.status}</span></div>)}
+              </div>
+            </div>
+          </GlassCard>
+          <GlassCard>
+            <div className="p-6 h-full flex flex-col">
+              <p className="text-xs uppercase tracking-wider text-accent-orange font-bold">🎯 Next Best Action</p>
+              {insights.nextBestAction ? <><h3 className="text-xl font-bold text-white mt-2">{insights.nextBestAction.title}</h3><p className="text-sm text-gray-400 mt-2">{insights.nextBestAction.reason}</p><div className="mt-4 text-xs text-gray-500">Focus skill: <span className="text-gray-300">{insights.nextBestAction.skill}</span> · ~{insights.nextBestAction.estimatedWeeks} week{insights.nextBestAction.estimatedWeeks === 1 ? '' : 's'}</div><a href="/paths" className="mt-auto pt-5 flex items-center gap-2 text-sm font-semibold text-accent-orange">Start learning <ArrowRight size={15}/></a></> : <p className="text-sm text-accent-teal mt-3">🎉 You have no major remaining skill gaps.</p>}
+            </div>
+          </GlassCard>
+        </div>}
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <GlassCard className="lg:col-span-2" delay={0.1}>

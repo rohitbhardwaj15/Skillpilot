@@ -8,6 +8,8 @@ import LearningPath from '../models/LearningPath.js';
 import { matchRole, rankCourses } from '../services/recommendation.service.js';
 import { orderByPrerequisites, groupIntoPhases } from '../services/pathgen.service.js';
 import { requireAuth } from '../middleware/auth.middleware.js';
+import { applyCompletion, applyFeedback, knowledgeSummary } from '../services/learner.service.js';
+import { buildCareerInsights } from '../services/readiness.service.js';
 
 const router = Router();
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -48,6 +50,7 @@ router.post('/generate', requireAuth, async (req, res) => {
   try {
     const profile = await Profile.findById(profileId);
     if (!profile) return res.status(404).json({ error: 'Profile not found' });
+    if (String(profile.userId) !== String(req.auth.userId)) return res.status(403).json({ error: 'Forbidden' });
 
     const courses = await Course.find({});
     if (courses.length === 0) {
@@ -71,11 +74,25 @@ router.post('/generate', requireAuth, async (req, res) => {
   }
 });
 
+// GET /api/path/:id/insights — career readiness + next best action
+router.get('/:id/insights', requireAuth, async (req, res) => {
+  try {
+    const learningPath = await LearningPath.findById(req.params.id);
+    if (!learningPath) return res.status(404).json({ error: 'Learning path not found' });
+    const profile = await Profile.findById(learningPath.profileId);
+    if (!profile || String(profile.userId) !== String(req.auth.userId)) return res.status(403).json({ error: 'Forbidden' });
+    const courses = await Course.find({});
+    res.json(buildCareerInsights(profile, roles, courses, learningPath));
+  } catch (err) { res.status(400).json({ error: err.message }); }
+});
+
 // GET /api/path/:id
 router.get('/:id', requireAuth, async (req, res) => {
   try {
     const learningPath = await LearningPath.findById(req.params.id);
     if (!learningPath) return res.status(404).json({ error: 'Learning path not found' });
+    const owner = await Profile.findById(learningPath.profileId).select('userId');
+    if (!owner || String(owner.userId) !== String(req.auth.userId)) return res.status(403).json({ error: 'Forbidden' });
     res.json(learningPath);
   } catch (err) {
     res.status(400).json({ error: err.message });
@@ -87,7 +104,8 @@ router.get('/:id', requireAuth, async (req, res) => {
 // Marks a course complete, advances the next upcoming course to 'current',
 // and syncs the learner's profile (completedCourseIds + currentSkills).
 router.put('/:id/progress', requireAuth, async (req, res) => {
-  const { courseId, status } = req.body;
+  const { courseId, status, timeSpentMinutes = 0 } = req.body;
+  if (!Number.isFinite(Number(timeSpentMinutes)) || Number(timeSpentMinutes) < 0 || Number(timeSpentMinutes) > 24 * 60) return res.status(400).json({ error: 'timeSpentMinutes must be between 0 and 1440.' });
   if (!courseId || status !== 'done') {
     return res.status(400).json({ error: 'courseId and status "done" are required' });
   }
@@ -95,6 +113,8 @@ router.put('/:id/progress', requireAuth, async (req, res) => {
   try {
     const learningPath = await LearningPath.findById(req.params.id);
     if (!learningPath) return res.status(404).json({ error: 'Learning path not found' });
+    const owner = await Profile.findById(learningPath.profileId).select('userId');
+    if (!owner || String(owner.userId) !== String(req.auth.userId)) return res.status(403).json({ error: 'Forbidden' });
 
     const flat = learningPath.phases.flatMap((p) => p.courses);
     const idx = flat.findIndex((c) => String(c.courseId) === String(courseId));
@@ -122,16 +142,7 @@ router.put('/:id/progress', requireAuth, async (req, res) => {
         profile.completedCourseIds.push(courseId);
       }
       const completedCourse = flat[idx];
-      completedCourse.skills.forEach((skillName) => {
-        const existing = profile.currentSkills.find(
-          (s) => s.name.toLowerCase() === skillName.toLowerCase()
-        );
-        if (existing) {
-          existing.level = 'intermediate';
-        } else {
-          profile.currentSkills.push({ name: skillName, level: 'intermediate' });
-        }
-      });
+      applyCompletion(profile, completedCourse.skills, timeSpentMinutes);
       await profile.save();
     }
 
@@ -150,7 +161,8 @@ router.put('/:id/progress', requireAuth, async (req, res) => {
 // profile and re-runs the recommendation engine on the remaining (not-done)
 // portion of the path, so the roadmap that comes back can genuinely differ.
 router.post('/:id/feedback', requireAuth, async (req, res) => {
-  const { courseId, rating } = req.body;
+  const { courseId, rating, timeSpentMinutes = 0 } = req.body;
+  if (!Number.isFinite(Number(timeSpentMinutes)) || Number(timeSpentMinutes) < 0 || Number(timeSpentMinutes) > 24 * 60) return res.status(400).json({ error: 'timeSpentMinutes must be between 0 and 1440.' });
   const validRatings = ['too_easy', 'too_hard', 'good', 'perfect'];
   if (!courseId || !validRatings.includes(rating)) {
     return res.status(400).json({ error: `rating must be one of: ${validRatings.join(', ')}` });
@@ -161,6 +173,7 @@ router.post('/:id/feedback', requireAuth, async (req, res) => {
     if (!learningPath) return res.status(404).json({ error: 'Learning path not found' });
 
     const profile = await Profile.findById(learningPath.profileId);
+    if (profile && String(profile.userId) !== String(req.auth.userId)) return res.status(403).json({ error: 'Forbidden' });
     if (!profile) return res.status(404).json({ error: 'Profile not found' });
 
     const flat = learningPath.phases.flatMap((p) => p.courses);
@@ -172,37 +185,21 @@ router.post('/:id/feedback', requireAuth, async (req, res) => {
     let adaptationMessage = '';
 
     if (rating === 'too_easy') {
-      // Learner already has this covered — bump those skills to advanced so
-      // the engine stops recommending more beginner material for them.
-      targetEntry.skills.forEach((skillName) => {
-        const existing = profile.currentSkills.find(
-          (s) => s.name.toLowerCase() === skillName.toLowerCase()
-        );
-        if (existing) existing.level = 'advanced';
-        else profile.currentSkills.push({ name: skillName, level: 'advanced' });
-      });
-      adaptationMessage = `Marked ${targetEntry.skills.join(', ')} as more advanced — the engine will stop suggesting beginner material for these skills.`;
+      applyFeedback(profile, targetEntry.skills, rating);
+      adaptationMessage = `Feedback updated your mastery estimate for ${targetEntry.skills.join(', ')} — we'll move you toward more advanced material.`;
     } else if (rating === 'too_hard') {
-      // Walk it back — treat the skill as less known so the engine surfaces
-      // more foundational material before revisiting harder content.
-      targetEntry.skills.forEach((skillName) => {
-        const existing = profile.currentSkills.find(
-          (s) => s.name.toLowerCase() === skillName.toLowerCase()
-        );
-        if (existing && existing.level !== 'none') existing.level = 'beginner';
-      });
-      adaptationMessage = `Noted — we'll prioritize more foundational material for ${targetEntry.skills.join(', ')} before harder content.`;
+      applyFeedback(profile, targetEntry.skills, rating);
+      adaptationMessage = `Feedback lowered the mastery estimate for ${targetEntry.skills.join(', ')} — we'll prioritize stronger foundations.`;
     } else {
-      // good / perfect — reinforce this course's format as a preference,
-      // using the actual course type from the catalog for accuracy
+      applyFeedback(profile, targetEntry.skills, rating);
       const courseDoc = await Course.findById(courseId);
       const styleKey = courseDoc ? FEEDBACK_TYPE_MAP[courseDoc.type] || courseDoc.type : 'projects';
-      if (styleKey && !profile.learningStyle.includes(styleKey)) {
-        profile.learningStyle.unshift(styleKey);
-      }
-      adaptationMessage = `Good to know — we'll lean more toward "${styleKey}"-style recommendations going forward.`;
+      if (styleKey && !profile.learningStyle.includes(styleKey)) profile.learningStyle.unshift(styleKey);
+      adaptationMessage = `Feedback updated your mastery and preference profile — we'll lean toward ${styleKey}-style resources.`;
     }
-
+    // Completion/time is independent evidence. If the learner spent time on the course,
+    // combine it with feedback instead of letting one heuristic overwrite the profile.
+    if (Number(timeSpentMinutes) > 0) applyCompletion(profile, targetEntry.skills, timeSpentMinutes);
     await profile.save();
 
     // Re-rank the REMAINING (not-done) portion of the path against the
@@ -237,7 +234,7 @@ router.post('/:id/feedback', requireAuth, async (req, res) => {
     learningPath.markModified('phases');
     await learningPath.save();
 
-    res.json({ learningPath, adaptation: { rating, message: adaptationMessage } });
+    res.json({ learningPath, adaptation: { rating, message: adaptationMessage }, knowledgeState: knowledgeSummary(profile) });
   } catch (err) {
     console.error('feedback failed:', err.message);
     res.status(422).json({ error: err.message });

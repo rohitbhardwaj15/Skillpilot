@@ -3,7 +3,7 @@ import { Canvas, useFrame } from '@react-three/fiber'
 import { Text, OrbitControls } from '@react-three/drei'
 import * as THREE from 'three'
 
-function Node({ position, color, label, completed, onClick, isActive }) {
+function Node({ position, color, label, completed, status, onClick, isActive }) {
   const meshRef = useRef()
   const ringRef = useRef()
 
@@ -129,6 +129,7 @@ function SkillTreeScene({ nodes, connections, onNodeClick, activeNode }) {
           color={node.color}
           label={node.label}
           completed={node.completed}
+          status={node.status}
           isActive={activeNode === node.id}
           onClick={() => onNodeClick?.(node)}
         />

@@ -11,6 +11,7 @@ const userSchema = new mongoose.Schema(
       trim: true,
     },
     passwordHash: { type: String, required: true },
+    refreshTokenHash: { type: String, default: null },
     profileId: { type: mongoose.Schema.Types.ObjectId, ref: 'Profile' },
   },
   { timestamps: true }

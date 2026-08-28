@@ -1,0 +1,8 @@
+{
+  "cases": 64,
+  "roleMatchAccuracy": 0.875,
+  "precisionAt10": 0.906,
+  "skillCoverageAt10": 0.966,
+  "recommendationDiversity": 0.759,
+  "prerequisiteViolationRate": 0
+}

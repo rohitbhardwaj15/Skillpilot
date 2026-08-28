@@ -131,3 +131,13 @@ Write the explanation now.`;
 
   return callGroq(systemPrompt, userMessage);
 }
+
+export async function generateSkillAssessment(skill, learnerLevel = 'beginner') {
+  const systemPrompt = `Create a fair 5-question multiple-choice assessment for the skill "${skill}" at ${learnerLevel} level.
+Return ONLY valid JSON: {"questions":[{"question":string,"options":[string,string,string,string],"correctIndex":number,"explanation":string}]}.
+Questions must test practical understanding, not trivia. correctIndex must be 0-3.`;
+  const raw = await callGroq(systemPrompt, `Generate the assessment for ${skill}.`, { jsonMode: true });
+  const parsed = JSON.parse(raw.trim());
+  if (!Array.isArray(parsed.questions) || parsed.questions.length < 5) throw new Error('Invalid assessment generated');
+  return { questions: parsed.questions.slice(0, 5) };
+}

@@ -13,6 +13,7 @@ import LearningPathPage from './pages/LearningPathPage'
 import AIAssistantPage from './pages/AIAssistantPage'
 import RecommendationsPage from './pages/RecommendationsPage'
 import ProfilePage from './pages/ProfilePage'
+import AssessmentPage from './pages/AssessmentPage'
 
 function PageWrapper({ children }) {
   return (
@@ -56,6 +57,7 @@ export default function App() {
             <Route path="/recommendations" element={
               <ProtectedRoute><PageWrapper><RecommendationsPage /></PageWrapper></ProtectedRoute>
             } />
+            <Route path="/assessment" element={<ProtectedRoute><PageWrapper><AssessmentPage /></PageWrapper></ProtectedRoute>} />
             <Route path="/profile" element={
               <ProtectedRoute><PageWrapper><ProfilePage /></PageWrapper></ProtectedRoute>
             } />

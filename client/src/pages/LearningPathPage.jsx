@@ -10,6 +10,7 @@ import { setCurrentPath } from '../store/slices/pathSlice'
 import { api } from '../lib/api'
 import { transformPathResponse } from '../lib/transformPath'
 import GlassCard from '../components/ui/GlassCard'
+import SkillTree3D from '../components/3d/SkillTree3D'
 
 /* ── Markdown renderer ────────────────────────────────────────────────── */
 function renderMarkdown(text = '') {
@@ -273,7 +274,7 @@ export default function LearningPathPage() {
       if (pathId) {
         const path = await api.getPath(pathId)
         setRawPath(path)
-        dispatch(setCurrentPath(transformPathResponse(path)))
+        dispatch(setCurrentPath(transformPathResponse(path, prof)))
       }
     } catch (err) {
       setError(err.message)
@@ -284,14 +285,27 @@ export default function LearningPathPage() {
 
   useEffect(() => { load() }, [load])
 
+  // Start a real client-side learning timer when the learner reaches the current node.
+  useEffect(() => {
+    const active = (currentPath?.nodes || []).find(n => n.status === 'current' || (n.progress > 0 && !n.completed))
+    if (active?.courseId) {
+      const key = `skillpilot_course_started_${active.courseId}`
+      if (!localStorage.getItem(key)) localStorage.setItem(key, String(Date.now()))
+    }
+  }, [currentPath])
+
   // Mark course done
   const handleMarkDone = async (node) => {
     if (!pathId || !node.courseId || marking) return
     setMarking(node.id)
     try {
-      const updated = await api.markCourseDone(pathId, node.courseId)
+      const startedKey = `skillpilot_course_started_${node.courseId}`
+      const started = Number(localStorage.getItem(startedKey)) || Date.now()
+      const timeSpentMinutes = Math.max(1, Math.round((Date.now() - started) / 60000))
+      const updated = await api.markCourseDone(pathId, node.courseId, timeSpentMinutes)
+      localStorage.removeItem(startedKey)
       setRawPath(updated)
-      dispatch(setCurrentPath(transformPathResponse(updated)))
+      dispatch(setCurrentPath(transformPathResponse(updated, profile)))
     } catch (e) {
       console.error(e)
     } finally {
@@ -370,6 +384,23 @@ export default function LearningPathPage() {
           <Zap size={14} />
           <span>This path adapts based on your feedback — rate each course to improve your recommendations!</span>
         </div>
+
+        {/* Evidence-backed skill graph */}
+        {activePath.skillGraph?.nodes?.length > 0 && (
+          <GlassCard className="mb-8">
+            <div className="p-5">
+              <div className="flex flex-wrap items-center justify-between gap-3 mb-3">
+                <div><h2 className="text-lg font-bold text-white">🧠 Your Skill Graph</h2><p className="text-xs text-gray-500">Dependencies and mastery status derived from your learner model.</p></div>
+                <div className="flex flex-wrap gap-3 text-[11px] text-gray-400">{[['#00d4aa','Mastered'],['#f5a623','Learning'],['#ef4444','Missing'],['#60a5fa','Recommended']].map(([c,l])=><span key={l} className="flex items-center gap-1"><i className="w-2 h-2 rounded-full" style={{background:c}} />{l}</span>)}</div>
+              </div>
+              <div className="flex flex-wrap gap-3 mb-3 text-xs text-gray-400">
+                <span>🟢 Mastered</span><span>🟡 Learning</span><span>🔴 Missing</span><span>🔵 Recommended</span><span>🟣 Target Role</span>
+              </div>
+              <p className="text-xs text-gray-500 mb-3">Nodes are derived from your role requirements, knowledge state and roadmap prerequisites.</p>
+              <SkillTree3D nodes={activePath.skillGraph.nodes} connections={activePath.skillGraph.connections} />
+            </div>
+          </GlassCard>
+        )}
 
         {/* Timeline */}
         <div className="space-y-4">

@@ -49,9 +49,20 @@ console.log(`Top match: ${ranked[0].course.title} (score ${ranked[0].breakdown.t
 
 console.log('\n=== Prerequisite Ordering ===');
 const ordered = orderByPrerequisites(ranked, profile);
-const jsIndex = ordered.findIndex((o) => o.course.skills.includes('JavaScript'));
-const reactIndex = ordered.findIndex((o) => o.course.skills.includes('React'));
-assert(jsIndex !== -1 && reactIndex !== -1 && jsIndex < reactIndex, 'JavaScript is sequenced before React');
+// A course may teach both a prerequisite and its dependent skill (e.g. a full-stack
+// foundations course teaches JavaScript + React together). In that case requiring a
+// separate JavaScript course before React would be incorrect. Instead verify the
+// actual invariant: every explicit prerequisite must be known or taught earlier.
+let prerequisiteViolations = 0;
+const knownSkills = new Set(profile.currentSkills.filter(s => ['intermediate','advanced'].includes(s.level)).map(s => s.name.toLowerCase()));
+for (const entry of ordered) {
+  for (const prereq of (entry.course.prerequisites || [])) {
+    const p = prereq.toLowerCase();
+    if (!knownSkills.has(p)) prerequisiteViolations++;
+  }
+  entry.course.skills.forEach(s => knownSkills.add(s.toLowerCase()));
+}
+assert(prerequisiteViolations === 0, 'no course is placed before an unsatisfied prerequisite');
 
 console.log('\n=== Phase Grouping ===');
 const phases = groupIntoPhases(ordered);

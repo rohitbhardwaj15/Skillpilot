@@ -18,7 +18,7 @@ export function requireAuth(req, res, next) {
     if (!secret) {
       throw new Error('JWT_SECRET is not set on the server');
     }
-    const payload = jwt.verify(token, secret);
+    const payload = jwt.verify(token, secret, { issuer: 'skillpilot' });
     req.auth = { userId: payload.userId };
     next();
   } catch (err) {

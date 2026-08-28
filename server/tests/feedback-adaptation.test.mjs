@@ -46,7 +46,7 @@ assert(reactGapBefore, 'React starts as a skill gap');
 // Fix on ONE specific course for a clean, stable before/after comparison —
 // scoring it directly (bypassing the ranked/diversity list) so the diversity
 // filter changing which course ranks #1 doesn't affect this comparison.
-const fixedReactCourse = courses.find((c) => c.title === 'React - The Complete Guide');
+const fixedReactCourse = courses.find((c) => c.title === 'React – The Complete Guide');
 const requiredSkillsSet = new Set(role.requiredSkills.map((s) => s.toLowerCase()));
 const gapSetBefore = new Set(before.skillGaps.map((s) => s.toLowerCase()));
 const scoreBefore = scoreCourse(fixedReactCourse, {

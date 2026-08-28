@@ -29,7 +29,7 @@ function getKnownSkillSet(currentSkills = []) {
  */
 export function orderByPrerequisites(rankedCourses, profile) {
   const known = getKnownSkillSet(profile.currentSkills);
-  const candidates = rankedCourses.slice(0, MAX_COURSES * 2); // wider pool than final cap
+  const candidates = rankedCourses.slice(0, Math.max(MAX_COURSES * 4, rankedCourses.length)); // keep a broad pool so prerequisites are not dropped
 
   const remaining = [...candidates];
   const ordered = [];
@@ -46,12 +46,12 @@ export function orderByPrerequisites(rankedCourses, profile) {
     });
 
     if (eligibleIndex === -1) {
-      // Nothing is fully eligible (missing prereq not in catalog/gap) —
-      // take the highest-scored remaining course anyway rather than stalling,
-      // but only after trying everything else.
-      const fallback = remaining.shift();
-      ordered.push(fallback);
-      fallback.course.skills.forEach((s) => skillsGainedSoFar.add(s.toLowerCase()));
+      // A true prerequisite-safe planner must not silently violate a dependency.
+      // If the prerequisite cannot be satisfied from the candidate pool, skip this
+      // course for now and continue looking for another eligible course.
+      const blocked = remaining.shift();
+      blocked.blocked = true;
+      blocked.blockedReason = `Missing prerequisite(s): ${(blocked.course.prerequisites || []).filter(p => !skillsGainedSoFar.has(p.toLowerCase())).join(', ')}`;
       continue;
     }
 
@@ -60,6 +60,7 @@ export function orderByPrerequisites(rankedCourses, profile) {
     next.course.skills.forEach((s) => skillsGainedSoFar.add(s.toLowerCase()));
   }
 
+  // Expose blocked candidates for the UI/evaluation layer without ever inserting them.
   return ordered;
 }
 
@@ -75,13 +76,15 @@ export function groupIntoPhases(orderedCourses) {
       phaseNumber,
       title: phaseTitle(phaseNumber, chunk),
       durationWeeks,
-      courses: chunk.map(({ course, breakdown }, idx) => ({
+      courses: chunk.map(({ course, breakdown, explanation }, idx) => ({
         courseId: course._id,
         title: course.title,
         skills: course.skills,
         level: course.level,
         durationWeeks: course.durationWeeks,
         scoreBreakdown: breakdown,
+        explanation,
+        qualityScore: course.qualityScore,
         status: phaseNumber === 1 && idx === 0 ? 'current' : 'upcoming',
       })),
     });

@@ -29,6 +29,11 @@ const courseSchema = new mongoose.Schema({
     default: 'English',
   },
   is_free: { type: Boolean, default: false },
+  // Quality metadata used by the recommendation/evaluation layer.
+  rating: { type: Number, min: 0, max: 5, default: 0 },
+  completionRate: { type: Number, min: 0, max: 1, default: 0 },
+  lastVerified: { type: Date, default: Date.now },
+  qualityScore: { type: Number, min: 0, max: 1, default: 0.5 },
 });
 
 // Index for fast language + level filtering

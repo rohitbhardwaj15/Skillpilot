@@ -12,7 +12,11 @@
     "test:engine": "node tests/recommendation-engine.test.mjs",
     "test:feedback": "node tests/feedback-adaptation.test.mjs",
     "test:roles": "node tests/role-matching.test.mjs",
-    "test": "npm run test:engine && npm run test:feedback && npm run test:roles"
+    "test": "npm run test:engine && npm run test:feedback && npm run test:roles && npm run test:ml && npm run test:learner",
+    "test:ml": "node tests/ml-layer.test.mjs",
+    "test:learner": "node tests/learner-model.test.mjs",
+    "evaluate": "node scripts/evaluate-recommender.mjs",
+    "test:api": "node tests/api-e2e.test.mjs"
   },
   "keywords": [],
   "author": "",
