@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import {
   Clock, BookOpen, Loader2, AlertCircle, Copy, Check,
   Youtube, FileText, ExternalLink, ChevronDown, ChevronUp,
-  ThumbsUp, ThumbsDown, CheckCircle, Star, Zap, Trophy,
+  ThumbsUp, ThumbsDown, CheckCircle, Star, Zap, Trophy, RefreshCw,
 } from 'lucide-react'
 import { setCurrentPath } from '../store/slices/pathSlice'
 import { api } from '../lib/api'
@@ -256,6 +256,7 @@ export default function LearningPathPage() {
   const [error,        setError]        = useState('')
   const [expandedNode, setExpandedNode] = useState(null)
   const [marking,      setMarking]      = useState(null)
+  const [adapting,     setAdapting]     = useState(false)
 
   const pathId    = localStorage.getItem('skillpilot_path_id')
   const streakDays = profile?.streakDays || 0
@@ -310,6 +311,19 @@ export default function LearningPathPage() {
       console.error(e)
     } finally {
       setMarking(null)
+    }
+  }
+
+  const handleManualAdapt = async () => {
+    if (!pathId || adapting) return
+    setAdapting(true)
+    try {
+      const res = await api.adaptPath(pathId)
+      if (res?.learningPath) handleAdaptation(res.learningPath)
+    } catch (e) {
+      console.error('Path adaptation failed:', e)
+    } finally {
+      setAdapting(false)
     }
   }
 
@@ -380,9 +394,15 @@ export default function LearningPathPage() {
         <StatsBar nodes={allNodes} streakDays={streakDays} />
 
         {/* Adaptive notice */}
-        <div className="mb-6 px-4 py-3 rounded-xl bg-accent-purple/10 border border-accent-purple/20 text-sm text-accent-purple flex items-center gap-2">
-          <Zap size={14} />
-          <span>This path adapts based on your feedback — rate each course to improve your recommendations!</span>
+        <div className="mb-6 px-4 py-3 rounded-xl bg-accent-purple/10 border border-accent-purple/20 text-sm text-accent-purple flex flex-wrap items-center justify-between gap-3">
+          <div className="flex items-center gap-2"><Zap size={14} />
+            <span>This path adapts from assessments, completions and feedback.</span>
+          </div>
+          <button onClick={handleManualAdapt} disabled={adapting}
+            className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-accent-purple/20 hover:bg-accent-purple/30 text-xs font-semibold text-white disabled:opacity-50">
+            <RefreshCw size={13} className={adapting ? 'animate-spin' : ''} />
+            {adapting ? 'Recalculating…' : 'Recalculate Path'}
+          </button>
         </div>
 
         {/* Evidence-backed skill graph */}
