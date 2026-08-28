@@ -1,9 +1,11 @@
 import { Routes, Route, useLocation } from 'react-router-dom'
 import { AnimatePresence, motion } from 'framer-motion'
+
 import Navbar from './components/layout/Navbar'
 import Footer from './components/layout/Footer'
 import ParticleBackground from './components/3d/ParticleBackground'
 import ProtectedRoute from './components/auth/ProtectedRoute'
+
 import LandingPage from './pages/LandingPage'
 import LoginPage from './pages/LoginPage'
 import RegisterPage from './pages/RegisterPage'
@@ -29,59 +31,179 @@ function PageWrapper({ children }) {
   )
 }
 
+function ProtectedPage({ children }) {
+  return (
+    <ProtectedRoute>
+      <PageWrapper>
+        {children}
+      </PageWrapper>
+    </ProtectedRoute>
+  )
+}
+
+function NotFoundPage() {
+  return (
+    <div className="min-h-screen bg-white px-6 pt-32 text-center text-slate-900">
+      <h1 className="text-5xl font-bold">
+        404
+      </h1>
+
+      <p className="mt-4 text-lg text-slate-600">
+        Page not found.
+      </p>
+    </div>
+  )
+}
+
 export default function App() {
   const location = useLocation()
 
   return (
     <div className="relative min-h-screen bg-dark-900 text-white">
       <ParticleBackground />
+
       <Navbar />
+
       <main className="relative z-10">
-        <AnimatePresence mode="wait">
-          <Routes location={location} key={location.pathname}>
-            <Route path="/" element={<PageWrapper><LandingPage /></PageWrapper>} />
-            <Route path="/login" element={<PageWrapper><LoginPage /></PageWrapper>} />
-            <Route path="/register" element={<PageWrapper><RegisterPage /></PageWrapper>} />
+        <AnimatePresence
+          mode="wait"
+        >
+          <Routes
+            location={location}
+            key={location.pathname}
+          >
 
-            <Route path="/onboarding" element={
-              <ProtectedRoute><PageWrapper><OnboardingPage /></PageWrapper></ProtectedRoute>
-            } />
+            {/* ================================
+                PUBLIC ROUTES
+            ================================= */}
 
-            <Route path="/dashboard" element={
-              <ProtectedRoute><PageWrapper><DashboardPage /></PageWrapper></ProtectedRoute>
-            } />
-
-            <Route path="/paths" element={
-              <ProtectedRoute><PageWrapper><LearningPathPage /></PageWrapper></ProtectedRoute>
-            } />
-
-            <Route path="/assistant" element={
-              <ProtectedRoute><PageWrapper><AIAssistantPage /></PageWrapper></ProtectedRoute>
-            } />
-
-            <Route path="/recommendations" element={
-              <ProtectedRoute><PageWrapper><RecommendationsPage /></PageWrapper></ProtectedRoute>
-            } />
-
-            <Route path="/assessment" element={
-              <ProtectedRoute><PageWrapper><AssessmentPage /></PageWrapper></ProtectedRoute>
-            } />
-
-            <Route path="/profile" element={
-              <ProtectedRoute><PageWrapper><ProfilePage /></PageWrapper></ProtectedRoute>
-            } />
-
-            {/* NEW: What-If Career Simulator */}
-            <Route path="/career-simulator" element={
-              <ProtectedRoute>
+            <Route
+              path="/"
+              element={
                 <PageWrapper>
-                  <CareerSimulatorPage />
+                  <LandingPage />
                 </PageWrapper>
-              </ProtectedRoute>
-            } />
+              }
+            />
+
+            <Route
+              path="/login"
+              element={
+                <PageWrapper>
+                  <LoginPage />
+                </PageWrapper>
+              }
+            />
+
+            <Route
+              path="/register"
+              element={
+                <PageWrapper>
+                  <RegisterPage />
+                </PageWrapper>
+              }
+            />
+
+
+            {/* ================================
+                PROTECTED ROUTES
+            ================================= */}
+
+            <Route
+              path="/onboarding"
+              element={
+                <ProtectedPage>
+                  <OnboardingPage />
+                </ProtectedPage>
+              }
+            />
+
+            <Route
+              path="/dashboard"
+              element={
+                <ProtectedPage>
+                  <DashboardPage />
+                </ProtectedPage>
+              }
+            />
+
+            <Route
+              path="/paths"
+              element={
+                <ProtectedPage>
+                  <LearningPathPage />
+                </ProtectedPage>
+              }
+            />
+
+            <Route
+              path="/assistant"
+              element={
+                <ProtectedPage>
+                  <AIAssistantPage />
+                </ProtectedPage>
+              }
+            />
+
+            <Route
+              path="/recommendations"
+              element={
+                <ProtectedPage>
+                  <RecommendationsPage />
+                </ProtectedPage>
+              }
+            />
+
+            <Route
+              path="/assessment"
+              element={
+                <ProtectedPage>
+                  <AssessmentPage />
+                </ProtectedPage>
+              }
+            />
+
+            <Route
+              path="/profile"
+              element={
+                <ProtectedPage>
+                  <ProfilePage />
+                </ProtectedPage>
+              }
+            />
+
+
+            {/* ================================
+                WHAT-IF CAREER SIMULATOR
+            ================================= */}
+
+            <Route
+              path="/career-simulator"
+              element={
+                <ProtectedPage>
+                  <CareerSimulatorPage />
+                </ProtectedPage>
+              }
+            />
+
+
+            {/* ================================
+                404
+            ================================= */}
+
+            <Route
+              path="*"
+              element={
+                <PageWrapper>
+                  <NotFoundPage />
+                </PageWrapper>
+              }
+            />
+
           </Routes>
         </AnimatePresence>
       </main>
+
       <Footer />
     </div>
   )
