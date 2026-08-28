@@ -16,7 +16,7 @@
  */
 
 const GROQ_API_URL = 'https://api.groq.com/openai/v1/chat/completions';
-const MODEL = 'openai/gpt-oss-120b'; // Groq's current supported model (llama-3.3 was deprecated)
+const MODEL = 'llama-3.3-70b-versatile'; // Groq supported model
 
 async function callGroq(systemPrompt, userMessage, { jsonMode = false } = {}) {
   const apiKey = process.env.LLM_API_KEY;
