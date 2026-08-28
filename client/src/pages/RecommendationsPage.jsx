@@ -39,38 +39,74 @@ export default function RecommendationsPage() {
   const [searchQuery,    setSearchQuery]    = useState('')
   const [whyOpen,        setWhyOpen]        = useState(null)
 
-  useEffect(() => {
+    useEffect(() => {
     async function load() {
       try {
-        const data = await api.getRecommendedCourses(36)
+        let data = null
+
+        // Try personalized recommendations first
+        try {
+          data = await api.getRecommendedCourses(36)
+        } catch (recommendationError) {
+          console.warn(
+            'Personalized recommendations unavailable, loading course catalog:',
+            recommendationError.message
+          )
+
+          // Fallback: public course catalog
+          const catalog = await api.getCourses()
+          data = {
+            courses: catalog || [],
+            skillGaps: [],
+          }
+        }
+
         setCourses(data.courses || [])
         setSkillGaps(data.skillGaps || [])
+
+        // Restore skill gaps from an existing learning path if available
         const pathId = localStorage.getItem('skillpilot_path_id')
+
         if (pathId) {
           const path = await api.getPath(pathId).catch(() => null)
-          if (path) setSkillGaps(path.skillGaps || [])
+
+          if (path) {
+            setSkillGaps(path.skillGaps || [])
+          }
         }
+
+        // Load learner profile for known skills and language preference
         const profile = await api.getMyProfile().catch(() => null)
+
         if (profile) {
           setKnownSkills(
             (profile.currentSkills || [])
-              .filter((s) => s.level === 'intermediate' || s.level === 'advanced')
+              .filter(
+                (s) =>
+                  s.level === 'intermediate' ||
+                  s.level === 'advanced'
+              )
               .map((s) => s.name.toLowerCase())
           )
-          // pre-select language from profile
-          if (profile.preferredLanguage && profile.preferredLanguage !== 'English') {
+
+          // Pre-select language from profile
+          if (
+            profile.preferredLanguage &&
+            profile.preferredLanguage !== 'English'
+          ) {
             setActiveLang(profile.preferredLanguage)
           }
         }
       } catch (err) {
+        console.error('Failed to load courses:', err)
         setError(err.message)
       } finally {
         setLoading(false)
       }
     }
+
     load()
   }, [])
-
   const topSkills = useMemo(() => {
     const counts = {}
     courses.forEach((c) => c.skills.forEach((s) => { counts[s] = (counts[s] || 0) + 1 }))
