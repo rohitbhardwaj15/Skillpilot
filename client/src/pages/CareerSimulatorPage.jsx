@@ -1,7 +1,5 @@
 import { useState } from 'react';
-import {
-  simulateCareerPath,
-} from '../lib/api';
+import { api } from '../lib/api';
 
 export default function CareerSimulatorPage() {
   const [targetRole, setTargetRole] =
@@ -32,7 +30,7 @@ export default function CareerSimulatorPage() {
 
     try {
       const response =
-        await simulateCareerPath({
+        await api.simulateCareerPath({
           targetRole:
             targetRole.trim(),
         });
