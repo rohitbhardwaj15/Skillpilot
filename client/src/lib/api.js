@@ -71,12 +71,14 @@ export const api = {
   // Courses
   getCourses: (skill) =>
     request(skill ? `/courses?skill=${encodeURIComponent(skill)}` : '/courses'),
+  getRecommendedCourses: (limit = 24) => request(`/courses/recommended?limit=${limit}`),
 
   // Path
   generatePath: (profileId) =>
     request('/path/generate', { method: 'POST', body: JSON.stringify({ profileId }) }),
   getPath: (id) => request(`/path/${id}`),
   getPathInsights: (id) => request(`/path/${id}/insights`),
+  adaptPath: (id) => request(`/path/${id}/adapt`, { method: 'POST' }),
 
   // Course completion — saves to DB
   markCourseDone: (pathId, courseId, timeSpentMinutes = 0) =>
