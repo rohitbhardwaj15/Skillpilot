@@ -5,6 +5,7 @@ import courseRoutes from './routes/course.routes.js';
 import aiRoutes from './routes/ai.routes.js';
 import pathRoutes from './routes/path.routes.js';
 import authRoutes from './routes/auth.routes.js';
+import assessmentRoutes from './routes/assessment.routes.js';
 import { rateLimit, securityHeaders } from './middleware/security.middleware.js';
 
 const app = express();
@@ -33,6 +34,7 @@ app.use('/api/courses', courseRoutes);
 app.use('/api/ai', aiRoutes);
 app.use('/api/path', pathRoutes);
 app.use('/api/auth', authRoutes);
+app.use('/api/assessment', assessmentRoutes);
 
 app.use((err, req, res, next) => {
   if (err?.message === 'Origin not allowed by CORS') return res.status(403).json({ error: 'Origin not allowed.' });
