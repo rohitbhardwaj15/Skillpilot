@@ -23,7 +23,9 @@ router.get('/recommended', requireAuth, async (req, res) => {
     const role = matchRole(profile.targetRole, roles);
     if (!role) return res.status(422).json({ error: 'Could not match your target role' });
     const courses = await Course.find({});
-    const { ranked, skillGaps, model } = rankCourses(courses, profile, role);
+    const { ranked, skillGaps, model } = await rankCourses(courses, profile, role, {
+      priorModel: profile.preferenceModel,
+    });
     const limit = Math.min(Math.max(Number(req.query.limit) || 24, 1), 60);
     res.json({
       courses: ranked.slice(0, limit).map((item, index) => ({
