@@ -559,6 +559,17 @@ docs/recommendation-evaluation.json
 This makes it possible to measure actual improvement instead of simply claiming that the system is "AI-powered."
 
 ---
+### 🤖 LLM Integration
+
+SkillPilot uses **Groq's OpenAI-compatible API** with **Llama 3.3 70B** for natural-language understanding and recommendation explanations.
+
+The LLM is intentionally limited to two responsibilities:
+
+1. **Goal Understanding** — converts the learner's free-text career goal into structured information such as target role, timeline, and current skills.
+2. **Recommendation Explanation** — converts the recommendation engine's actual score breakdown into simple, human-friendly explanations.
+
+**The LLM does not rank or select courses.** Course ranking is handled by SkillPilot's deterministic hybrid recommendation engine using skill-gap matching, prerequisites, TF-IDF, embeddings, learner preferences, quality signals, and MMR-based diversity.
+
 
 # 🏗️ System Architecture
 
