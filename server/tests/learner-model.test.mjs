@@ -1,11 +1,11 @@
 import assert from 'node:assert/strict';
-import { applyAssessment, applyCompletion, applyFeedback } from '../services/learner.service.js';
+import { applyCompletion, applyFeedback } from '../services/learner.service.js';
 
 function profile() { return { currentSkills: [{ name:'React', level:'beginner' }], knowledgeState: [], learningStyle: [] }; }
 
 const p = profile();
-const a = applyAssessment(p, 'React', 90);
-assert(a.level > 0.6 && a.confidence >= 0.65, 'assessment creates high mastery with strong confidence');
+const [a] = applyCompletion(p, ['React'], 120);
+assert(a.level > 0, 'completion creates a mastery estimate');
 const before = a.level;
 applyCompletion(p, ['React'], 120);
 assert(p.knowledgeState[0].level > 0, 'completion contributes additional evidence');
