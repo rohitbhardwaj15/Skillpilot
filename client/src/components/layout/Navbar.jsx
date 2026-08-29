@@ -4,8 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { useSelector, useDispatch } from 'react-redux'
 import {
   Menu, X, Compass, LayoutDashboard, MessageSquare,
-  User, LogOut, Sparkles, ChevronDown, BookOpen,
-  Target
+  User, LogOut, Sparkles, ChevronDown, BookOpen  
 } from 'lucide-react'
 import { setSidebar } from '../../store/slices/uiSlice'
 import { logout } from '../../store/slices/authSlice'
@@ -16,7 +15,7 @@ const navLinks = [
   { path: '/paths', label: 'Learning Paths', icon: Compass },
   { path: '/recommendations', label: 'Recommendations', icon: BookOpen },
   { path: '/assistant', label: 'AI Assistant', icon: MessageSquare },
-  { path: '/career-simulator', label: 'Career Simulator', icon: Target },
+  
   { path: '/profile', label: 'Profile', icon: User },
 ]
 
