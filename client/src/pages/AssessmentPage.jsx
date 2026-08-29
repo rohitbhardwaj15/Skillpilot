@@ -23,15 +23,16 @@ export default function AssessmentPage() {
       .then(setProfile)
       .catch((err) => setError(`Couldn't load your profile: ${err.message}. Try refreshing, or complete onboarding first if you haven't already.`))
   }, [])
-  useEffect(() => { if (!skill && gaps[0]) setSkill(gaps[0]) }, [profile?.knowledgeState?.length])
+  useEffect(() => { if (!skill && gaps[0]) setSkill(gaps[0]) }, [gaps.length, gaps[0]])
 
   const start = async () => {
     const profileId = profile?.id || profile?._id
     if (!profileId) { setError('No profile found for your account yet — please complete onboarding first.'); return }
-    if (!skill) { setError('Please choose a skill first.'); return }
+    const effectiveSkill = skill || gaps[0]
+    if (!effectiveSkill) { setError('Please choose a skill first.'); return }
     setLoading(true); setResult(null); setError(null)
     try {
-      const a = await api.startAssessment(profileId, skill)
+      const a = await api.startAssessment(profileId, effectiveSkill)
       if (!a?.questions?.length) { setError('The assessment came back empty. Please try again.'); return }
       setAssessment(a); setAnswers(Array(a.questions.length).fill(null))
     }
@@ -55,10 +56,10 @@ export default function AssessmentPage() {
       <p className="text-gray-400 mb-6">Replace self-reported skills with evidence. Your score updates your learner knowledge state and future roadmap.</p>
       {!assessment && !result && <>
         <label className="text-sm text-gray-300">Choose a skill</label>
-        <select value={skill} onChange={e=>setSkill(e.target.value)} className="w-full mt-2 mb-5 bg-white/5 border border-white/10 rounded-xl p-3 text-white">
+        <select value={skill || gaps[0] || ''} onChange={e=>setSkill(e.target.value)} className="w-full mt-2 mb-5 bg-white/5 border border-white/10 rounded-xl p-3 text-white">
           {gapsRaw.length ? gapsRaw.map(g=><option key={g.name} value={g.name} className="bg-gray-900">{g.name}{g.isNew ? ' (new)' : ''}</option>) : <option className="bg-gray-900">No skills available</option>}
         </select>
-        <button onClick={start} disabled={loading || !skill} className="px-5 py-3 rounded-xl bg-accent-orange text-dark-900 font-semibold disabled:opacity-50">{loading ? <Loader2 className="animate-spin"/> : 'Start 5-Question Assessment'}</button>
+        <button onClick={start} disabled={loading || !(skill || gaps[0])} className="px-5 py-3 rounded-xl bg-accent-orange text-dark-900 font-semibold disabled:opacity-50">{loading ? <Loader2 className="animate-spin"/> : 'Start 5-Question Assessment'}</button>
         {error && <p className="text-sm text-red-400 mt-3">{error}</p>}
       </>}
       {assessment && !result && <div className="space-y-6">
