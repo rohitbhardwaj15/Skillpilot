@@ -28,7 +28,7 @@
 import { validateAssessmentQuestions } from './assessment.service.js';
 
 const GROQ_API_URL = 'https://api.groq.com/openai/v1/chat/completions';
-const MODEL = 'llama-3.3-70b-versatile'; // Groq supported model
+const MODEL = 'openai/gpt-oss-120b'; // llama-3.3-70b-versatile was deprecated by Groq on 2026-06-17; this is Groq's recommended replacement
 
 const REQUEST_TIMEOUT_MS = Number(process.env.LLM_TIMEOUT_MS) || 12000;
 const MAX_RETRIES = Number(process.env.LLM_MAX_RETRIES) || 2;
