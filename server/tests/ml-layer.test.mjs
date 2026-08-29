@@ -16,7 +16,7 @@ const profile = {
 };
 const role = { role: 'Frontend Developer', requiredSkills: ['JavaScript', 'React'] };
 
-const scores = semanticCourseScores(courses, profile, role, ['React']);
+const scores = await semanticCourseScores(courses, profile, role, ['React']);
 assert(scores.get('react') > scores.get('python'), 'semantic model ranks React content above unrelated Python content');
 assert(cosineSimilarity(new Map([['react', 1]]), new Map([['react', 1]])) === 1, 'cosine similarity is normalized');
 
