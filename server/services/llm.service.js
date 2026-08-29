@@ -20,10 +20,12 @@
  * failures with exponential backoff + jitter under a hard timeout; callers
  * that produce "nice to have" text (chat, explanations) fall back to a
  * clear, honest message instead of throwing, while callers that need
- * structured data (goal extraction) still throw
+ * structured data (goal extraction, assessment generation) still throw
  * after retries are exhausted, since guessing structured data silently
  * would be worse than a visible error.
  */
+
+import { validateAssessmentQuestions } from './assessment.service.js';
 
 const GROQ_API_URL = 'https://api.groq.com/openai/v1/chat/completions';
 const MODEL = 'llama-3.3-70b-versatile'; // Groq supported model
@@ -215,5 +217,31 @@ Write the explanation now.`;
       ? `Recommended primarily for its strong "${strongest.replace(/([A-Z])/g, ' $1').toLowerCase()}" match with your goal.`
       : `Recommended based on your current skill gaps and target role.`;
   }
+}
+
+/**
+ * Generates a 5-question skill assessment. Throws on failure — a partially
+ * or incorrectly generated assessment would silently produce a broken quiz,
+ * which is worse than a visible retry/error at creation time.
+ *
+ * The raw LLM output is run through validateAssessmentQuestions() so a
+ * malformed response (wrong option count, out-of-range correctIndex, a
+ * missing field) is caught here with a clear error instead of reaching the
+ * database or the learner's screen half-broken.
+ */
+export async function generateSkillAssessment(skill, learnerLevel = 'beginner') {
+  const systemPrompt = `Create a fair 5-question multiple-choice assessment for the skill "${skill}" at ${learnerLevel} level.
+Return ONLY valid JSON: {"questions":[{"question":string,"options":[string,string,string,string],"correctIndex":number,"explanation":string}]}.
+Questions must test practical understanding, not trivia. correctIndex must be 0-3.`;
+  const raw = await callGroq(systemPrompt, `Generate the assessment for ${skill}.`, { jsonMode: true });
+
+  let parsed;
+  try {
+    parsed = JSON.parse(raw.trim());
+  } catch (err) {
+    throw new Error(`LLM returned non-JSON output for assessment, could not parse: ${raw.slice(0, 200)}`);
+  }
+
+  return validateAssessmentQuestions(parsed);
 }
 
