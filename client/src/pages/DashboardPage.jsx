@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
+import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { Brain, Clock, Target, BookOpen, Award, Zap, Loader2, AlertCircle, TrendingUp, ArrowRight, ShieldCheck } from 'lucide-react'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, Cell } from 'recharts'
@@ -179,6 +180,7 @@ export default function DashboardPage() {
                   <h3 className="text-lg font-semibold text-white flex items-center gap-2"><Brain size={18} className="text-accent-orange" /> Evidence-backed Skill Knowledge</h3>
                   <p className="text-sm text-gray-500">Your mastery estimate combines self-report, course completion and feedback.</p>
                 </div>
+                <Link to="/assessment" className="shrink-0 text-sm font-semibold px-4 py-2 rounded-xl bg-accent-orange text-dark-900 hover:opacity-90 transition">Take an Assessment</Link>
               </div>
               <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
                 {(profile?.knowledgeState || []).slice(0, 8).map((k) => (
