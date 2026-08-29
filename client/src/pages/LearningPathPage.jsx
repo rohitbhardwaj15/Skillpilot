@@ -396,7 +396,7 @@ export default function LearningPathPage() {
         {/* Adaptive notice */}
         <div className="mb-6 px-4 py-3 rounded-xl bg-accent-purple/10 border border-accent-purple/20 text-sm text-accent-purple flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-2"><Zap size={14} />
-            <span>This path adapts from assessments, completions and feedback.</span>
+            <span>This path adapts from completions and feedback.</span>
           </div>
           <button onClick={handleManualAdapt} disabled={adapting}
             className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-accent-purple/20 hover:bg-accent-purple/30 text-xs font-semibold text-white disabled:opacity-50">
