@@ -1,28 +1,28 @@
 {
-  "cases": 0,
-  "roleMatchAccuracy": 0,
+  "cases": 64,
+  "roleMatchAccuracy": 0.875,
   "baseline": {
-    "precisionAt10": 0,
-    "skillCoverageAt10": 0,
-    "recommendationDiversity": 0
+    "precisionAt10": 0.975,
+    "skillCoverageAt10": 0.793,
+    "recommendationDiversity": 0.643
   },
   "enhanced": {
-    "precisionAt10": 0,
-    "skillCoverageAt10": 0,
-    "recommendationDiversity": 0
+    "precisionAt10": 0.959,
+    "skillCoverageAt10": 0.894,
+    "recommendationDiversity": 0.703
   },
   "improvement": {
     "precisionAt10": {
-      "absolutePoints": 0,
-      "relativePercent": 0
+      "absolutePoints": -0.016,
+      "relativePercent": -1.6
     },
     "skillCoverageAt10": {
-      "absolutePoints": 0,
-      "relativePercent": 0
+      "absolutePoints": 0.101,
+      "relativePercent": 12.7
     },
     "recommendationDiversity": {
-      "absolutePoints": 0,
-      "relativePercent": 0
+      "absolutePoints": 0.06,
+      "relativePercent": 9.3
     }
   },
   "prerequisiteViolationRate": 0,
