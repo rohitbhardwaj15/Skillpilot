@@ -16,7 +16,7 @@ import AIAssistantPage from './pages/AIAssistantPage'
 import RecommendationsPage from './pages/RecommendationsPage'
 import ProfilePage from './pages/ProfilePage'
 import AssessmentPage from './pages/AssessmentPage'
-import CareerSimulatorPage from './pages/CareerSimulatorPage'
+
 
 function PageWrapper({ children }) {
   return (
@@ -173,19 +173,7 @@ export default function App() {
             />
 
 
-            {/* ================================
-                WHAT-IF CAREER SIMULATOR
-            ================================= */}
-
-            <Route
-              path="/career-simulator"
-              element={
-                <ProtectedPage>
-                  <CareerSimulatorPage />
-                </ProtectedPage>
-              }
-            />
-
+           
 
             {/* ================================
                 404
