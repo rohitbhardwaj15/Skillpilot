@@ -274,6 +274,40 @@ export const api = {
 
 
   // ==========================================
+  // ASSESSMENT
+  // ==========================================
+
+  startAssessment: (
+    profileId,
+    skill,
+    difficulty
+  ) =>
+    request(
+      '/assessment/start',
+      {
+        method: 'POST',
+        body: JSON.stringify({
+          profileId,
+          skill,
+          difficulty
+        })
+      }
+    ),
+
+  submitAssessment: (
+    assessmentId,
+    answers
+  ) =>
+    request(
+      `/assessment/${assessmentId}/submit`,
+      {
+        method: 'POST',
+        body: JSON.stringify({ answers })
+      }
+    ),
+
+
+  // ==========================================
   // NOTES
   // ==========================================
 
