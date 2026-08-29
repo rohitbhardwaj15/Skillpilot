@@ -39,7 +39,7 @@ const baseProfile = {
 const role = matchRole(baseProfile.targetRole, roles);
 
 console.log('=== BEFORE feedback: React is a gap, scored against it ===');
-const before = rankCourses(courses, baseProfile, role);
+const before = await rankCourses(courses, baseProfile, role);
 const reactGapBefore = before.skillGaps.map((s) => s.toLowerCase()).includes('react');
 assert(reactGapBefore, 'React starts as a skill gap');
 
@@ -79,8 +79,8 @@ assert(
 
 console.log('\n=== SIMULATE "good" feedback preferring project-type courses ===');
 const projectPreferredProfile = { ...baseProfile, learningStyle: ['projects'] };
-const projectRanked = rankCourses(courses, projectPreferredProfile, role);
-const videoPreferredRanked = rankCourses(courses, baseProfile, role); // learningStyle: ['video']
+const projectRanked = await rankCourses(courses, projectPreferredProfile, role);
+const videoPreferredRanked = await rankCourses(courses, baseProfile, role); // learningStyle: ['video']
 
 const projectCourse = projectRanked.ranked.find((r) => r.course.type === 'project');
 const sameProjectCourseInVideoProfile = videoPreferredRanked.ranked.find(
