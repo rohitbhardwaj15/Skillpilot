@@ -177,9 +177,8 @@ export default function DashboardPage() {
               <div className="flex items-center justify-between gap-4 mb-5">
                 <div>
                   <h3 className="text-lg font-semibold text-white flex items-center gap-2"><Brain size={18} className="text-accent-orange" /> Evidence-backed Skill Knowledge</h3>
-                  <p className="text-sm text-gray-500">Your mastery estimate now combines self-report, assessments, completion and feedback.</p>
+                  <p className="text-sm text-gray-500">Your mastery estimate combines self-report, course completion and feedback.</p>
                 </div>
-                <a href="/assessment" className="px-4 py-2 rounded-lg bg-accent-orange text-dark-900 text-xs font-semibold">Assess a Skill</a>
               </div>
               <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
                 {(profile?.knowledgeState || []).slice(0, 8).map((k) => (
@@ -189,7 +188,7 @@ export default function DashboardPage() {
                     <div className="text-[10px] text-gray-500 mt-2">Confidence {Math.round(k.confidence*100)}%</div>
                   </div>
                 ))}
-                {(!profile?.knowledgeState || profile.knowledgeState.length === 0) && <p className="text-sm text-gray-500">Take an assessment to create your first evidence-backed skill estimate.</p>}
+                {(!profile?.knowledgeState || profile.knowledgeState.length === 0) && <p className="text-sm text-gray-500">Complete a course or give feedback to build your first evidence-backed skill estimate.</p>}
               </div>
             </div>
           </GlassCard>
