@@ -20,7 +20,7 @@
  * failures with exponential backoff + jitter under a hard timeout; callers
  * that produce "nice to have" text (chat, explanations) fall back to a
  * clear, honest message instead of throwing, while callers that need
- * structured data (goal extraction, assessment generation) still throw
+ * structured data (goal extraction) still throw
  * after retries are exhausted, since guessing structured data silently
  * would be worse than a visible error.
  */
@@ -217,17 +217,3 @@ Write the explanation now.`;
   }
 }
 
-/**
- * Generates a 5-question skill assessment. Throws on failure — a partially
- * or incorrectly generated assessment would silently produce a broken quiz,
- * which is worse than a visible retry/error at creation time.
- */
-export async function generateSkillAssessment(skill, learnerLevel = 'beginner') {
-  const systemPrompt = `Create a fair 5-question multiple-choice assessment for the skill "${skill}" at ${learnerLevel} level.
-Return ONLY valid JSON: {"questions":[{"question":string,"options":[string,string,string,string],"correctIndex":number,"explanation":string}]}.
-Questions must test practical understanding, not trivia. correctIndex must be 0-3.`;
-  const raw = await callGroq(systemPrompt, `Generate the assessment for ${skill}.`, { jsonMode: true });
-  const parsed = JSON.parse(raw.trim());
-  if (!Array.isArray(parsed.questions) || parsed.questions.length < 5) throw new Error('Invalid assessment generated');
-  return { questions: parsed.questions.slice(0, 5) };
-}
