@@ -15,7 +15,6 @@ import LearningPathPage from './pages/LearningPathPage'
 import AIAssistantPage from './pages/AIAssistantPage'
 import RecommendationsPage from './pages/RecommendationsPage'
 import ProfilePage from './pages/ProfilePage'
-import AssessmentPage from './pages/AssessmentPage'
 
 
 function PageWrapper({ children }) {
@@ -150,15 +149,6 @@ export default function App() {
               element={
                 <ProtectedPage>
                   <RecommendationsPage />
-                </ProtectedPage>
-              }
-            />
-
-            <Route
-              path="/assessment"
-              element={
-                <ProtectedPage>
-                  <AssessmentPage />
                 </ProtectedPage>
               }
             />
