@@ -13,7 +13,6 @@ export function upsertKnowledge(profile, skill, evidenceScore, evidence, reliabi
   if (current) current.level = level; else profile.currentSkills.push({name, level});
   return state;
 }
-export function applyAssessment(profile, skill, score) { const mastery=Number(score)/100; const state=upsertKnowledge(profile,skill,mastery,`quiz score: ${Math.round(score)}%`,0.8); state.confidence=Math.max(state.confidence,0.65+mastery*0.25); return state; }
 export function applyCompletion(profile, skills, timeSpentMinutes=0) { const hours=Math.max(0,Number(timeSpentMinutes)||0)/60; const reliability=Math.min(0.55,0.25+Math.min(hours/8,0.3)); return skills.map(skill=>upsertKnowledge(profile,skill,0.72,`completed course${hours?` (${Math.round(hours*10)/10}h spent)`:''}`,reliability)); }
 export function applyFeedback(profile, skills, rating) { const score={too_easy:0.92,perfect:0.8,good:0.7,too_hard:0.35}[rating] ?? 0.5; const reliability={too_easy:0.55,perfect:0.4,good:0.35,too_hard:0.55}[rating] ?? 0.4; return skills.map(skill=>upsertKnowledge(profile,skill,score,`learner feedback: ${rating}`,reliability)); }
 export function knowledgeSummary(profile) { return (profile.knowledgeState||[]).map(k=>({skill:k.skill,level:+k.level.toFixed(2),confidence:+k.confidence.toFixed(2),evidence:k.evidence,lastUpdated:k.lastUpdated})); }
