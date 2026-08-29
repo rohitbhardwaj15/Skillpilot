@@ -41,7 +41,7 @@ const role = matchRole(profile.targetRole, roles);
 assert(role?.role === 'Full Stack Developer', 'matches "Full Stack Developer" text to the correct role');
 
 console.log('\n=== Skill Gap + Ranking ===');
-const { ranked, skillGaps } = rankCourses(courses, profile, role);
+const { ranked, skillGaps } = await rankCourses(courses, profile, role);
 assert(!skillGaps.map((s) => s.toLowerCase()).includes('html'), 'HTML excluded from gaps (learner already knows it)');
 assert(skillGaps.map((s) => s.toLowerCase()).includes('react'), 'React correctly identified as a gap');
 assert(ranked.length > 0, 'at least one relevant course found');
