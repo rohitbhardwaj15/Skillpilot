@@ -705,7 +705,7 @@ export function rankCourses(
                     ]).size
                   )
                 );
-              }
+              })
           )
         : 0;
 
