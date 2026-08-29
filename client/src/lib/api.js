@@ -417,24 +417,8 @@ export const api = {
     ),
 
 
-  // ==========================================
-  // WHAT-IF CAREER SIMULATOR
-  // ==========================================
-
-  simulateCareer: (
-    targetRole,
-    profile = {}
-  ) =>
-    request(
-      '/path/simulate-career',
-      {
-        method: 'POST',
-        body: JSON.stringify({
-          targetRole,
-          profile
-        })
-      }
-    ),
+ 
+  
 
 
   // ==========================================
