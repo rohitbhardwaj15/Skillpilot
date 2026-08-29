@@ -60,6 +60,17 @@ const profileSchema = new mongoose.Schema(
       },
     ],
     knowledgeState: [knowledgeStateSchema],
+    // Persisted online-logistic-regression preference model (see
+    // ml.service.js / recommendation.service.js). Warm-started on every
+    // subsequent feedback event instead of being retrained from zero each
+    // time, so the learner's preferences genuinely accumulate over sessions.
+    preferenceModel: {
+      weights: { type: [Number], default: undefined },
+      bias: { type: Number, default: 0 },
+      trained: { type: Boolean, default: false },
+      samples: { type: Number, default: 0 },
+      updatedAt: { type: Date },
+    },
     // Notes saved per learning path node — persisted in DB not localStorage
     notes: [noteSchema],
     // Progress streak tracking
