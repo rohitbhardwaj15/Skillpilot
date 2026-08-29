@@ -14,21 +14,31 @@ export default function AssessmentPage() {
   const [answers, setAnswers] = useState([])
   const [result, setResult] = useState(null)
   const [loading, setLoading] = useState(false)
+  const [error, setError] = useState(null)
   const gaps = profile?.knowledgeState?.length ? profile.knowledgeState.filter(k => k.level < .8).map(k => k.skill) : (profile?.currentSkills || []).map(k => k.name)
 
-  useEffect(() => { api.getMyProfile().then(setProfile).catch(() => {}) }, [])
+  useEffect(() => {
+    api.getMyProfile()
+      .then(setProfile)
+      .catch((err) => setError(`Couldn't load your profile: ${err.message}. Try refreshing, or complete onboarding first if you haven't already.`))
+  }, [])
   useEffect(() => { if (!skill && gaps[0]) setSkill(gaps[0]) }, [profile?.knowledgeState?.length])
 
   const start = async () => {
-    if (!profile?.id && !profile?._id || !skill) return
-    setLoading(true); setResult(null)
-    try { const a = await api.startAssessment(profile.id || profile._id, skill); setAssessment(a); setAnswers(Array(a.questions.length).fill(null)) }
+    const profileId = profile?.id || profile?._id
+    if (!profileId) { setError('No profile found for your account yet — please complete onboarding first.'); return }
+    if (!skill) { setError('Please choose a skill first.'); return }
+    setLoading(true); setResult(null); setError(null)
+    try { const a = await api.startAssessment(profileId, skill); setAssessment(a); setAnswers(Array(a.questions.length).fill(null)) }
+    catch (err) { setError(err.message || 'Failed to start assessment. Please try again.') }
     finally { setLoading(false) }
   }
   const submit = async () => {
     if (answers.some(a => a === null)) return
-    setLoading(true)
-    try { setResult(await api.submitAssessment(assessment._id, answers)) } finally { setLoading(false) }
+    setLoading(true); setError(null)
+    try { setResult(await api.submitAssessment(assessment._id, answers)) }
+    catch (err) { setError(err.message || 'Failed to submit assessment. Please try again.') }
+    finally { setLoading(false) }
   }
 
   return <div className="min-h-screen pt-28 pb-16 section-padding"><div className="max-w-4xl mx-auto">
@@ -41,10 +51,12 @@ export default function AssessmentPage() {
           {gaps.length ? gaps.map(g=><option key={g} value={g} className="bg-gray-900">{g}</option>) : <option className="bg-gray-900">No skills available</option>}
         </select>
         <button onClick={start} disabled={loading || !skill} className="px-5 py-3 rounded-xl bg-accent-orange text-dark-900 font-semibold disabled:opacity-50">{loading ? <Loader2 className="animate-spin"/> : 'Start 5-Question Assessment'}</button>
+        {error && <p className="text-sm text-red-400 mt-3">{error}</p>}
       </>}
       {assessment && !result && <div className="space-y-6">
         {assessment.questions.map((q,i)=><div key={q._id || i} className="border border-white/10 rounded-xl p-5"><p className="text-white font-medium mb-4">{i+1}. {q.question}</p><div className="grid gap-2">{q.options.map((o,j)=><button key={j} onClick={()=>setAnswers(a=>a.map((v,k)=>k===i?j:v))} className={`text-left p-3 rounded-lg border ${answers[i]===j?'border-accent-orange bg-accent-orange/10 text-white':'border-white/10 bg-white/5 text-gray-400'}`}>{o}</button>)}</div></div>)}
         <button onClick={submit} disabled={loading || answers.some(a=>a===null)} className="px-5 py-3 rounded-xl bg-accent-teal text-dark-900 font-semibold disabled:opacity-50">{loading?'Scoring…':'Submit Assessment'}</button>
+        {error && <p className="text-sm text-red-400">{error}</p>}
       </div>}
       {result && <div className="text-center py-8"><CheckCircle size={52} className="mx-auto text-accent-teal mb-4"/><div className="text-5xl font-bold text-white">{result.score}%</div><p className="text-gray-400 mt-2">{result.correctAnswers}/{result.totalQuestions} correct</p><div className="mt-6 grid grid-cols-2 gap-3"><div className="bg-white/5 rounded-xl p-4"><Target className="mx-auto text-accent-orange mb-2"/><div className="text-white font-semibold capitalize">{result.estimatedLevel}</div><div className="text-xs text-gray-500">Estimated Level</div></div><div className="bg-white/5 rounded-xl p-4"><div className="text-2xl font-bold text-accent-teal">{Math.round(result.confidence*100)}%</div><div className="text-xs text-gray-500">Confidence</div></div></div><p className="text-sm text-gray-400 mt-6">Your evidence-backed skill state has been updated. Generate/revisit your roadmap to apply the new estimate.</p><button onClick={()=>navigate('/dashboard')} className="mt-5 px-5 py-3 rounded-xl bg-accent-orange text-dark-900 font-semibold">Back to Dashboard</button></div>}
     </GlassCard>
