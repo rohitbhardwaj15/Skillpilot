@@ -5,6 +5,7 @@ import { Send, Bot, User, Lightbulb, RotateCcw } from 'lucide-react'
 import { addMessage, setTyping, clearChat } from '../store/slices/chatSlice'
 import { api } from '../lib/api'
 import GlassCard from '../components/ui/GlassCard'
+import PageHero from '../components/ui/PageHero'
 
 const SUGGESTIONS = [
   'What should I focus on next?',
@@ -85,15 +86,14 @@ export default function AIAssistantPage() {
   }
 
   return (
-    <div className="min-h-screen pt-24 pb-12 section-padding">
+    <div className="min-h-screen pb-12">
+      <PageHero
+        eyebrow="AI Assistant"
+        title="AI Learning Assistant"
+        subtitle="Ask anything about your learning journey — grounded in your actual profile and progress."
+      />
+      <div className="section-padding -mt-6 relative z-10">
       <div className="max-w-4xl mx-auto h-[calc(100vh-8rem)] flex flex-col">
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-4">
-          <h1 className="text-3xl font-bold font-display text-ink mb-2">
-            AI <span className="gradient-text">Learning Assistant</span>
-          </h1>
-          <p className="text-ink-soft">Ask anything about your learning journey — grounded in your actual profile and progress.</p>
-        </motion.div>
-
         <GlassCard className="flex-1 flex flex-col overflow-hidden">
           <div className="flex-1 overflow-y-auto p-6 space-y-4">
             {messages.length === 0 && (
@@ -161,6 +161,7 @@ export default function AIAssistantPage() {
             </button>
           </div>
         </GlassCard>
+      </div>
       </div>
     </div>
   )

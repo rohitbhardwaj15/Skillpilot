@@ -78,6 +78,27 @@
            active:scale-95 flex items-center gap-2;
   }
 
+  /* Wave theme buttons — pill-shaped, glassy, for use on the dark hero gradient */
+  .btn-wave-primary {
+    @apply px-7 py-3.5 bg-wave-pink/90 text-white font-bold rounded-full border border-white/40
+           transition-all duration-300 hover:bg-wave-pink hover:shadow-lg hover:shadow-wave-plum/30
+           hover:scale-105 active:scale-95 flex items-center gap-2 backdrop-blur-sm;
+  }
+
+  .btn-wave-outline {
+    @apply px-6 py-3 bg-white/5 text-white font-semibold rounded-full border border-white/40
+           transition-all duration-300 hover:bg-white/15 hover:scale-105 active:scale-95
+           flex items-center gap-2 backdrop-blur-sm;
+  }
+
+  .wave-hero-bg {
+    @apply bg-wave-gradient;
+  }
+
+  .heading-wave {
+    @apply font-display font-black uppercase tracking-tight text-white;
+  }
+
   .section-padding {
     @apply px-4 sm:px-6 lg:px-8 xl:px-16 2xl:px-24;
   }

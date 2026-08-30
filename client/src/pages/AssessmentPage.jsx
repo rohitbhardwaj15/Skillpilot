@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import { Brain, CheckCircle, Loader2, Target } from 'lucide-react'
 import { api } from '../lib/api'
 import GlassCard from '../components/ui/GlassCard'
+import PageHero from '../components/ui/PageHero'
 
 export default function AssessmentPage() {
   const cachedProfile = useSelector(s => s.user?.profile)
@@ -50,10 +51,10 @@ export default function AssessmentPage() {
     finally { setLoading(false) }
   }
 
-  return <div className="min-h-screen pt-28 pb-16 section-padding"><div className="max-w-4xl mx-auto">
+  return <div className="min-h-screen pb-16">
+    <PageHero eyebrow="Assessment" icon={Brain} title="Skill Assessment" subtitle="Replace self-reported skills with evidence. Your score updates your learner knowledge state and future roadmap." />
+    <div className="section-padding -mt-6 relative z-10"><div className="max-w-4xl mx-auto">
     <GlassCard className="p-6 md:p-8">
-      <div className="flex items-center gap-3 mb-2"><Brain className="text-accent-orange"/><h1 className="text-2xl font-bold text-ink">Skill Assessment</h1></div>
-      <p className="text-ink-soft mb-6">Replace self-reported skills with evidence. Your score updates your learner knowledge state and future roadmap.</p>
       {!assessment && !result && <>
         <label className="text-sm text-ink-soft">Choose a skill</label>
         <select value={skill || gaps[0] || ''} onChange={e=>setSkill(e.target.value)} className="w-full mt-2 mb-5 bg-white border border-border rounded-xl p-3 text-ink">
@@ -70,4 +71,5 @@ export default function AssessmentPage() {
       {result && <div className="text-center py-8"><CheckCircle size={52} className="mx-auto text-accent-teal mb-4"/><div className="text-5xl font-bold text-ink">{result.score}%</div><p className="text-ink-soft mt-2">{result.correctAnswers}/{result.totalQuestions} correct</p><div className="mt-6 grid grid-cols-2 gap-3"><div className="bg-surface-alt rounded-xl p-4"><Target className="mx-auto text-accent-orange mb-2"/><div className="text-ink font-semibold capitalize">{result.estimatedLevel}</div><div className="text-xs text-ink-faint">Estimated Level</div></div><div className="bg-surface-alt rounded-xl p-4"><div className="text-2xl font-bold text-accent-teal">{Math.round(result.confidence*100)}%</div><div className="text-xs text-ink-faint">Confidence</div></div></div><p className="text-sm text-ink-soft mt-6">Your evidence-backed skill state has been updated. Generate/revisit your roadmap to apply the new estimate.</p><button onClick={()=>navigate('/dashboard')} className="mt-5 px-5 py-3 rounded-xl bg-accent-orange text-white font-semibold">Back to Dashboard</button></div>}
     </GlassCard>
   </div></div>
+  </div>
 }

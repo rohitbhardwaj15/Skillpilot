@@ -29,6 +29,11 @@ export default function Navbar() {
   const dispatch = useDispatch()
   const { user, isAuthenticated } = useSelector(state => state.auth)
 
+  // Every page now opens with a dark wave-gradient hero behind the navbar
+  // (see PageHero), so we go transparent-with-white-text before scrolling,
+  // then switch to a solid navbar once the hero scrolls out of view.
+  const overHero = !scrolled
+
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 50)
     window.addEventListener('scroll', handleScroll)
@@ -49,9 +54,9 @@ export default function Navbar() {
         transition={{ duration: 0.6, ease: 'easeOut' }}
         className={`
           fixed top-0 left-0 right-0 z-50 transition-all duration-300
-          ${scrolled
-            ? 'bg-white/90 backdrop-blur-xl border-b border-border shadow-sm'
-            : 'bg-transparent'
+          ${overHero
+            ? 'bg-transparent'
+            : 'bg-white/90 backdrop-blur-xl border-b border-border shadow-sm'
           }
         `}
       >
@@ -60,11 +65,11 @@ export default function Navbar() {
 
             {/* Logo */}
             <Link to="/" className="flex items-center gap-2 group">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-accent-orange to-accent-amber flex items-center justify-center">
+              <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${overHero ? 'bg-white/10 border border-white/30 backdrop-blur-sm' : 'bg-gradient-to-br from-accent-orange to-accent-amber'}`}>
                 <Sparkles size={20} className="text-white" />
               </div>
 
-              <span className="text-xl font-bold font-display text-ink group-hover:text-accent-orange transition-colors">
+              <span className={`text-xl font-bold font-display transition-colors ${overHero ? 'text-white group-hover:text-white/80' : 'text-ink group-hover:text-accent-orange'}`}>
                 SkillPilot
               </span>
             </Link>
@@ -82,9 +87,9 @@ export default function Navbar() {
                     className={`
                       relative px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200
                       flex items-center gap-2
-                      ${isActive
-                        ? 'text-accent-orange'
-                        : 'text-ink-soft hover:text-ink hover:bg-surface-alt'
+                      ${overHero
+                        ? (isActive ? 'text-white' : 'text-white/75 hover:text-white hover:bg-white/10')
+                        : (isActive ? 'text-accent-orange' : 'text-ink-soft hover:text-ink hover:bg-surface-alt')
                       }
                     `}
                   >
@@ -94,7 +99,10 @@ export default function Navbar() {
                     {isActive && (
                       <motion.div
                         layoutId="activeNav"
-                        className="absolute inset-0 bg-accent-orange/10 rounded-lg border border-accent-orange/20"
+                        className={overHero
+                          ? 'absolute inset-0 bg-white/15 rounded-lg border border-white/25'
+                          : 'absolute inset-0 bg-accent-orange/10 rounded-lg border border-accent-orange/20'
+                        }
                         transition={{
                           type: 'spring',
                           bounce: 0.2,
@@ -115,13 +123,13 @@ export default function Navbar() {
                     onClick={() =>
                       setUserMenuOpen(!userMenuOpen)
                     }
-                    className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-surface-alt border border-border hover:bg-border/60 transition-colors"
+                    className={`flex items-center gap-2 px-3 py-1.5 rounded-full border transition-colors ${overHero ? 'bg-white/10 border-white/25 hover:bg-white/20' : 'bg-surface-alt border-border hover:bg-border/60'}`}
                   >
                     <div className="w-6 h-6 rounded-full bg-gradient-to-br from-accent-orange to-accent-purple flex items-center justify-center text-xs font-bold text-white">
                       {user.name?.[0]?.toUpperCase() || '?'}
                     </div>
 
-                    <span className="text-sm text-ink-soft">
+                    <span className={`text-sm ${overHero ? 'text-white' : 'text-ink-soft'}`}>
                       {user.name}
                     </span>
 
@@ -171,14 +179,14 @@ export default function Navbar() {
                 <div className="hidden lg:flex items-center gap-2">
                   <Link
                     to="/login"
-                    className="px-4 py-2 text-sm font-medium text-ink-soft hover:text-ink transition-colors"
+                    className={`px-4 py-2 text-sm font-medium transition-colors ${overHero ? 'text-white/80 hover:text-white' : 'text-ink-soft hover:text-ink'}`}
                   >
                     Log in
                   </Link>
 
                   <Link
                     to="/register"
-                    className="btn-primary text-sm py-2.5 px-5"
+                    className={overHero ? 'btn-wave-outline text-sm py-2.5 px-5' : 'btn-primary text-sm py-2.5 px-5'}
                   >
                     Get Started
                   </Link>
@@ -190,7 +198,7 @@ export default function Navbar() {
                 onClick={() =>
                   setMobileOpen(!mobileOpen)
                 }
-                className="lg:hidden p-2 rounded-lg text-ink-soft hover:text-ink hover:bg-surface-alt transition-all"
+                className={`lg:hidden p-2 rounded-lg transition-all ${overHero ? 'text-white hover:bg-white/10' : 'text-ink-soft hover:text-ink hover:bg-surface-alt'}`}
               >
                 {mobileOpen
                   ? <X size={24} />

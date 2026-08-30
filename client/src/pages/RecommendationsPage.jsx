@@ -6,6 +6,7 @@ import {
 } from 'lucide-react'
 import { api } from '../lib/api'
 import GlassCard from '../components/ui/GlassCard'
+import PageHero from '../components/ui/PageHero'
 
 const LEVELS = ['All', 'beginner', 'intermediate', 'advanced']
 const TYPES  = ['All', 'course', 'project']
@@ -169,20 +170,14 @@ export default function RecommendationsPage() {
   }
 
   return (
-    <div className="min-h-screen pt-24 pb-12 section-padding">
+    <div className="min-h-screen pb-12">
+      <PageHero
+        eyebrow="Recommendations"
+        title={skillGaps.length > 0 ? 'Recommended For You' : 'Course Catalog'}
+        subtitle={`${filteredCourses.length} of ${courses.length} courses shown`}
+      />
+      <div className="section-padding -mt-8 relative z-10">
       <div className="max-w-7xl mx-auto">
-
-        {/* Header */}
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-8">
-          <h1 className="text-3xl lg:text-4xl font-bold font-display text-ink mb-2">
-            {skillGaps.length > 0
-              ? <>Recommended <span className="gradient-text">For You</span></>
-              : <>Course <span className="gradient-text">Catalog</span></>}
-          </h1>
-          <p className="text-ink-soft">
-            {filteredCourses.length} of {courses.length} courses shown
-          </p>
-        </motion.div>
 
         {error && <p className="text-red-400 text-sm mb-4">{error}</p>}
 
@@ -406,6 +401,7 @@ export default function RecommendationsPage() {
         {filteredCourses.length === 0 && !loading && (
           <p className="text-center text-ink-faint py-16">No courses match these filters.</p>
         )}
+      </div>
       </div>
     </div>
   )

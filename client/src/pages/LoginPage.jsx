@@ -6,6 +6,7 @@ import { Sparkles, Mail, Lock, ArrowRight, AlertCircle } from 'lucide-react'
 import { authStart, authSuccess, authFailure } from '../store/slices/authSlice'
 import { api } from '../lib/api'
 import GlassCard from '../components/ui/GlassCard'
+import WaveBackground from '../components/ui/WaveBackground'
 
 export default function LoginPage() {
   const navigate = useNavigate()
@@ -35,19 +36,20 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-6 pt-24 pb-12">
+    <div className="relative min-h-screen flex items-center justify-center px-6 pt-24 pb-12 overflow-hidden">
+      <WaveBackground />
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="w-full max-w-md"
+        className="relative z-10 w-full max-w-md"
       >
         <div className="text-center mb-8">
-          <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-accent-orange to-accent-amber flex items-center justify-center mx-auto mb-4">
+          <div className="w-14 h-14 rounded-2xl bg-white/10 border border-white/25 backdrop-blur-sm flex items-center justify-center mx-auto mb-4">
             <Sparkles size={26} className="text-white" />
           </div>
-          <h1 className="text-3xl font-bold font-display text-ink mb-2">Welcome back</h1>
-          <p className="text-ink-soft text-sm">Log in to continue your learning path.</p>
+          <h1 className="text-3xl font-bold font-display text-white mb-2">Welcome back</h1>
+          <p className="text-white/70 text-sm">Log in to continue your learning path.</p>
         </div>
 
         <GlassCard className="p-8">

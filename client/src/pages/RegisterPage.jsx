@@ -6,6 +6,7 @@ import { Sparkles, Mail, Lock, User, ArrowRight, AlertCircle } from 'lucide-reac
 import { authStart, authSuccess, authFailure } from '../store/slices/authSlice'
 import { api } from '../lib/api'
 import GlassCard from '../components/ui/GlassCard'
+import WaveBackground from '../components/ui/WaveBackground'
 
 export default function RegisterPage() {
   const navigate = useNavigate()
@@ -46,21 +47,22 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-6 pt-24 pb-12">
+    <div className="relative min-h-screen flex items-center justify-center px-6 pt-24 pb-12 overflow-hidden">
+      <WaveBackground />
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="w-full max-w-md"
+        className="relative z-10 w-full max-w-md"
       >
         <div className="text-center mb-8">
-          <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-accent-orange to-accent-amber flex items-center justify-center mx-auto mb-4">
+          <div className="w-14 h-14 rounded-2xl bg-white/10 border border-white/25 backdrop-blur-sm flex items-center justify-center mx-auto mb-4">
             <Sparkles size={26} className="text-white" />
           </div>
-          <h1 className="text-3xl font-bold font-display text-ink mb-2">
+          <h1 className="text-3xl font-bold font-display text-white mb-2">
             Create your account
           </h1>
-          <p className="text-ink-soft text-sm">
+          <p className="text-white/70 text-sm">
             Start building your personalized learning path.
           </p>
         </div>

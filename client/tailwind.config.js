@@ -43,7 +43,21 @@ export default {
           light: 'rgba(255, 255, 255, 0.05)',
           medium: 'rgba(255, 255, 255, 0.1)',
           heavy: 'rgba(255, 255, 255, 0.15)',
-        }
+        },
+        // Wave theme — taken from the abstract wave landing-page template.
+        // Used for the hero + navbar to give the site that gradient look.
+        wave: {
+          navy: '#1c2b52',
+          indigo: '#3d3568',
+          plum: '#6b3f70',
+          magenta: '#a9527f',
+          pink: '#d9789f',
+          blush: '#f3c3ca',
+        },
+      },
+      backgroundImage: {
+        'wave-gradient': 'linear-gradient(165deg, #1c2b52 0%, #33305f 20%, #6b3f70 42%, #a9527f 62%, #d9789f 80%, #F6F7FB 100%)',
+        'wave-gradient-soft': 'linear-gradient(180deg, #1c2b52 0%, #4a3a6b 30%, #b06188 65%, #f3c3ca 100%)',
       },
       animation: {
         'float': 'float 6s ease-in-out infinite',

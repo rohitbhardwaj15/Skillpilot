@@ -9,6 +9,7 @@ import { api } from '../lib/api'
 import { transformPathResponse } from '../lib/transformPath'
 import GlassCard from '../components/ui/GlassCard'
 import ProgressRing from '../components/ui/ProgressRing'
+import PageHero from '../components/ui/PageHero'
 
 const LEVEL_VALUE = { none: 0, beginner: 33, intermediate: 66, advanced: 100 }
 
@@ -86,17 +87,15 @@ export default function DashboardPage() {
     .map((s) => ({ subject: s.name, A: LEVEL_VALUE[s.level] || 0, fullMark: 100 }))
 
   return (
-    <div className="min-h-screen pt-24 pb-12 section-padding">
+    <div className="min-h-screen pb-12">
+      <PageHero
+        eyebrow="Dashboard"
+        uppercase={false}
+        title={<>Welcome back, <span className="text-wave-blush">{profile?.name || user?.name || 'Learner'}</span> 👋</>}
+        subtitle={profile?.targetRole ? `Goal: ${profile.targetRole}` : 'Here is your learning overview.'}
+      />
+      <div className="section-padding -mt-8 relative z-10">
       <div className="max-w-7xl mx-auto">
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-8">
-          <h1 className="text-3xl lg:text-4xl font-bold font-display text-ink mb-2">
-            Welcome back, <span className="gradient-text">{profile?.name || user?.name || 'Learner'}</span> 👋
-          </h1>
-          <p className="text-ink-soft">
-            {profile?.targetRole ? `Goal: ${profile.targetRole}` : 'Here is your learning overview.'}
-          </p>
-        </motion.div>
-
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
           {[
             { label: 'Path Progress', value: `${pathProgress}%`, icon: Target, color: 'text-accent-purple', bg: 'bg-accent-purple/10' },
@@ -284,6 +283,7 @@ export default function DashboardPage() {
             </div>
           </GlassCard>
         </div>
+      </div>
       </div>
     </div>
   )

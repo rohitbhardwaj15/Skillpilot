@@ -11,6 +11,7 @@ import { api } from '../lib/api'
 import { transformPathResponse } from '../lib/transformPath'
 import GlassCard from '../components/ui/GlassCard'
 import SkillTree3D from '../components/3d/SkillTree3D'
+import PageHero from '../components/ui/PageHero'
 
 /* ── Markdown renderer ────────────────────────────────────────────────── */
 function renderMarkdown(text = '') {
@@ -363,32 +364,32 @@ export default function LearningPathPage() {
   const progress  = allNodes.length ? Math.round((doneCount / allNodes.length) * 100) : 0
 
   return (
-    <div className="min-h-screen pt-24 pb-12 section-padding">
+    <div className="min-h-screen pb-12">
+      <PageHero
+        eyebrow="Learning Path"
+        title="Your Learning Path"
+        subtitle={activePath.description}
+      >
+        <div className="flex items-center gap-4 mt-4 text-sm text-white/70">
+          <span className="flex items-center gap-1"><Clock size={14} /> ~{activePath.estimatedWeeks} weeks</span>
+          <span className="flex items-center gap-1"><BookOpen size={14} /> {allNodes.length} steps</span>
+        </div>
+
+        {/* Overall progress bar */}
+        <div className="mt-4 max-w-md">
+          <div className="flex justify-between text-xs text-white/60 mb-1">
+            <span>Overall Progress</span>
+            <span>{progress}%</span>
+          </div>
+          <div className="h-2 bg-white/15 rounded-full overflow-hidden">
+            <motion.div className="h-full bg-gradient-to-r from-accent-orange to-accent-teal rounded-full"
+              initial={{ width: 0 }} animate={{ width: `${progress}%` }} transition={{ duration: 0.8 }} />
+          </div>
+        </div>
+      </PageHero>
+
+      <div className="section-padding -mt-6 relative z-10">
       <div className="max-w-4xl mx-auto">
-
-        {/* Header */}
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-6">
-          <h1 className="text-3xl lg:text-4xl font-bold font-display text-ink mb-1">
-            Your <span className="gradient-text">Learning Path</span>
-          </h1>
-          <p className="text-ink-soft text-sm">{activePath.description}</p>
-          <div className="flex items-center gap-4 mt-2 text-sm text-ink-soft">
-            <span className="flex items-center gap-1"><Clock size={14} /> ~{activePath.estimatedWeeks} weeks</span>
-            <span className="flex items-center gap-1"><BookOpen size={14} /> {allNodes.length} steps</span>
-          </div>
-
-          {/* Overall progress bar */}
-          <div className="mt-4">
-            <div className="flex justify-between text-xs text-ink-faint mb-1">
-              <span>Overall Progress</span>
-              <span>{progress}%</span>
-            </div>
-            <div className="h-2 bg-border rounded-full overflow-hidden">
-              <motion.div className="h-full bg-gradient-to-r from-accent-orange to-accent-teal rounded-full"
-                initial={{ width: 0 }} animate={{ width: `${progress}%` }} transition={{ duration: 0.8 }} />
-            </div>
-          </div>
-        </motion.div>
 
         {/* Stats */}
         <StatsBar nodes={allNodes} streakDays={streakDays} />
@@ -522,6 +523,7 @@ export default function LearningPathPage() {
             <p className="text-ink-soft">Congratulations! You have completed your entire learning path.</p>
           </motion.div>
         )}
+      </div>
       </div>
     </div>
   )

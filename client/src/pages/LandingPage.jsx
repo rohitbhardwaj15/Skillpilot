@@ -6,103 +6,9 @@ import {
   ArrowRight, Sparkles, Brain, Target, Zap, TrendingUp,
   MessageSquare, Shield, Star, Cpu, Layers, GitBranch, Clock
 } from 'lucide-react'
-import { Canvas, useFrame } from '@react-three/fiber'
-import * as THREE from 'three'
-import FloatingOrbs from '../components/3d/FloatingOrbs'
+import WaveBackground from '../components/ui/WaveBackground'
 import GlassCard from '../components/ui/GlassCard'
 import { api } from '../lib/api'
-
-function HeroParticles() {
-  const pointsRef = useRef()
-  const count = 200
-
-  const positions = useRef(new Float32Array(count * 3))
-  const velocities = useRef(new Float32Array(count * 3))
-
-  useEffect(() => {
-    for (let i = 0; i < count; i++) {
-      positions.current[i * 3] = (Math.random() - 0.5) * 20
-      positions.current[i * 3 + 1] = (Math.random() - 0.5) * 20
-      positions.current[i * 3 + 2] = (Math.random() - 0.5) * 10
-      velocities.current[i * 3] = (Math.random() - 0.5) * 0.005
-      velocities.current[i * 3 + 1] = (Math.random() - 0.5) * 0.005
-      velocities.current[i * 3 + 2] = (Math.random() - 0.5) * 0.005
-    }
-  }, [])
-
-  useFrame(() => {
-    if (!pointsRef.current) return
-    const pos = pointsRef.current.geometry.attributes.position.array
-    for (let i = 0; i < count; i++) {
-      pos[i * 3] += velocities.current[i * 3]
-      pos[i * 3 + 1] += velocities.current[i * 3 + 1]
-      pos[i * 3 + 2] += velocities.current[i * 3 + 2]
-      if (Math.abs(pos[i * 3]) > 10) velocities.current[i * 3] *= -1
-      if (Math.abs(pos[i * 3 + 1]) > 10) velocities.current[i * 3 + 1] *= -1
-    }
-    pointsRef.current.geometry.attributes.position.needsUpdate = true
-  })
-
-  return (
-    <points ref={pointsRef}>
-      <bufferGeometry>
-        <bufferAttribute
-          attach="attributes-position"
-          count={count}
-          array={positions.current}
-          itemSize={3}
-        />
-      </bufferGeometry>
-      <pointsMaterial
-        size={0.04}
-        color="#D97B0F"
-        transparent
-        opacity={0.6}
-        sizeAttenuation
-        blending={THREE.AdditiveBlending}
-      />
-    </points>
-  )
-}
-
-function FloatingCube() {
-  const meshRef = useRef()
-
-  useFrame((state) => {
-    if (!meshRef.current) return
-    meshRef.current.rotation.x = state.clock.elapsedTime * 0.3
-    meshRef.current.rotation.y = state.clock.elapsedTime * 0.5
-    meshRef.current.position.y = Math.sin(state.clock.elapsedTime) * 0.5
-  })
-
-  return (
-    <mesh ref={meshRef} position={[3, 0, -2]}>
-      <boxGeometry args={[1.5, 1.5, 1.5]} />
-      <meshStandardMaterial
-        color="#D97B0F"
-        transparent
-        opacity={0.35}
-        wireframe
-        emissive="#D97B0F"
-        emissiveIntensity={0.5}
-      />
-    </mesh>
-  )
-}
-
-function Hero3D() {
-  return (
-    <div className="absolute inset-0 -z-10">
-      <Canvas camera={{ position: [0, 0, 8], fov: 60 }} dpr={[1, 1.5]}>
-        <ambientLight intensity={0.3} />
-        <pointLight position={[10, 10, 10]} intensity={0.8} />
-        <pointLight position={[-10, -10, -5]} intensity={0.3} color="#0E9C8F" />
-        <HeroParticles />
-        <FloatingCube />
-      </Canvas>
-    </div>
-  )
-}
 
 const features = [
   {
@@ -197,10 +103,9 @@ export default function LandingPage() {
 
   return (
     <div ref={containerRef} className="relative">
-      {/* Hero Section */}
+      {/* Hero Section — abstract wave theme */}
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-        <Hero3D />
-        <FloatingOrbs />
+        <WaveBackground />
 
         <motion.div 
           style={{ y, opacity }}
@@ -211,7 +116,7 @@ export default function LandingPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
           >
-            <span className="inline-block px-4 py-1.5 mb-6 text-xs font-semibold tracking-[0.2em] uppercase text-accent-orange bg-accent-orange/10 border border-accent-orange/20 rounded-full">
+            <span className="inline-block px-4 py-1.5 mb-6 text-xs font-semibold tracking-[0.2em] uppercase text-white bg-white/10 border border-white/25 rounded-full backdrop-blur-sm">
               AI-Powered Learning Path Recommender
             </span>
           </motion.div>
@@ -220,18 +125,18 @@ export default function LandingPage() {
             initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.1 }}
-            className="text-5xl sm:text-6xl lg:text-7xl xl:text-8xl font-bold font-display text-ink leading-tight mb-6"
+            className="heading-wave text-5xl sm:text-6xl lg:text-7xl xl:text-8xl leading-[0.95] mb-6"
           >
-            Your goal, mapped{' '}
+            Your goal, mapped
             <br className="hidden sm:block" />
-            <span className="gradient-text">into a real path.</span>
+            into a real path.
           </motion.h1>
 
           <motion.p
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
-            className="text-lg sm:text-xl text-ink-soft max-w-2xl mx-auto mb-10 leading-relaxed"
+            className="text-lg sm:text-xl text-white/80 max-w-2xl mx-auto mb-10 leading-relaxed"
           >
             SkillPilot does not just recommend courses. It builds, explains, and 
             continuously adapts a learning journey — from where you are, to where you are going.
@@ -243,11 +148,11 @@ export default function LandingPage() {
             transition={{ duration: 0.8, delay: 0.3 }}
             className="flex flex-col sm:flex-row items-center justify-center gap-4"
           >
-            <Link to={primaryCtaTo} className="btn-primary text-lg">
+            <Link to={primaryCtaTo} className="btn-wave-primary text-lg">
               {primaryCtaLabel}
               <ArrowRight size={20} />
             </Link>
-            <Link to={secondaryCtaTo} className="btn-secondary">
+            <Link to={secondaryCtaTo} className="btn-wave-outline">
               {secondaryCtaLabel}
             </Link>
           </motion.div>
@@ -263,11 +168,11 @@ export default function LandingPage() {
               const Icon = cap.icon
               return (
                 <div key={i} className="text-center">
-                  <div className="w-12 h-12 mx-auto mb-3 rounded-xl bg-surface-alt border border-border flex items-center justify-center">
-                    <Icon size={22} className="text-accent-orange" />
+                  <div className="w-12 h-12 mx-auto mb-3 rounded-xl bg-white/10 border border-white/20 flex items-center justify-center backdrop-blur-sm">
+                    <Icon size={22} className="text-white" />
                   </div>
-                  <div className="text-lg font-bold text-ink mb-1">{cap.value}</div>
-                  <div className="text-xs text-ink-faint">{cap.label}</div>
+                  <div className="text-lg font-bold text-white mb-1">{cap.value}</div>
+                  <div className="text-xs text-white/60">{cap.label}</div>
                 </div>
               )
             })}
@@ -284,9 +189,9 @@ export default function LandingPage() {
           <motion.div
             animate={{ y: [0, 10, 0] }}
             transition={{ duration: 2, repeat: Infinity }}
-            className="w-6 h-10 rounded-full border-2 border-ink-faint/30 flex items-start justify-center p-2"
+            className="w-6 h-10 rounded-full border-2 border-white/30 flex items-start justify-center p-2"
           >
-            <div className="w-1.5 h-1.5 rounded-full bg-accent-orange" />
+            <div className="w-1.5 h-1.5 rounded-full bg-white" />
           </motion.div>
         </motion.div>
       </section>

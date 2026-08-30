@@ -11,6 +11,7 @@ import { transformPathResponse } from '../lib/transformPath'
 import GlassCard from '../components/ui/GlassCard'
 import SkillBadge from '../components/ui/SkillBadge'
 import AnimatedButton from '../components/ui/AnimatedButton'
+import PageHero from '../components/ui/PageHero'
 
 const INTERESTS = [
   'Web Development', 'Data Science', 'Machine Learning', 'Mobile Development',
@@ -183,15 +184,14 @@ export default function OnboardingPage() {
   }
 
   return (
-    <div className="min-h-screen pt-24 pb-12 section-padding">
+    <div className="min-h-screen pb-12">
+      <PageHero
+        eyebrow="Profile"
+        title="Build Your Learning Profile"
+        subtitle="Tell us about yourself and our AI will craft the perfect path for you."
+      />
+      <div className="section-padding -mt-6 relative z-10">
       <div className="max-w-4xl mx-auto">
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-10">
-          <h1 className="text-4xl lg:text-5xl font-bold font-display text-ink mb-2">
-            Let us build your <span className="gradient-text">learning profile</span>
-          </h1>
-          <p className="text-ink-soft">Tell us about yourself and our AI will craft the perfect path for you.</p>
-        </motion.div>
-
         <GlassCard className="mb-8">
           <div className="h-[300px] overflow-y-auto p-6 space-y-4">
             {chatMessages.map((msg, i) => (
@@ -338,6 +338,7 @@ export default function OnboardingPage() {
             </motion.div>
           )}
         </AnimatePresence>
+      </div>
       </div>
     </div>
   )
