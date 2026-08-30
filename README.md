@@ -280,6 +280,14 @@ For example:
 The explanation is grounded in the **actual recommendation score**, rather than being a generic AI-generated justification.
 
 ---
+### Quantified Recommendation Explanations
+
+* Provides transparent, data-driven explanations for every recommended course.
+* Shows how many remaining skill gaps a course can close.
+* Identifies how many other target-role skills depend on the recommended skill through prerequisite relationships.
+* Example: **“Closes 2 of your 8 remaining skill gaps”** and **“SQL is required for 3 other skills in your Data Analyst path.”**
+* Explanations are generated deterministically from the skill-gap and prerequisite graph rather than using fabricated claims.
+
 
 # 🧩 Prerequisite-Safe Learning Paths
 
