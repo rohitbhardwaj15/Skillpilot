@@ -1,4 +1,3 @@
-import { Suspense, lazy } from 'react'
 import { Routes, Route, useLocation } from 'react-router-dom'
 import { AnimatePresence, motion } from 'framer-motion'
 
@@ -7,22 +6,16 @@ import Footer from './components/layout/Footer'
 import ParticleBackground from './components/3d/ParticleBackground'
 import ProtectedRoute from './components/auth/ProtectedRoute'
 
-// LandingPage stays eager — it's the first thing every visitor sees, so
-// there's nothing to gain from a loading flash on it.
 import LandingPage from './pages/LandingPage'
-
-// Every other page is lazy-loaded so heavy chunks (three.js for the 3D
-// skill graph, recharts for the dashboard) only download when a route
-// that actually needs them is visited, instead of on every page load.
-const LoginPage = lazy(() => import('./pages/LoginPage'))
-const RegisterPage = lazy(() => import('./pages/RegisterPage'))
-const OnboardingPage = lazy(() => import('./pages/OnboardingPage'))
-const DashboardPage = lazy(() => import('./pages/DashboardPage'))
-const LearningPathPage = lazy(() => import('./pages/LearningPathPage'))
-const AIAssistantPage = lazy(() => import('./pages/AIAssistantPage'))
-const RecommendationsPage = lazy(() => import('./pages/RecommendationsPage'))
-const ProfilePage = lazy(() => import('./pages/ProfilePage'))
-const AssessmentPage = lazy(() => import('./pages/AssessmentPage'))
+import LoginPage from './pages/LoginPage'
+import RegisterPage from './pages/RegisterPage'
+import OnboardingPage from './pages/OnboardingPage'
+import DashboardPage from './pages/DashboardPage'
+import LearningPathPage from './pages/LearningPathPage'
+import AIAssistantPage from './pages/AIAssistantPage'
+import RecommendationsPage from './pages/RecommendationsPage'
+import ProfilePage from './pages/ProfilePage'
+import AssessmentPage from './pages/AssessmentPage'
 
 
 function PageWrapper({ children }) {
@@ -38,21 +31,11 @@ function PageWrapper({ children }) {
   )
 }
 
-function PageLoader() {
-  return (
-    <div className="min-h-screen flex items-center justify-center">
-      <div className="w-10 h-10 rounded-full border-2 border-accent-orange/30 border-t-accent-orange animate-spin" />
-    </div>
-  )
-}
-
 function ProtectedPage({ children }) {
   return (
     <ProtectedRoute>
       <PageWrapper>
-        <Suspense fallback={<PageLoader />}>
-          {children}
-        </Suspense>
+        {children}
       </PageWrapper>
     </ProtectedRoute>
   )
@@ -76,7 +59,7 @@ export default function App() {
   const location = useLocation()
 
   return (
-    <div className="relative min-h-screen bg-dark-900 text-white">
+    <div className="relative min-h-screen bg-base text-ink">
       <ParticleBackground />
 
       <Navbar />
@@ -107,9 +90,7 @@ export default function App() {
               path="/login"
               element={
                 <PageWrapper>
-                  <Suspense fallback={<PageLoader />}>
-                    <LoginPage />
-                  </Suspense>
+                  <LoginPage />
                 </PageWrapper>
               }
             />
@@ -118,9 +99,7 @@ export default function App() {
               path="/register"
               element={
                 <PageWrapper>
-                  <Suspense fallback={<PageLoader />}>
-                    <RegisterPage />
-                  </Suspense>
+                  <RegisterPage />
                 </PageWrapper>
               }
             />

@@ -291,62 +291,6 @@ export default function LandingPage() {
         </motion.div>
       </section>
 
-      {/* How It Works — placed right after the hero so the process is clear
-          within seconds, before any feature grid or marketing copy. */}
-      <section className="section-padding py-24 lg:py-32 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-accent-orange/5 to-transparent" />
-
-        <div className="max-w-6xl mx-auto relative z-10">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-center mb-16"
-          >
-            <span className="text-accent-orange text-sm font-semibold tracking-wider uppercase">How It Works</span>
-            <h2 className="text-4xl lg:text-5xl font-bold font-display text-ink mt-3">
-              From your goal to a <span className="gradient-text">real roadmap</span>
-            </h2>
-            <p className="text-ink-soft max-w-xl mx-auto mt-3">
-              Every recommendation traces back to this sequence — nothing is suggested until the gap is known.
-            </p>
-          </motion.div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {[
-              { step: '01', icon: MessageSquare, title: 'Tell Us Your Goal', desc: 'Describe your career goal and current skills in your own words — no long form.' },
-              { step: '02', icon: Target, title: 'We Find the Gap', desc: 'We compare your skills against what your target role actually requires.' },
-              { step: '03', icon: GitBranch, title: 'Get Your Roadmap', desc: 'A prerequisite-ordered path, built only from skills you\'re missing.' },
-              { step: '04', icon: TrendingUp, title: 'Track & Adapt', desc: 'Progress updates your skill state, and the roadmap re-ranks itself.' },
-            ].map((item, i) => {
-              const Icon = item.icon
-              return (
-                <motion.div
-                  key={i}
-                  initial={{ opacity: 0, y: 30 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: i * 0.15 }}
-                  className="relative"
-                >
-                  <div className="text-6xl font-bold text-ink/[0.06] absolute -top-4 -left-2">{item.step}</div>
-                  <div className="relative pt-8">
-                    <div className="w-12 h-12 rounded-full bg-accent-orange/20 border border-accent-orange/40 flex items-center justify-center mb-4">
-                      <Icon size={20} className="text-accent-orange" />
-                    </div>
-                    <h3 className="text-lg font-semibold text-ink mb-2">{item.title}</h3>
-                    <p className="text-sm text-ink-soft">{item.desc}</p>
-                  </div>
-                  {i < 3 && (
-                    <div className="hidden lg:block absolute top-14 left-[calc(100%-0.5rem)] w-8 h-px bg-gradient-to-r from-accent-orange/40 to-transparent" />
-                  )}
-                </motion.div>
-              )
-            })}
-          </div>
-        </div>
-      </section>
-
       {/* Features Section */}
       <section className="section-padding py-24 lg:py-32">
         <div className="max-w-7xl mx-auto">
@@ -381,6 +325,52 @@ export default function LandingPage() {
                 </GlassCard>
               )
             })}
+          </div>
+        </div>
+      </section>
+
+      {/* How It Works */}
+      <section className="section-padding py-24 lg:py-32 relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-accent-orange/5 to-transparent" />
+
+        <div className="max-w-6xl mx-auto relative z-10">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-center mb-16"
+          >
+            <span className="text-accent-orange text-sm font-semibold tracking-wider uppercase">How It Works</span>
+            <h2 className="text-4xl lg:text-5xl font-bold font-display text-ink mt-3">
+              Four steps to your <span className="gradient-text">dream career</span>
+            </h2>
+          </motion.div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {[
+              { step: '01', title: 'Share Your Goals', desc: 'Tell us what you want to achieve in natural language' },
+              { step: '02', title: 'Build Your Profile', desc: 'We analyze your skills, experience, and learning style' },
+              { step: '03', title: 'Get Your Path', desc: 'AI generates a personalized roadmap with courses and projects' },
+              { step: '04', title: 'Learn & Adapt', desc: 'Track progress and get adaptive recommendations as you grow' },
+            ].map((item, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.15 }}
+                className="relative"
+              >
+                <div className="text-6xl font-bold text-ink/[0.06] absolute -top-4 -left-2">{item.step}</div>
+                <div className="relative pt-8">
+                  <div className="w-12 h-12 rounded-full bg-accent-orange/20 border border-accent-orange/40 flex items-center justify-center mb-4">
+                    <span className="text-accent-orange font-bold">{item.step}</span>
+                  </div>
+                  <h3 className="text-lg font-semibold text-ink mb-2">{item.title}</h3>
+                  <p className="text-sm text-ink-soft">{item.desc}</p>
+                </div>
+              </motion.div>
+            ))}
           </div>
         </div>
       </section>

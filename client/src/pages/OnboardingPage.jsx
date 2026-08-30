@@ -291,47 +291,16 @@ export default function OnboardingPage() {
     }
   }
 
-  /* ── step progress (for the UI indicator only — doesn't affect logic) ── */
-  const ONBOARDING_STEPS = ['Name', 'Goal', 'Language', 'Courses', 'Style', 'Profile']
-  const stepIndex = Math.min(step, ONBOARDING_STEPS.length - 1)
-
   /* ── render ─────────────────────────────────────────────────────────── */
   return (
     <div className="min-h-screen pt-24 pb-12 section-padding">
       <div className="max-w-4xl mx-auto">
 
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-6">
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-10">
           <h1 className="text-4xl lg:text-5xl font-bold font-display text-ink mb-2">
             Let us build your <span className="gradient-text">learning profile</span>
           </h1>
           <p className="text-ink-soft">Tell us about yourself and our AI will craft the perfect path for you.</p>
-        </motion.div>
-
-        {/* Step progress indicator */}
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mb-8 max-w-lg mx-auto">
-          <div className="flex justify-between items-center mb-2 text-xs text-ink-soft">
-            <span className="font-semibold text-accent-orange">
-              Step {stepIndex + 1} of {ONBOARDING_STEPS.length}: {ONBOARDING_STEPS[stepIndex]}
-            </span>
-            <span>{Math.round(((stepIndex + 1) / ONBOARDING_STEPS.length) * 100)}%</span>
-          </div>
-          <div className="h-1.5 bg-border rounded-full overflow-hidden mb-3">
-            <motion.div
-              className="h-full bg-gradient-to-r from-accent-orange to-accent-teal rounded-full"
-              animate={{ width: `${((stepIndex + 1) / ONBOARDING_STEPS.length) * 100}%` }}
-              transition={{ duration: 0.4 }}
-            />
-          </div>
-          <div className="flex justify-between">
-            {ONBOARDING_STEPS.map((label, i) => (
-              <div key={label} className="flex flex-col items-center gap-1" style={{ width: `${100 / ONBOARDING_STEPS.length}%` }}>
-                <div className={`w-2.5 h-2.5 rounded-full transition-colors ${
-                  i < stepIndex ? 'bg-accent-teal' : i === stepIndex ? 'bg-accent-orange' : 'bg-border'
-                }`} />
-                <span className={`text-[10px] hidden sm:block ${i === stepIndex ? 'text-ink' : 'text-ink-faint'}`}>{label}</span>
-              </div>
-            ))}
-          </div>
         </motion.div>
 
         {/* Chat window */}
