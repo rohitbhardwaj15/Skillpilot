@@ -131,12 +131,12 @@ export default function DashboardPage() {
               {phaseChartData.length > 0 ? (
                 <ResponsiveContainer width="100%" height={250}>
                   <BarChart data={phaseChartData}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(20,21,26,0.08)" />
-                    <XAxis dataKey="name" stroke="#8A8FA3" fontSize={11} />
-                    <YAxis stroke="#8A8FA3" fontSize={12} domain={[0, 100]} />
+                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.08)" />
+                    <XAxis dataKey="name" stroke="#A7ABC4" fontSize={11} />
+                    <YAxis stroke="#A7ABC4" fontSize={12} domain={[0, 100]} />
                     <Tooltip
-                      contentStyle={{ backgroundColor: '#FFFFFF', border: '1px solid #E2E5ED', borderRadius: '8px', boxShadow: '0 4px 12px rgba(20,21,26,0.08)' }}
-                      labelStyle={{ color: '#14151A' }}
+                      contentStyle={{ backgroundColor: '#1d1d30', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '8px', boxShadow: '0 4px 12px rgba(0,0,0,0.3)' }}
+                      labelStyle={{ color: '#F3F4F8' }}
                     />
                     <Bar dataKey="progress" radius={[6, 6, 0, 0]}>
                       {phaseChartData.map((entry, i) => (
@@ -158,9 +158,9 @@ export default function DashboardPage() {
               {skillRadarData.length > 0 ? (
                 <ResponsiveContainer width="100%" height={250}>
                   <RadarChart data={skillRadarData}>
-                    <PolarGrid stroke="rgba(20,21,26,0.1)" />
-                    <PolarAngleAxis dataKey="subject" stroke="#5B6072" fontSize={11} />
-                    <PolarRadiusAxis angle={30} domain={[0, 100]} stroke="#8A8FA3" fontSize={10} />
+                    <PolarGrid stroke="rgba(255,255,255,0.1)" />
+                    <PolarAngleAxis dataKey="subject" stroke="#A7ABC4" fontSize={11} />
+                    <PolarRadiusAxis angle={30} domain={[0, 100]} stroke="#6E7390" fontSize={10} />
                     <Radar name="Skills" dataKey="A" stroke="#D97B0F" fill="#D97B0F" fillOpacity={0.2} strokeWidth={2} />
                   </RadarChart>
                 </ResponsiveContainer>

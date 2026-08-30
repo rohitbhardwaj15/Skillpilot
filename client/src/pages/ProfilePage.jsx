@@ -214,7 +214,7 @@ export default function OnboardingPage() {
               <input type="text" value={inputValue} onChange={(e) => setInputValue(e.target.value)}
                 onKeyPress={(e) => e.key === 'Enter' && handleSend()}
                 placeholder="Type your response..."
-                className="flex-1 bg-white border border-border rounded-xl px-4 py-3 text-ink placeholder-ink-faint focus:outline-none focus:border-accent-orange/50 transition-colors" />
+                className="flex-1 bg-surface-alt border border-border rounded-xl px-4 py-3 text-ink placeholder-ink-faint focus:outline-none focus:border-accent-orange/50 transition-colors" />
               <button onClick={handleSend}
                 className="w-12 h-12 rounded-xl bg-accent-orange flex items-center justify-center text-white hover:bg-accent-amber transition-colors">
                 <Send size={18} />
@@ -272,7 +272,7 @@ export default function OnboardingPage() {
                         className={`p-4 rounded-xl border text-left transition-all ${
                           experience === level.value
                             ? 'border-accent-orange/50 bg-accent-orange/10'
-                            : 'border-border bg-white hover:border-ink-faint/40'}`}>
+                            : 'border-border bg-surface-alt hover:border-ink-faint/40'}`}>
                         <div className="font-semibold text-ink mb-1">{level.label}</div>
                         <div className="text-xs text-ink-soft">{level.desc}</div>
                       </button>
@@ -296,7 +296,7 @@ export default function OnboardingPage() {
                     value={priorCoursesInput}
                     onChange={(e) => setPriorCoursesInput(e.target.value)}
                     placeholder="e.g. Python for Everybody (Coursera), CS50 (edX) — separate with commas"
-                    className="w-full bg-white border border-border rounded-xl px-4 py-3 text-ink placeholder-ink-faint focus:outline-none focus:border-accent-orange/50 transition-colors"
+                    className="w-full bg-surface-alt border border-border rounded-xl px-4 py-3 text-ink placeholder-ink-faint focus:outline-none focus:border-accent-orange/50 transition-colors"
                   />
                 </div>
               </GlassCard>
@@ -314,7 +314,7 @@ export default function OnboardingPage() {
                         className={`px-6 py-3 rounded-xl border font-semibold transition-all ${
                           timePerWeek === hours
                             ? 'border-accent-orange/50 bg-accent-orange/10 text-accent-orange'
-                            : 'border-border bg-white text-ink-soft hover:border-ink-faint/40'}`}>
+                            : 'border-border bg-surface-alt text-ink-soft hover:border-ink-faint/40'}`}>
                         {hours} hrs
                       </button>
                     ))}

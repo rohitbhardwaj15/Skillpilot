@@ -22,7 +22,7 @@ export default function Footer() {
                 <a
                   key={i}
                   href="#"
-                  className="w-9 h-9 rounded-lg bg-white border border-border flex items-center justify-center text-ink-soft hover:text-accent-orange hover:border-accent-orange/40 transition-all"
+                  className="w-9 h-9 rounded-lg bg-surface border border-border flex items-center justify-center text-ink-soft hover:text-accent-orange hover:border-accent-orange/40 transition-all"
                 >
                   <Icon size={16} />
                 </a>

@@ -58,7 +58,7 @@ function Node({ position, color, label, completed, status, onClick, isActive }) 
       <Text
         position={[0, -0.9, 0]}
         fontSize={0.2}
-        color="#14151A"
+        color="#F3F4F8"
         anchorX="center"
         anchorY="middle"
         maxWidth={3}

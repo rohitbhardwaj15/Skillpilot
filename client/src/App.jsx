@@ -43,12 +43,12 @@ function ProtectedPage({ children }) {
 
 function NotFoundPage() {
   return (
-    <div className="min-h-screen bg-white px-6 pt-32 text-center text-slate-900">
+    <div className="min-h-screen bg-base px-6 pt-32 text-center text-ink">
       <h1 className="text-5xl font-bold">
         404
       </h1>
 
-      <p className="mt-4 text-lg text-slate-600">
+      <p className="mt-4 text-lg text-ink-soft">
         Page not found.
       </p>
     </div>

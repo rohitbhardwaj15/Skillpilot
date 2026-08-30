@@ -25,7 +25,7 @@ export default function SkillBadge({
         transition-all duration-200
         ${sizeClasses[size]}
         ${selected 
-          ? 'bg-accent-orange-soft text-accent-orange border border-accent-orange/40' 
+          ? 'bg-accent-orange/15 text-accent-orange border border-accent-orange/40' 
           : selectable 
             ? 'bg-surface-alt text-ink-soft border border-border hover:bg-border/50 hover:border-ink-faint/40'
             : 'bg-surface-alt text-ink-soft border border-border'

@@ -79,7 +79,7 @@ export default function RegisterPage() {
                   onChange={(e) => setName(e.target.value)}
                   required
                   placeholder="Your name"
-                  className="w-full bg-white border border-border rounded-xl pl-11 pr-4 py-3 text-ink placeholder-ink-faint focus:outline-none focus:border-accent-orange/50 transition-colors"
+                  className="w-full bg-surface-alt border border-border rounded-xl pl-11 pr-4 py-3 text-ink placeholder-ink-faint focus:outline-none focus:border-accent-orange/50 transition-colors"
                 />
               </div>
             </div>
@@ -94,7 +94,7 @@ export default function RegisterPage() {
                   onChange={(e) => setEmail(e.target.value)}
                   required
                   placeholder="you@example.com"
-                  className="w-full bg-white border border-border rounded-xl pl-11 pr-4 py-3 text-ink placeholder-ink-faint focus:outline-none focus:border-accent-orange/50 transition-colors"
+                  className="w-full bg-surface-alt border border-border rounded-xl pl-11 pr-4 py-3 text-ink placeholder-ink-faint focus:outline-none focus:border-accent-orange/50 transition-colors"
                 />
               </div>
             </div>
@@ -109,7 +109,7 @@ export default function RegisterPage() {
                   onChange={(e) => setPassword(e.target.value)}
                   required
                   placeholder="At least 8 characters"
-                  className="w-full bg-white border border-border rounded-xl pl-11 pr-4 py-3 text-ink placeholder-ink-faint focus:outline-none focus:border-accent-orange/50 transition-colors"
+                  className="w-full bg-surface-alt border border-border rounded-xl pl-11 pr-4 py-3 text-ink placeholder-ink-faint focus:outline-none focus:border-accent-orange/50 transition-colors"
                 />
               </div>
             </div>
@@ -124,7 +124,7 @@ export default function RegisterPage() {
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   required
                   placeholder="Re-enter your password"
-                  className="w-full bg-white border border-border rounded-xl pl-11 pr-4 py-3 text-ink placeholder-ink-faint focus:outline-none focus:border-accent-orange/50 transition-colors"
+                  className="w-full bg-surface-alt border border-border rounded-xl pl-11 pr-4 py-3 text-ink placeholder-ink-faint focus:outline-none focus:border-accent-orange/50 transition-colors"
                 />
               </div>
             </div>

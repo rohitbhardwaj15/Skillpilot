@@ -110,7 +110,7 @@ function MarkdownNote({ node, profileId, initialNote }) {
         <textarea value={notes} onChange={(e) => setNotes(e.target.value)}
           placeholder={"Write your notes in Markdown…\n## Heading\n**Bold**, *italic*, `code`\n- Bullet"}
           rows={6}
-          className="w-full bg-white border border-border rounded-xl p-4 text-sm text-ink
+          className="w-full bg-surface-alt border border-border rounded-xl p-4 text-sm text-ink
             placeholder-ink-faint font-mono focus:outline-none focus:border-accent-orange/50 transition-colors resize-y" />
       )}
 

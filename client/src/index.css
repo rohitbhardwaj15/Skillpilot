@@ -15,16 +15,16 @@
 
   body {
     font-family: 'Inter', system-ui, sans-serif;
-    background-color: #F6F7FB;
-    color: #14151A;
+    background-color: #0a0a0f;
+    color: #F3F4F8;
     overflow-x: hidden;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
 
   ::selection {
-    background: rgba(217, 123, 15, 0.2);
-    color: #14151A;
+    background: rgba(217, 123, 15, 0.35);
+    color: #F3F4F8;
   }
 
   ::-webkit-scrollbar {
@@ -32,11 +32,11 @@
   }
 
   ::-webkit-scrollbar-track {
-    background: #F6F7FB;
+    background: #0a0a0f;
   }
 
   ::-webkit-scrollbar-thumb {
-    background: #C7CBD9;
+    background: #33335a;
     border-radius: 4px;
   }
 
@@ -47,7 +47,7 @@
 
 @layer components {
   .glass-card {
-    @apply bg-white border border-border rounded-2xl shadow-sm;
+    @apply bg-surface border border-border rounded-2xl shadow-sm;
   }
 
   .glass-card-hover {
@@ -73,7 +73,7 @@
   }
 
   .btn-secondary {
-    @apply px-8 py-4 bg-white border border-border text-ink font-semibold rounded-full 
+    @apply px-8 py-4 bg-surface border border-border text-ink font-semibold rounded-full 
            transition-all duration-300 hover:border-accent-orange/50 hover:shadow-sm hover:scale-105 
            active:scale-95 flex items-center gap-2;
   }

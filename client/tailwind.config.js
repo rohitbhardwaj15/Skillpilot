@@ -11,15 +11,17 @@ export default {
         display: ['Space Grotesk', 'Inter', 'sans-serif'],
       },
       colors: {
-        // Light theme — see design plan. 'dark' tokens kept only for any
-        // stray reference during migration; new UI should use these.
-        base: '#F6F7FB',
-        surface: '#FFFFFF',
-        'surface-alt': '#EEF0F5',
-        border: '#E2E5ED',
-        ink: '#14151A',
-        'ink-soft': '#5B6072',
-        'ink-faint': '#8A8FA3',
+        // Dark wave theme — full-site dark surfaces, driven from these
+        // tokens (App.jsx root uses bg-base/text-ink so this flips
+        // everything at once). 'dark' tokens below now double as the
+        // literal base/surface values.
+        base: '#0a0a0f',
+        surface: '#14141f',
+        'surface-alt': '#1d1d30',
+        border: 'rgba(255, 255, 255, 0.08)',
+        ink: '#F3F4F8',
+        'ink-soft': '#A7ABC4',
+        'ink-faint': '#6E7390',
         dark: {
           900: '#0a0a0f',
           800: '#12121a',

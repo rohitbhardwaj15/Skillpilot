@@ -21,7 +21,7 @@ export default function ProgressRing({
           cy={size / 2}
           r={radius}
           fill="none"
-          stroke="rgba(20,21,26,0.08)"
+          stroke="rgba(255,255,255,0.1)"
           strokeWidth={strokeWidth}
         />
         {/* Progress circle */}

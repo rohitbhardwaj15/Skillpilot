@@ -21,7 +21,7 @@ export default function GlassCard({
       onClick={onClick}
       className={`
         relative overflow-hidden rounded-2xl
-        bg-white
+        bg-surface
         border border-border
         shadow-sm
         transition-all duration-300

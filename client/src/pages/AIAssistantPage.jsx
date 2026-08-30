@@ -154,7 +154,7 @@ export default function AIAssistantPage() {
             <input type="text" value={input} onChange={(e) => setInput(e.target.value)}
               onKeyPress={(e) => e.key === 'Enter' && sendMessage(input)}
               placeholder="Ask me anything about your learning path..."
-              className="flex-1 bg-white border border-border rounded-xl px-4 py-3 text-ink placeholder-ink-faint focus:outline-none focus:border-accent-orange/50 transition-colors" />
+              className="flex-1 bg-surface-alt border border-border rounded-xl px-4 py-3 text-ink placeholder-ink-faint focus:outline-none focus:border-accent-orange/50 transition-colors" />
             <button onClick={() => sendMessage(input)} disabled={!input.trim() || isTyping}
               className="p-3 rounded-xl bg-accent-orange text-white hover:bg-accent-amber transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
               <Send size={18} />

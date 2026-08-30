@@ -210,7 +210,7 @@ export default function RecommendationsPage() {
               <input type="text" value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search courses, skills, or providers..."
-                className="w-full bg-white border border-border rounded-xl pl-11 pr-4 py-3 text-ink
+                className="w-full bg-surface-alt border border-border rounded-xl pl-11 pr-4 py-3 text-ink
                   placeholder-ink-faint focus:outline-none focus:border-accent-orange/50 transition-colors" />
             </div>
 

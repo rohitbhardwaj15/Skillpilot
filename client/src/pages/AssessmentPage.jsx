@@ -57,14 +57,14 @@ export default function AssessmentPage() {
     <GlassCard className="p-6 md:p-8">
       {!assessment && !result && <>
         <label className="text-sm text-ink-soft">Choose a skill</label>
-        <select value={skill || gaps[0] || ''} onChange={e=>setSkill(e.target.value)} className="w-full mt-2 mb-5 bg-white border border-border rounded-xl p-3 text-ink">
+        <select value={skill || gaps[0] || ''} onChange={e=>setSkill(e.target.value)} className="w-full mt-2 mb-5 bg-surface-alt border border-border rounded-xl p-3 text-ink">
           {gapsRaw.length ? gapsRaw.map(g=><option key={g.name} value={g.name}>{g.name}{g.isNew ? ' (new)' : ''}</option>) : <option>No skills available</option>}
         </select>
         <button onClick={start} disabled={loading || !(skill || gaps[0])} className="px-5 py-3 rounded-xl bg-accent-orange text-white font-semibold disabled:opacity-50">{loading ? <Loader2 className="animate-spin"/> : 'Start 5-Question Assessment'}</button>
         {error && <p className="text-sm text-red-400 mt-3">{error}</p>}
       </>}
       {assessment && !result && <div className="space-y-6">
-        {assessment.questions.map((q,i)=><div key={q._id || i} className="border border-border rounded-xl p-5 bg-white"><p className="text-ink font-medium mb-4">{i+1}. {q.question}</p><div className="grid gap-2">{q.options.map((o,j)=><button key={j} onClick={()=>setAnswers(a=>a.map((v,k)=>k===i?j:v))} className={`text-left p-3 rounded-lg border ${answers[i]===j?'border-accent-orange bg-accent-orange-soft text-ink':'border-border bg-surface-alt text-ink-soft'}`}>{o}</button>)}</div></div>)}
+        {assessment.questions.map((q,i)=><div key={q._id || i} className="border border-border rounded-xl p-5 bg-surface-alt"><p className="text-ink font-medium mb-4">{i+1}. {q.question}</p><div className="grid gap-2">{q.options.map((o,j)=><button key={j} onClick={()=>setAnswers(a=>a.map((v,k)=>k===i?j:v))} className={`text-left p-3 rounded-lg border ${answers[i]===j?'border-accent-orange bg-accent-orange/15 text-ink':'border-border bg-surface-alt text-ink-soft'}`}>{o}</button>)}</div></div>)}
         <button onClick={submit} disabled={loading || answers.some(a=>a===null)} className="px-5 py-3 rounded-xl bg-accent-teal text-white font-semibold disabled:opacity-50">{loading?'Scoring…':'Submit Assessment'}</button>
         {error && <p className="text-sm text-red-400">{error}</p>}
       </div>}

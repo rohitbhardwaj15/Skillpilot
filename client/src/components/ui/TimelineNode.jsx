@@ -9,8 +9,8 @@ export default function TimelineNode({
   isActive = false,
 }) {
   const statusConfig = {
-    completed: { icon: Check, color: 'text-accent-teal', bg: 'bg-accent-teal-soft', border: 'border-accent-teal' },
-    active: { icon: Play, color: 'text-accent-orange', bg: 'bg-accent-orange-soft', border: 'border-accent-orange' },
+    completed: { icon: Check, color: 'text-accent-teal', bg: 'bg-accent-teal/15', border: 'border-accent-teal' },
+    active: { icon: Play, color: 'text-accent-orange', bg: 'bg-accent-orange/15', border: 'border-accent-orange' },
     locked: { icon: Lock, color: 'text-ink-faint', bg: 'bg-surface-alt', border: 'border-border' },
     upcoming: { icon: Star, color: 'text-ink-soft', bg: 'bg-surface-alt', border: 'border-border' },
   }
@@ -54,8 +54,8 @@ export default function TimelineNode({
         <div className={`
           p-4 rounded-xl border transition-all duration-300
           ${isActive 
-            ? 'bg-accent-orange-soft/40 border-accent-orange/30 shadow-sm' 
-            : 'bg-white border-border hover:border-ink-faint/40 shadow-sm'
+            ? 'bg-accent-orange/20 border-accent-orange/30 shadow-sm' 
+            : 'bg-surface border-border hover:border-ink-faint/40 shadow-sm'
           }
         `}>
           <div className="flex items-start justify-between mb-2">
@@ -63,7 +63,7 @@ export default function TimelineNode({
               {node.title}
             </h4>
             {node.type === 'project' && (
-              <span className="px-2 py-0.5 text-xs bg-accent-purple-soft text-accent-purple rounded-full">
+              <span className="px-2 py-0.5 text-xs bg-accent-purple/15 text-accent-purple rounded-full">
                 Project
               </span>
             )}

@@ -56,7 +56,7 @@ export default function Navbar() {
           fixed top-0 left-0 right-0 z-50 transition-all duration-300
           ${overHero
             ? 'bg-transparent'
-            : 'bg-white/90 backdrop-blur-xl border-b border-border shadow-sm'
+            : 'bg-surface/90 backdrop-blur-xl border-b border-border shadow-sm'
           }
         `}
       >
@@ -151,7 +151,7 @@ export default function Navbar() {
                           opacity: 0,
                           y: -10
                         }}
-                        className="absolute right-0 mt-2 w-48 rounded-xl bg-white border border-border shadow-xl overflow-hidden"
+                        className="absolute right-0 mt-2 w-48 rounded-xl bg-surface border border-border shadow-xl overflow-hidden"
                       >
                         <Link
                           to="/profile"
@@ -229,7 +229,7 @@ export default function Navbar() {
             className="fixed inset-0 z-40 lg:hidden"
           >
             <div
-              className="absolute inset-0 bg-white/97 backdrop-blur-xl"
+              className="absolute inset-0 bg-surface/97 backdrop-blur-xl"
               onClick={() =>
                 setMobileOpen(false)
               }

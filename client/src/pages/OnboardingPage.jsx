@@ -331,7 +331,7 @@ export default function OnboardingPage() {
                 onChange={(e) => setInputValue(e.target.value)}
                 onKeyPress={(e) => e.key === 'Enter' && handleSend()}
                 placeholder="Type your response..."
-                className="flex-1 bg-white border border-border rounded-xl px-4 py-3 text-ink
+                className="flex-1 bg-surface-alt border border-border rounded-xl px-4 py-3 text-ink
                   placeholder-ink-faint focus:outline-none focus:border-accent-orange/50 transition-colors" />
               <button onClick={handleSend}
                 className="w-12 h-12 rounded-xl bg-accent-orange flex items-center justify-center
@@ -360,7 +360,7 @@ export default function OnboardingPage() {
                     {LANGUAGES.map((lang) => (
                       <button key={lang.code} onClick={() => handleLanguageSelect(lang.code)}
                         className="flex flex-col items-center gap-2 p-4 rounded-xl border border-border
-                          bg-white hover:border-accent-orange/50 hover:bg-accent-orange-soft transition-all group cursor-pointer">
+                          bg-surface-alt hover:border-accent-orange/50 hover:bg-accent-orange/10 transition-all group cursor-pointer">
                         <span className="text-3xl">{lang.flag}</span>
                         <span className="text-sm font-medium text-ink-soft group-hover:text-ink text-center">{lang.label}</span>
                       </button>
@@ -505,7 +505,7 @@ export default function OnboardingPage() {
                         className={`p-4 rounded-xl border text-left transition-all ${
                           experience === level.value
                             ? 'border-accent-orange/50 bg-accent-orange/10'
-                            : 'border-border bg-white hover:border-ink-faint/40'}`}>
+                            : 'border-border bg-surface-alt hover:border-ink-faint/40'}`}>
                         <div className="font-semibold text-ink mb-1">{level.label}</div>
                         <div className="text-xs text-ink-soft">{level.desc}</div>
                       </button>
@@ -525,7 +525,7 @@ export default function OnboardingPage() {
                   <input type="text" value={priorCoursesInput}
                     onChange={(e) => setPriorCoursesInput(e.target.value)}
                     placeholder="e.g. Python for Everybody (Coursera), CS50 — separate with commas"
-                    className="w-full bg-white border border-border rounded-xl px-4 py-3 text-ink
+                    className="w-full bg-surface-alt border border-border rounded-xl px-4 py-3 text-ink
                       placeholder-ink-faint focus:outline-none focus:border-accent-orange/50 transition-colors" />
                 </div>
               </GlassCard>
@@ -544,7 +544,7 @@ export default function OnboardingPage() {
                         className={`px-6 py-3 rounded-xl border font-semibold transition-all ${
                           timePerWeek === hours
                             ? 'border-accent-orange/50 bg-accent-orange/10 text-accent-orange'
-                            : 'border-border bg-white text-ink-soft hover:border-ink-faint/40'}`}>
+                            : 'border-border bg-surface-alt text-ink-soft hover:border-ink-faint/40'}`}>
                         {hours} hrs
                       </button>
                     ))}
