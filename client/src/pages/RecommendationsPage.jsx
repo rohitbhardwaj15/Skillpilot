@@ -292,7 +292,7 @@ export default function RecommendationsPage() {
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.95 }}
                   transition={{ delay: Math.min(i * 0.03, 0.3) }}>
-                  <GlassCard hover3D className="h-full">
+                  <GlassCard hover3D glow className="h-full">
                     <div className="p-5 flex flex-col h-full">
 
                       {/* Top badges row */}

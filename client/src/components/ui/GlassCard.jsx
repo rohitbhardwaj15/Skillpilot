@@ -14,11 +14,13 @@ export default function GlassCard({
   return (
     <motion.div
       ref={ref}
-      initial={{ opacity: 0, y: 30 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, delay }}
+      initial={{ opacity: 0, y: 40, rotateX: -8 }}
+      whileInView={{ opacity: 1, y: 0, rotateX: 0 }}
+      viewport={{ once: true, amount: 0.2 }}
+      transition={{ duration: 0.6, delay, ease: [0.16, 1, 0.3, 1] }}
       whileHover={{ scale: hover3D ? undefined : 1.01 }}
       onClick={onClick}
+      style={{ transformPerspective: 1000 }}
       className={`
         relative overflow-hidden rounded-2xl
         bg-surface

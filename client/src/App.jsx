@@ -9,6 +9,8 @@ import ProtectedRoute from './components/auth/ProtectedRoute'
 import LandingPage from './pages/LandingPage'
 import LoginPage from './pages/LoginPage'
 import RegisterPage from './pages/RegisterPage'
+import ForgotPasswordPage from './pages/ForgotPasswordPage'
+import ResetPasswordPage from './pages/ResetPasswordPage'
 import OnboardingPage from './pages/OnboardingPage'
 import DashboardPage from './pages/DashboardPage'
 import LearningPathPage from './pages/LearningPathPage'
@@ -100,6 +102,24 @@ export default function App() {
               element={
                 <PageWrapper>
                   <RegisterPage />
+                </PageWrapper>
+              }
+            />
+
+            <Route
+              path="/forgot-password"
+              element={
+                <PageWrapper>
+                  <ForgotPasswordPage />
+                </PageWrapper>
+              }
+            />
+
+            <Route
+              path="/reset-password/:token"
+              element={
+                <PageWrapper>
+                  <ResetPasswordPage />
                 </PageWrapper>
               }
             />

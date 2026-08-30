@@ -1,8 +1,13 @@
 // Recreates the flowing "wave ribbon" motif from the abstract-wave landing
-// page template as a lightweight, dependency-free SVG (no three.js needed).
+// page template — a CSS gradient + SVG ribbons, now with a real animated
+// 3D wave-mesh (Wave3D) layered underneath for depth and motion.
+import Wave3D from '../3d/Wave3D'
+
 export default function WaveBackground() {
   return (
     <div className="absolute inset-0 -z-10 overflow-hidden wave-hero-bg">
+      <Wave3D />
+
       <svg
         className="absolute inset-0 w-full h-full"
         viewBox="0 0 1440 900"

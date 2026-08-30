@@ -260,10 +260,11 @@ export default function LandingPage() {
             ].map((item, i) => (
               <motion.div
                 key={i}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
+                initial={{ opacity: 0, y: 30, rotateX: -20 }}
+                whileInView={{ opacity: 1, y: 0, rotateX: 0 }}
                 viewport={{ once: true }}
-                transition={{ delay: i * 0.15 }}
+                transition={{ delay: i * 0.15, duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+                style={{ transformPerspective: 800 }}
                 className="relative"
               >
                 <div className="text-6xl font-bold text-ink/[0.06] absolute -top-4 -left-2">{item.step}</div>
@@ -328,9 +329,11 @@ export default function LandingPage() {
       {/* CTA Section */}
       <section className="section-padding py-24 lg:py-32">
         <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          whileInView={{ opacity: 1, scale: 1 }}
+          initial={{ opacity: 0, scale: 0.95, rotateX: -10 }}
+          whileInView={{ opacity: 1, scale: 1, rotateX: 0 }}
           viewport={{ once: true }}
+          transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+          style={{ transformPerspective: 1000 }}
           className="max-w-4xl mx-auto text-center"
         >
           <div className="relative p-12 lg:p-16 rounded-3xl bg-gradient-to-br from-accent-orange/10 via-accent-purple/10 to-accent-cyan/10 border border-border overflow-hidden">

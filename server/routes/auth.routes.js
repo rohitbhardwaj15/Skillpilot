@@ -1,9 +1,11 @@
 import { Router } from 'express';
+import crypto from 'crypto';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import User from '../models/User.js';
 import { requireAuth } from '../middleware/auth.middleware.js';
 import { hashToken, rateLimit } from '../middleware/security.middleware.js';
+import { sendPasswordResetEmail } from '../services/email.service.js';
 
 const router = Router();
 const SALT_ROUNDS = 10;
@@ -126,6 +128,81 @@ router.post('/refresh', rateLimit({ windowMs: 15 * 60_000, max: 20 }), async (re
 router.post('/logout', requireAuth, async (req, res) => {
   await User.findByIdAndUpdate(req.auth.userId, { refreshTokenHash: null });
   res.json({ ok: true });
+});
+
+// POST /api/auth/forgot-password
+// Body: { email }
+// Always responds the same way whether or not the account exists, so this
+// endpoint can't be used to enumerate registered emails.
+router.post('/forgot-password', rateLimit({ windowMs: 15 * 60_000, max: 5 }), async (req, res) => {
+  const { email } = req.body;
+
+  if (!email || !isValidEmail(email)) {
+    return res.status(400).json({ error: 'Please enter a valid email address.' });
+  }
+
+  const genericResponse = {
+    ok: true,
+    message: 'If an account exists for that email, a password reset link has been sent.',
+  };
+
+  try {
+    const user = await User.findOne({ email: email.toLowerCase() });
+
+    if (user) {
+      const rawToken = crypto.randomBytes(32).toString('hex');
+      user.resetPasswordTokenHash = hashToken(rawToken);
+      user.resetPasswordExpires = new Date(Date.now() + 60 * 60_000); // 1 hour
+      await user.save();
+
+      const clientUrl = (process.env.CLIENT_URLS || 'http://localhost:5173').split(',')[0].trim();
+      const resetUrl = `${clientUrl}/reset-password/${rawToken}`;
+      await sendPasswordResetEmail(user.email, resetUrl);
+    }
+
+    res.json(genericResponse);
+  } catch (err) {
+    console.error('forgot-password failed:', err.message);
+    // Still respond generically — don't leak whether something went wrong
+    // for this specific email vs. it simply not existing.
+    res.json(genericResponse);
+  }
+});
+
+// POST /api/auth/reset-password
+// Body: { token, password }
+router.post('/reset-password', rateLimit({ windowMs: 15 * 60_000, max: 10 }), async (req, res) => {
+  const { token, password } = req.body;
+
+  if (!token || !password) {
+    return res.status(400).json({ error: 'token and password are required.' });
+  }
+  if (password.length < 8) {
+    return res.status(400).json({ error: 'Password must be at least 8 characters.' });
+  }
+
+  try {
+    const tokenHash = hashToken(token);
+    const user = await User.findOne({
+      resetPasswordTokenHash: tokenHash,
+      resetPasswordExpires: { $gt: new Date() },
+    });
+
+    if (!user) {
+      return res.status(400).json({ error: 'This reset link is invalid or has expired.' });
+    }
+
+    user.passwordHash = await bcrypt.hash(password, SALT_ROUNDS);
+    user.resetPasswordTokenHash = null;
+    user.resetPasswordExpires = null;
+    user.refreshTokenHash = null; // log out any existing sessions on this account
+    await user.save();
+
+    res.json({ ok: true, message: 'Your password has been updated. You can now log in.' });
+  } catch (err) {
+    console.error('reset-password failed:', err.message);
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
+  }
 });
 
 // GET /api/auth/me — returns the current logged-in user, given a valid token

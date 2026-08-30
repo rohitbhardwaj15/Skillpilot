@@ -280,14 +280,6 @@ For example:
 The explanation is grounded in the **actual recommendation score**, rather than being a generic AI-generated justification.
 
 ---
-### Quantified Recommendation Explanations
-
-* Provides transparent, data-driven explanations for every recommended course.
-* Shows how many remaining skill gaps a course can close.
-* Identifies how many other target-role skills depend on the recommended skill through prerequisite relationships.
-* Example: **“Closes 2 of your 8 remaining skill gaps”** and **“SQL is required for 3 other skills in your Data Analyst path.”**
-* Explanations are generated deterministically from the skill-gap and prerequisite graph rather than using fabricated claims.
-
 
 # 🧩 Prerequisite-Safe Learning Paths
 
@@ -472,6 +464,8 @@ SkillPilot is designed with production-oriented security and reliability practic
 * Refresh-token rotation
 * Refresh-token revocation on logout
 * bcrypt password hashing
+* Email-based password reset (time-limited, single-use token; doesn't
+  reveal whether an email is registered; revokes existing sessions on reset)
 
 ### API Security
 
@@ -513,7 +507,7 @@ SkillPilot currently contains:
 | Free courses        |   **265** |
 | Paid courses        | **1,059** |
 | Career roles        |    **64** |
-| Supported languages |    **10** |
+| Supported languages |     **9** |
 
 Courses include metadata such as:
 
@@ -622,6 +616,11 @@ The LLM is intentionally limited to two responsibilities:
 │ ┌──────────────────────────────────────────────────────┐ │
 │ │ readiness.service.js                                 │ │
 │ │ Career readiness • Next-best-action                  │ │
+│ └──────────────────────────────────────────────────────┘ │
+│                                                          │
+│ ┌──────────────────────────────────────────────────────┐ │
+│ │ assessment.service.js                                │ │
+│ │ AI-generated skill assessments • Scoring             │ │
 │ └──────────────────────────────────────────────────────┘ │
 └───────────────────────────┬──────────────────────────────┘
                             │
@@ -745,6 +744,12 @@ LLM_TIMEOUT_MS=12000
 LLM_MAX_RETRIES=2
 
 EMBEDDING_TIMEOUT_MS=4000
+
+SMTP_HOST=
+SMTP_PORT=587
+SMTP_USER=
+SMTP_PASS=
+SMTP_FROM=
 ```
 
 ### Fallback behavior
@@ -754,6 +759,7 @@ EMBEDDING_TIMEOUT_MS=4000
 | Embeddings    | OpenAI-compatible API | Local deterministic hashed embedding |
 | Rate limiting | Upstash Redis         | In-memory limiter                    |
 | LLM           | Groq                  | Graceful fallback response           |
+| Password reset email | SMTP              | Reset link logged to server console |
 
 ---
 
@@ -874,17 +880,19 @@ npm run test:feedback
 npm run test:roles
 npm run test:ml
 npm run test:learner
+npm run test:assessment
 npm run test:api
 ```
 
-| Test     | Purpose                              |
-| -------- | ------------------------------------ |
-| Engine   | Recommendation ranking               |
-| Feedback | Feedback → preference adaptation     |
-| Roles    | Role-matching correctness            |
-| ML       | TF-IDF / embeddings / semantic layer |
-| Learner  | Knowledge-state updates              |
-| API      | Security and route contracts         |
+| Test       | Purpose                              |
+| ---------- | ------------------------------------ |
+| Engine     | Recommendation ranking               |
+| Feedback   | Feedback → preference adaptation     |
+| Roles      | Role-matching correctness            |
+| ML         | TF-IDF / embeddings / semantic layer |
+| Learner    | Knowledge-state updates              |
+| Assessment | AI-generated assessment scoring      |
+| API        | Security and route contracts         |
 
 For full DB-backed API testing:
 

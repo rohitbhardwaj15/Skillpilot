@@ -12,6 +12,8 @@ const userSchema = new mongoose.Schema(
     },
     passwordHash: { type: String, required: true },
     refreshTokenHash: { type: String, default: null },
+    resetPasswordTokenHash: { type: String, default: null },
+    resetPasswordExpires: { type: Date, default: null },
     profileId: { type: mongoose.Schema.Types.ObjectId, ref: 'Profile' },
   },
   { timestamps: true }

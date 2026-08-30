@@ -58,7 +58,7 @@ export default {
         },
       },
       backgroundImage: {
-        'wave-gradient': 'linear-gradient(165deg, #1c2b52 0%, #33305f 20%, #6b3f70 42%, #a9527f 62%, #d9789f 80%, #F6F7FB 100%)',
+        'wave-gradient': 'linear-gradient(165deg, #1c2b52 0%, #33305f 20%, #6b3f70 42%, #a9527f 62%, #d9789f 80%, #12121a 100%)',
         'wave-gradient-soft': 'linear-gradient(180deg, #1c2b52 0%, #4a3a6b 30%, #b06188 65%, #f3c3ca 100%)',
       },
       animation: {

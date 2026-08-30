@@ -105,7 +105,7 @@ export default function DashboardPage() {
           ].map((stat, i) => {
             const Icon = stat.icon
             return (
-              <GlassCard key={i} delay={i * 0.05}>
+              <GlassCard key={i} delay={i * 0.05} hover3D glow>
                 <div className="p-5">
                   <div className={`w-10 h-10 rounded-lg ${stat.bg} flex items-center justify-center mb-3`}>
                     <Icon size={20} className={stat.color} />
@@ -119,7 +119,7 @@ export default function DashboardPage() {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-          <GlassCard className="lg:col-span-2" delay={0.1}>
+          <GlassCard className="lg:col-span-2" delay={0.1} glow>
             <div className="p-6">
               <div className="flex items-center justify-between mb-6">
                 <div>
@@ -151,7 +151,7 @@ export default function DashboardPage() {
             </div>
           </GlassCard>
 
-          <GlassCard delay={0.2}>
+          <GlassCard delay={0.2} glow>
             <div className="p-6">
               <h3 className="text-lg font-semibold text-ink mb-1">Skill Development</h3>
               <p className="text-xs text-ink-faint mb-4">Your current skill levels</p>
@@ -172,7 +172,7 @@ export default function DashboardPage() {
         </div>
 
         <div className="mb-8">
-          <GlassCard>
+          <GlassCard glow>
             <div className="p-6">
               <div className="flex items-center justify-between gap-4 mb-5">
                 <div>
@@ -196,7 +196,7 @@ export default function DashboardPage() {
         </div>
 
         {insights && <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-          <GlassCard className="lg:col-span-2">
+          <GlassCard className="lg:col-span-2" glow>
             <div className="p-6">
               <div className="flex items-start justify-between gap-4">
                 <div><div className="flex items-center gap-2"><ShieldCheck size={19} className="text-accent-teal"/><h3 className="text-lg font-semibold text-ink">Career Readiness</h3></div>
@@ -209,7 +209,7 @@ export default function DashboardPage() {
               </div>
             </div>
           </GlassCard>
-          <GlassCard>
+          <GlassCard glow>
             <div className="p-6 h-full flex flex-col">
               <p className="text-xs uppercase tracking-wider text-accent-orange font-bold">🎯 Next Best Action</p>
               {insights.nextBestAction ? <><h3 className="text-xl font-bold text-ink mt-2">{insights.nextBestAction.title}</h3><p className="text-sm text-ink-soft mt-2">{insights.nextBestAction.reason}</p><div className="mt-4 text-xs text-ink-faint">Focus skill: <span className="text-ink-soft">{insights.nextBestAction.skill}</span> · ~{insights.nextBestAction.estimatedWeeks} week{insights.nextBestAction.estimatedWeeks === 1 ? '' : 's'}</div><a href="/paths" className="mt-auto pt-5 flex items-center gap-2 text-sm font-semibold text-accent-orange">Start learning <ArrowRight size={15}/></a></> : <p className="text-sm text-accent-teal mt-3">🎉 You have no major remaining skill gaps.</p>}
@@ -218,7 +218,7 @@ export default function DashboardPage() {
         </div>}
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <GlassCard className="lg:col-span-2" delay={0.1}>
+          <GlassCard className="lg:col-span-2" delay={0.1} glow>
             <div className="p-6">
               <div className="flex items-center justify-between mb-6">
                 <div>
@@ -256,7 +256,7 @@ export default function DashboardPage() {
             </div>
           </GlassCard>
 
-          <GlassCard delay={0.2}>
+          <GlassCard delay={0.2} glow>
             <div className="p-6">
               <h3 className="text-lg font-semibold text-ink mb-4">Skill Gaps</h3>
               <div className="space-y-3">
