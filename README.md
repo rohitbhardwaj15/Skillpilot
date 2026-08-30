@@ -895,27 +895,6 @@ E2E_BASE_URL=<server-url> npm run test:api
 ---
 
 # 📁 Project Structure
-
-```text
-Skillpilot-main/
-│
-├── client/
-│   └── src/
-│       ├── pages/
-│       │   ├── Landing
-│       │   ├── Auth
-│       │   ├── Onboarding
-│       │   ├── Dashboard
-│       │   ├── Recommendations
-│       │   ├── Learning Path
-│       │   ├── AI Assistant
-│       │   ├── Assessment
-│       │   └── Profile
-│       │
-│       └── components/
-│           └── 3d/
-│               └── Skill Tree
-│
 ├── server/
 │   ├── models/
 │   │   ├── User
@@ -939,7 +918,8 @@ Skillpilot-main/
 │   │   ├── llm.service.js
 │   │   ├── pathgen.service.js
 │   │   ├── readiness.service.js
-│   │   └── learner.service.js
+│   │   ├── learner.service.js
+│   │   └── assessment.service.js
 │   │
 │   ├── middleware/
 │   │   ├── auth
@@ -950,16 +930,6 @@ Skillpilot-main/
 │   └── scripts/
 │       ├── seed.js
 │       └── evaluate-recommender.mjs
-│
-├── data/
-│   ├── courses.json
-│   └── roles.json
-│
-└── docs/
-    └── recommendation-evaluation.json
-```
-
----
 
 # 🧠 Core Intelligence Pipeline
 
