@@ -291,16 +291,47 @@ export default function OnboardingPage() {
     }
   }
 
+  /* ── step progress (for the UI indicator only — doesn't affect logic) ── */
+  const ONBOARDING_STEPS = ['Name', 'Goal', 'Language', 'Courses', 'Style', 'Profile']
+  const stepIndex = Math.min(step, ONBOARDING_STEPS.length - 1)
+
   /* ── render ─────────────────────────────────────────────────────────── */
   return (
     <div className="min-h-screen pt-24 pb-12 section-padding">
       <div className="max-w-4xl mx-auto">
 
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-10">
-          <h1 className="text-4xl lg:text-5xl font-bold font-display text-white mb-2">
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-6">
+          <h1 className="text-4xl lg:text-5xl font-bold font-display text-ink mb-2">
             Let us build your <span className="gradient-text">learning profile</span>
           </h1>
-          <p className="text-gray-400">Tell us about yourself and our AI will craft the perfect path for you.</p>
+          <p className="text-ink-soft">Tell us about yourself and our AI will craft the perfect path for you.</p>
+        </motion.div>
+
+        {/* Step progress indicator */}
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mb-8 max-w-lg mx-auto">
+          <div className="flex justify-between items-center mb-2 text-xs text-ink-soft">
+            <span className="font-semibold text-accent-orange">
+              Step {stepIndex + 1} of {ONBOARDING_STEPS.length}: {ONBOARDING_STEPS[stepIndex]}
+            </span>
+            <span>{Math.round(((stepIndex + 1) / ONBOARDING_STEPS.length) * 100)}%</span>
+          </div>
+          <div className="h-1.5 bg-border rounded-full overflow-hidden mb-3">
+            <motion.div
+              className="h-full bg-gradient-to-r from-accent-orange to-accent-teal rounded-full"
+              animate={{ width: `${((stepIndex + 1) / ONBOARDING_STEPS.length) * 100}%` }}
+              transition={{ duration: 0.4 }}
+            />
+          </div>
+          <div className="flex justify-between">
+            {ONBOARDING_STEPS.map((label, i) => (
+              <div key={label} className="flex flex-col items-center gap-1" style={{ width: `${100 / ONBOARDING_STEPS.length}%` }}>
+                <div className={`w-2.5 h-2.5 rounded-full transition-colors ${
+                  i < stepIndex ? 'bg-accent-teal' : i === stepIndex ? 'bg-accent-orange' : 'bg-border'
+                }`} />
+                <span className={`text-[10px] hidden sm:block ${i === stepIndex ? 'text-ink' : 'text-ink-faint'}`}>{label}</span>
+              </div>
+            ))}
+          </div>
         </motion.div>
 
         {/* Chat window */}
@@ -316,7 +347,7 @@ export default function OnboardingPage() {
                     : <User     size={16} className="text-accent-purple" />}
                 </div>
                 <div className={`max-w-[80%] p-3 rounded-xl text-sm ${
-                  msg.role === 'assistant' ? 'bg-white/5 text-gray-200' : 'bg-accent-purple/20 text-white'}`}>
+                  msg.role === 'assistant' ? 'bg-surface-alt text-ink' : 'bg-accent-purple/20 text-accent-purple'}`}>
                   {msg.content}
                 </div>
               </motion.div>
@@ -326,16 +357,16 @@ export default function OnboardingPage() {
 
           {/* Text input for steps 0 & 1 */}
           {step < 2 && (
-            <div className="p-4 border-t border-white/10 flex gap-3">
+            <div className="p-4 border-t border-border flex gap-3">
               <input type="text" value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}
                 onKeyPress={(e) => e.key === 'Enter' && handleSend()}
                 placeholder="Type your response..."
-                className="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white
-                  placeholder-gray-500 focus:outline-none focus:border-accent-orange/50 transition-colors" />
+                className="flex-1 bg-white border border-border rounded-xl px-4 py-3 text-ink
+                  placeholder-ink-faint focus:outline-none focus:border-accent-orange/50 transition-colors" />
               <button onClick={handleSend}
                 className="w-12 h-12 rounded-xl bg-accent-orange flex items-center justify-center
-                  text-dark-900 hover:bg-accent-amber transition-colors">
+                  text-white hover:bg-accent-amber transition-colors">
                 <Send size={18} />
               </button>
             </div>
@@ -351,18 +382,18 @@ export default function OnboardingPage() {
                 <div className="p-6">
                   <div className="flex items-center gap-2 mb-2">
                     <Globe size={20} className="text-accent-orange" />
-                    <h3 className="text-lg font-semibold text-white">Choose Your Study Language</h3>
+                    <h3 className="text-lg font-semibold text-ink">Choose Your Study Language</h3>
                   </div>
-                  <p className="text-sm text-gray-400 mb-6">
+                  <p className="text-sm text-ink-soft mb-6">
                     We will prioritise courses in your language. English courses are always included as supplement.
                   </p>
                   <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
                     {LANGUAGES.map((lang) => (
                       <button key={lang.code} onClick={() => handleLanguageSelect(lang.code)}
-                        className="flex flex-col items-center gap-2 p-4 rounded-xl border border-white/10
-                          bg-white/5 hover:border-accent-orange/50 hover:bg-accent-orange/10 transition-all group cursor-pointer">
+                        className="flex flex-col items-center gap-2 p-4 rounded-xl border border-border
+                          bg-white hover:border-accent-orange/50 hover:bg-accent-orange-soft transition-all group cursor-pointer">
                         <span className="text-3xl">{lang.flag}</span>
-                        <span className="text-sm font-medium text-gray-300 group-hover:text-white text-center">{lang.label}</span>
+                        <span className="text-sm font-medium text-ink-soft group-hover:text-ink text-center">{lang.label}</span>
                       </button>
                     ))}
                   </div>
@@ -378,9 +409,9 @@ export default function OnboardingPage() {
                 <div className="p-6">
                   <div className="flex items-center gap-2 mb-2">
                     <DollarSign size={20} className="text-accent-orange" />
-                    <h3 className="text-lg font-semibold text-white">Course Preference</h3>
+                    <h3 className="text-lg font-semibold text-ink">Course Preference</h3>
                   </div>
-                  <p className="text-sm text-gray-400 mb-6">Do you want free courses, paid courses, or both?</p>
+                  <p className="text-sm text-ink-soft mb-6">Do you want free courses, paid courses, or both?</p>
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                     {COURSE_TYPES.map((ct) => {
                       const Icon = ct.icon
@@ -390,7 +421,7 @@ export default function OnboardingPage() {
                           <Icon size={28} className={ct.textColor} />
                           <div className="text-center">
                             <div className={`font-bold text-sm ${ct.textColor}`}>{ct.label}</div>
-                            <div className="text-xs text-gray-400 mt-1">{ct.desc}</div>
+                            <div className="text-xs text-ink-soft mt-1">{ct.desc}</div>
                           </div>
                         </button>
                       )
@@ -408,9 +439,9 @@ export default function OnboardingPage() {
                 <div className="p-6">
                   <div className="flex items-center gap-2 mb-2">
                     <BookOpen size={20} className="text-accent-orange" />
-                    <h3 className="text-lg font-semibold text-white">How Do You Learn Best?</h3>
+                    <h3 className="text-lg font-semibold text-ink">How Do You Learn Best?</h3>
                   </div>
-                  <p className="text-sm text-gray-400 mb-6">We will recommend resources that match your style.</p>
+                  <p className="text-sm text-ink-soft mb-6">We will recommend resources that match your style.</p>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     {LEARNING_STYLES.map((ls) => {
                       const Icon = ls.icon
@@ -420,7 +451,7 @@ export default function OnboardingPage() {
                           <Icon size={28} className={ls.textColor} />
                           <div className="text-left">
                             <div className={`font-bold text-sm ${ls.textColor}`}>{ls.label}</div>
-                            <div className="text-xs text-gray-400 mt-1">{ls.desc}</div>
+                            <div className="text-xs text-ink-soft mt-1">{ls.desc}</div>
                           </div>
                         </button>
                       )
@@ -437,20 +468,20 @@ export default function OnboardingPage() {
 
               {/* Summary badges */}
               <div className="flex flex-wrap items-center gap-3 text-sm">
-                <span className="flex items-center gap-1 text-gray-400">
+                <span className="flex items-center gap-1 text-ink-soft">
                   <Globe size={14} className="text-accent-orange" />
-                  <span className="text-white font-semibold">
+                  <span className="text-ink font-semibold">
                     {LANGUAGES.find(l => l.code === preferredLanguage)?.flag} {preferredLanguage}
                   </span>
                   <button onClick={() => setStep(2)} className="ml-1 text-xs text-accent-orange hover:underline">Change</button>
                 </span>
-                <span className="text-gray-600">|</span>
-                <span className="flex items-center gap-1 text-gray-400">
+                <span className="text-ink-faint">|</span>
+                <span className="flex items-center gap-1 text-ink-soft">
                   {courseTypeFilter === 'free' ? '🎁 Free only' : courseTypeFilter === 'paid' ? '💰 Paid only' : '🌐 All courses'}
                   <button onClick={() => setStep(3)} className="ml-1 text-xs text-accent-orange hover:underline">Change</button>
                 </span>
-                <span className="text-gray-600">|</span>
-                <span className="flex items-center gap-1 text-gray-400">
+                <span className="text-ink-faint">|</span>
+                <span className="flex items-center gap-1 text-ink-soft">
                   {LEARNING_STYLES.find(l => l.id === learningStyle)?.label}
                   <button onClick={() => setStep(4)} className="ml-1 text-xs text-accent-orange hover:underline">Change</button>
                 </span>
@@ -461,9 +492,9 @@ export default function OnboardingPage() {
                 <div className="p-6">
                   <div className="flex items-center gap-2 mb-4">
                     <BookOpen size={20} className="text-accent-orange" />
-                    <h3 className="text-lg font-semibold text-white">Your Interests</h3>
+                    <h3 className="text-lg font-semibold text-ink">Your Interests</h3>
                   </div>
-                  <p className="text-sm text-gray-400 mb-4">Select topics you are interested in learning</p>
+                  <p className="text-sm text-ink-soft mb-4">Select topics you are interested in learning</p>
                   <div className="flex flex-wrap gap-2">
                     {INTERESTS.map((interest) => (
                       <SkillBadge key={interest} skill={interest}
@@ -479,9 +510,9 @@ export default function OnboardingPage() {
                 <div className="p-6">
                   <div className="flex items-center gap-2 mb-4">
                     <Briefcase size={20} className="text-accent-teal" />
-                    <h3 className="text-lg font-semibold text-white">Current Skills</h3>
+                    <h3 className="text-lg font-semibold text-ink">Current Skills</h3>
                   </div>
-                  <p className="text-sm text-gray-400 mb-4">What do you already know?</p>
+                  <p className="text-sm text-ink-soft mb-4">What do you already know?</p>
                   <div className="flex flex-wrap gap-2">
                     {SKILLS.map((skill) => (
                       <SkillBadge key={skill} skill={skill}
@@ -497,7 +528,7 @@ export default function OnboardingPage() {
                 <div className="p-6">
                   <div className="flex items-center gap-2 mb-4">
                     <User size={20} className="text-accent-cyan" />
-                    <h3 className="text-lg font-semibold text-white">Experience Level</h3>
+                    <h3 className="text-lg font-semibold text-ink">Experience Level</h3>
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                     {EXPERIENCE_LEVELS.map((level) => (
@@ -505,9 +536,9 @@ export default function OnboardingPage() {
                         className={`p-4 rounded-xl border text-left transition-all ${
                           experience === level.value
                             ? 'border-accent-orange/50 bg-accent-orange/10'
-                            : 'border-white/10 bg-white/5 hover:border-white/20'}`}>
-                        <div className="font-semibold text-white mb-1">{level.label}</div>
-                        <div className="text-xs text-gray-400">{level.desc}</div>
+                            : 'border-border bg-white hover:border-ink-faint/40'}`}>
+                        <div className="font-semibold text-ink mb-1">{level.label}</div>
+                        <div className="text-xs text-ink-soft">{level.desc}</div>
                       </button>
                     ))}
                   </div>
@@ -519,14 +550,14 @@ export default function OnboardingPage() {
                 <div className="p-6">
                   <div className="flex items-center gap-2 mb-4">
                     <BookOpen size={20} className="text-accent-teal" />
-                    <h3 className="text-lg font-semibold text-white">Previous Learning <span className="text-gray-500 text-sm font-normal">(optional)</span></h3>
+                    <h3 className="text-lg font-semibold text-ink">Previous Learning <span className="text-ink-faint text-sm font-normal">(optional)</span></h3>
                   </div>
-                  <p className="text-sm text-gray-400 mb-4">Courses or certifications already completed — we will skip these.</p>
+                  <p className="text-sm text-ink-soft mb-4">Courses or certifications already completed — we will skip these.</p>
                   <input type="text" value={priorCoursesInput}
                     onChange={(e) => setPriorCoursesInput(e.target.value)}
                     placeholder="e.g. Python for Everybody (Coursera), CS50 — separate with commas"
-                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white
-                      placeholder-gray-500 focus:outline-none focus:border-accent-orange/50 transition-colors" />
+                    className="w-full bg-white border border-border rounded-xl px-4 py-3 text-ink
+                      placeholder-ink-faint focus:outline-none focus:border-accent-orange/50 transition-colors" />
                 </div>
               </GlassCard>
 
@@ -535,16 +566,16 @@ export default function OnboardingPage() {
                 <div className="p-6">
                   <div className="flex items-center gap-2 mb-4">
                     <Clock size={20} className="text-accent-purple" />
-                    <h3 className="text-lg font-semibold text-white">Weekly Time Commitment</h3>
+                    <h3 className="text-lg font-semibold text-ink">Weekly Time Commitment</h3>
                   </div>
-                  <p className="text-sm text-gray-400 mb-4">How many hours per week can you dedicate?</p>
+                  <p className="text-sm text-ink-soft mb-4">How many hours per week can you dedicate?</p>
                   <div className="flex flex-wrap gap-3">
                     {TIME_OPTIONS.map((hours) => (
                       <button key={hours} onClick={() => setTimePerWeek(hours)}
                         className={`px-6 py-3 rounded-xl border font-semibold transition-all ${
                           timePerWeek === hours
                             ? 'border-accent-orange/50 bg-accent-orange/10 text-accent-orange'
-                            : 'border-white/10 bg-white/5 text-gray-300 hover:border-white/20'}`}>
+                            : 'border-border bg-white text-ink-soft hover:border-ink-faint/40'}`}>
                         {hours} hrs
                       </button>
                     ))}

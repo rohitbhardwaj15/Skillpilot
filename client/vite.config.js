@@ -13,8 +13,12 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks: {
-          three: ['three', '@react-three/fiber', '@react-three/drei'],
-          charts: ['recharts'],
+          // Only group stable, rarely-changing core libs here so browsers
+          // can cache them across deploys. Deliberately NOT grouping
+          // three.js or recharts — those should stay wherever Vite's
+          // default splitting puts them (inside the lazy page chunk that
+          // actually imports them), so a login/profile/assessment visit
+          // never has to download either library.
           vendor: ['react', 'react-dom', 'react-router-dom', 'framer-motion']
         }
       }

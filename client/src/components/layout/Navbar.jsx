@@ -50,7 +50,7 @@ export default function Navbar() {
         className={`
           fixed top-0 left-0 right-0 z-50 transition-all duration-300
           ${scrolled
-            ? 'bg-dark-900/80 backdrop-blur-xl border-b border-white/10 shadow-lg shadow-black/20'
+            ? 'bg-white/90 backdrop-blur-xl border-b border-border shadow-sm'
             : 'bg-transparent'
           }
         `}
@@ -61,10 +61,10 @@ export default function Navbar() {
             {/* Logo */}
             <Link to="/" className="flex items-center gap-2 group">
               <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-accent-orange to-accent-amber flex items-center justify-center">
-                <Sparkles size={20} className="text-dark-900" />
+                <Sparkles size={20} className="text-white" />
               </div>
 
-              <span className="text-xl font-bold font-display text-white group-hover:text-accent-orange transition-colors">
+              <span className="text-xl font-bold font-display text-ink group-hover:text-accent-orange transition-colors">
                 SkillPilot
               </span>
             </Link>
@@ -84,7 +84,7 @@ export default function Navbar() {
                       flex items-center gap-2
                       ${isActive
                         ? 'text-accent-orange'
-                        : 'text-gray-400 hover:text-white hover:bg-white/5'
+                        : 'text-ink-soft hover:text-ink hover:bg-surface-alt'
                       }
                     `}
                   >
@@ -115,13 +115,13 @@ export default function Navbar() {
                     onClick={() =>
                       setUserMenuOpen(!userMenuOpen)
                     }
-                    className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-white/10 hover:bg-white/10 transition-colors"
+                    className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-surface-alt border border-border hover:bg-border/60 transition-colors"
                   >
                     <div className="w-6 h-6 rounded-full bg-gradient-to-br from-accent-orange to-accent-purple flex items-center justify-center text-xs font-bold text-white">
                       {user.name?.[0]?.toUpperCase() || '?'}
                     </div>
 
-                    <span className="text-sm text-gray-300">
+                    <span className="text-sm text-ink-soft">
                       {user.name}
                     </span>
 
@@ -143,14 +143,14 @@ export default function Navbar() {
                           opacity: 0,
                           y: -10
                         }}
-                        className="absolute right-0 mt-2 w-48 rounded-xl bg-dark-800 border border-white/10 shadow-xl overflow-hidden"
+                        className="absolute right-0 mt-2 w-48 rounded-xl bg-white border border-border shadow-xl overflow-hidden"
                       >
                         <Link
                           to="/profile"
                           onClick={() =>
                             setUserMenuOpen(false)
                           }
-                          className="flex items-center gap-2 px-4 py-3 text-sm text-gray-300 hover:bg-white/5 hover:text-white transition-colors"
+                          className="flex items-center gap-2 px-4 py-3 text-sm text-ink-soft hover:bg-surface-alt hover:text-ink transition-colors"
                         >
                           <User size={16} />
                           Profile
@@ -171,7 +171,7 @@ export default function Navbar() {
                 <div className="hidden lg:flex items-center gap-2">
                   <Link
                     to="/login"
-                    className="px-4 py-2 text-sm font-medium text-gray-300 hover:text-white transition-colors"
+                    className="px-4 py-2 text-sm font-medium text-ink-soft hover:text-ink transition-colors"
                   >
                     Log in
                   </Link>
@@ -190,7 +190,7 @@ export default function Navbar() {
                 onClick={() =>
                   setMobileOpen(!mobileOpen)
                 }
-                className="lg:hidden p-2 rounded-lg text-gray-400 hover:text-white hover:bg-white/5 transition-all"
+                className="lg:hidden p-2 rounded-lg text-ink-soft hover:text-ink hover:bg-surface-alt transition-all"
               >
                 {mobileOpen
                   ? <X size={24} />
@@ -221,7 +221,7 @@ export default function Navbar() {
             className="fixed inset-0 z-40 lg:hidden"
           >
             <div
-              className="absolute inset-0 bg-dark-900/95 backdrop-blur-xl"
+              className="absolute inset-0 bg-white/97 backdrop-blur-xl"
               onClick={() =>
                 setMobileOpen(false)
               }
@@ -258,7 +258,7 @@ export default function Navbar() {
                           flex items-center gap-3 px-4 py-3 rounded-xl text-lg font-medium transition-all
                           ${isActive
                             ? 'bg-accent-orange/10 text-accent-orange border border-accent-orange/20'
-                            : 'text-gray-300 hover:bg-white/5 hover:text-white'
+                            : 'text-ink-soft hover:bg-surface-alt hover:text-ink'
                           }
                         `}
                       >
@@ -315,7 +315,7 @@ export default function Navbar() {
                       onClick={() =>
                         setMobileOpen(false)
                       }
-                      className="flex items-center justify-center px-4 py-3 rounded-xl text-lg font-medium text-gray-300 hover:bg-white/5 hover:text-white transition-all border border-white/10"
+                      className="flex items-center justify-center px-4 py-3 rounded-xl text-lg font-medium text-ink-soft hover:bg-surface-alt hover:text-ink transition-all border border-border"
                     >
                       Log in
                     </Link>

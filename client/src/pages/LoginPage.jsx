@@ -44,40 +44,40 @@ export default function LoginPage() {
       >
         <div className="text-center mb-8">
           <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-accent-orange to-accent-amber flex items-center justify-center mx-auto mb-4">
-            <Sparkles size={26} className="text-dark-900" />
+            <Sparkles size={26} className="text-white" />
           </div>
-          <h1 className="text-3xl font-bold font-display text-white mb-2">Welcome back</h1>
-          <p className="text-gray-400 text-sm">Log in to continue your learning path.</p>
+          <h1 className="text-3xl font-bold font-display text-ink mb-2">Welcome back</h1>
+          <p className="text-ink-soft text-sm">Log in to continue your learning path.</p>
         </div>
 
         <GlassCard className="p-8">
           <form onSubmit={handleSubmit} className="space-y-5">
             <div>
-              <label className="text-sm text-gray-300 mb-1.5 block">Email</label>
+              <label className="text-sm text-ink-soft mb-1.5 block">Email</label>
               <div className="relative">
-                <Mail size={18} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-500" />
+                <Mail size={18} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-ink-faint" />
                 <input
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
                   placeholder="you@example.com"
-                  className="w-full bg-white/5 border border-white/10 rounded-xl pl-11 pr-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-accent-orange/50 transition-colors"
+                  className="w-full bg-white border border-border rounded-xl pl-11 pr-4 py-3 text-ink placeholder-ink-faint focus:outline-none focus:border-accent-orange/50 transition-colors"
                 />
               </div>
             </div>
 
             <div>
-              <label className="text-sm text-gray-300 mb-1.5 block">Password</label>
+              <label className="text-sm text-ink-soft mb-1.5 block">Password</label>
               <div className="relative">
-                <Lock size={18} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-500" />
+                <Lock size={18} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-ink-faint" />
                 <input
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
                   placeholder="Your password"
-                  className="w-full bg-white/5 border border-white/10 rounded-xl pl-11 pr-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-accent-orange/50 transition-colors"
+                  className="w-full bg-white border border-border rounded-xl pl-11 pr-4 py-3 text-ink placeholder-ink-faint focus:outline-none focus:border-accent-orange/50 transition-colors"
                 />
               </div>
             </div>
@@ -99,7 +99,7 @@ export default function LoginPage() {
             </button>
           </form>
 
-          <p className="text-center text-sm text-gray-400 mt-6">
+          <p className="text-center text-sm text-ink-soft mt-6">
             Don't have an account?{' '}
             <Link to="/register" className="text-accent-orange hover:underline">
               Sign up

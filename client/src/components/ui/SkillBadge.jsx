@@ -25,10 +25,10 @@ export default function SkillBadge({
         transition-all duration-200
         ${sizeClasses[size]}
         ${selected 
-          ? 'bg-accent-orange/20 text-accent-orange border border-accent-orange/40' 
+          ? 'bg-accent-orange-soft text-accent-orange border border-accent-orange/40' 
           : selectable 
-            ? 'bg-white/5 text-gray-300 border border-white/10 hover:bg-white/10 hover:border-white/20'
-            : 'bg-white/5 text-gray-300 border border-white/10'
+            ? 'bg-surface-alt text-ink-soft border border-border hover:bg-border/50 hover:border-ink-faint/40'
+            : 'bg-surface-alt text-ink-soft border border-border'
         }
         ${selectable ? 'cursor-pointer' : 'cursor-default'}
       `}
@@ -38,7 +38,7 @@ export default function SkillBadge({
       {onRemove && !selectable && (
         <button
           onClick={(e) => { e.stopPropagation(); onRemove(skill); }}
-          className="ml-1 hover:text-red-400 transition-colors"
+          className="ml-1 hover:text-red-500 transition-colors"
         >
           <X size={14} />
         </button>

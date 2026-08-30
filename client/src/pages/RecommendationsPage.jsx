@@ -155,8 +155,8 @@ export default function RecommendationsPage() {
   function recommendationTag(course) {
     const fillsGap       = course.skills.some((s) => gapSet.has(s.toLowerCase()))
     const buildsOnKnown  = course.skills.some((s) => knownSet.has(s.toLowerCase()))
-    if (fillsGap)      return { label: 'Fills a skill gap',     color: 'bg-accent-orange/90 text-dark-900' }
-    if (buildsOnKnown) return { label: 'Builds on your skills', color: 'bg-accent-teal/90 text-dark-900' }
+    if (fillsGap)      return { label: 'Fills a skill gap',     color: 'bg-accent-orange/90 text-white' }
+    if (buildsOnKnown) return { label: 'Builds on your skills', color: 'bg-accent-teal/90 text-white' }
     return null
   }
 
@@ -174,12 +174,12 @@ export default function RecommendationsPage() {
 
         {/* Header */}
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-8">
-          <h1 className="text-3xl lg:text-4xl font-bold font-display text-white mb-2">
+          <h1 className="text-3xl lg:text-4xl font-bold font-display text-ink mb-2">
             {skillGaps.length > 0
               ? <>Recommended <span className="gradient-text">For You</span></>
               : <>Course <span className="gradient-text">Catalog</span></>}
           </h1>
-          <p className="text-gray-400">
+          <p className="text-ink-soft">
             {filteredCourses.length} of {courses.length} courses shown
           </p>
         </motion.div>
@@ -192,12 +192,12 @@ export default function RecommendationsPage() {
             <button key={cat.id} onClick={() => setActiveCategory(cat.id)}
               className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium border transition-all ${
                 activeCategory === cat.id
-                  ? 'bg-accent-orange text-dark-900 border-accent-orange'
-                  : 'bg-white/5 text-gray-400 border-white/10 hover:border-white/20 hover:text-white'
+                  ? 'bg-accent-orange text-white border-accent-orange'
+                  : 'bg-surface-alt text-ink-soft border-border hover:border-ink-faint/40 hover:text-ink'
               }`}>
               {cat.label}
               <span className={`px-1.5 py-0.5 rounded-full text-[10px] font-bold ${
-                activeCategory === cat.id ? 'bg-dark-900/30' : 'bg-white/10'
+                activeCategory === cat.id ? 'bg-white/25' : 'bg-border'
               }`}>
                 {catCounts[cat.id]}
               </span>
@@ -211,24 +211,24 @@ export default function RecommendationsPage() {
 
             {/* Search */}
             <div className="relative">
-              <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500" />
+              <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-ink-faint" />
               <input type="text" value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search courses, skills, or providers..."
-                className="w-full bg-white/5 border border-white/10 rounded-xl pl-11 pr-4 py-3 text-white
-                  placeholder-gray-500 focus:outline-none focus:border-accent-orange/50 transition-colors" />
+                className="w-full bg-white border border-border rounded-xl pl-11 pr-4 py-3 text-ink
+                  placeholder-ink-faint focus:outline-none focus:border-accent-orange/50 transition-colors" />
             </div>
 
             {/* Skill chips */}
             <div className="flex flex-wrap items-center gap-3">
-              <Filter size={16} className="text-gray-500" />
+              <Filter size={16} className="text-ink-faint" />
               <div className="flex flex-wrap gap-2">
                 {['All', ...topSkills].map((skill) => (
                   <button key={skill} onClick={() => setActiveSkill(skill)}
                     className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
                       activeSkill === skill
                         ? 'bg-accent-purple text-white'
-                        : 'bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white'
+                        : 'bg-surface-alt text-ink-soft hover:bg-border/60 hover:text-ink'
                     }`}>
                     {skill}
                   </button>
@@ -240,13 +240,13 @@ export default function RecommendationsPage() {
             <div className="flex flex-wrap items-center gap-6">
               {/* Level */}
               <div className="flex flex-wrap items-center gap-2">
-                <span className="text-xs text-gray-500">Level:</span>
+                <span className="text-xs text-ink-faint">Level:</span>
                 {LEVELS.map((level) => (
                   <button key={level} onClick={() => setActiveLevel(level)}
                     className={`px-3 py-1.5 rounded-lg text-xs font-medium capitalize transition-all ${
                       activeLevel === level
-                        ? 'bg-accent-teal text-dark-900'
-                        : 'bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white'
+                        ? 'bg-accent-teal text-white'
+                        : 'bg-surface-alt text-ink-soft hover:bg-border/60 hover:text-ink'
                     }`}>
                     {level}
                   </button>
@@ -255,13 +255,13 @@ export default function RecommendationsPage() {
 
               {/* Type */}
               <div className="flex flex-wrap items-center gap-2">
-                <span className="text-xs text-gray-500">Type:</span>
+                <span className="text-xs text-ink-faint">Type:</span>
                 {TYPES.map((type) => (
                   <button key={type} onClick={() => setActiveType(type)}
                     className={`px-3 py-1.5 rounded-lg text-xs font-medium capitalize transition-all ${
                       activeType === type
-                        ? 'bg-accent-orange text-dark-900'
-                        : 'bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white'
+                        ? 'bg-accent-orange text-white'
+                        : 'bg-surface-alt text-ink-soft hover:bg-border/60 hover:text-ink'
                     }`}>
                     {type}
                   </button>
@@ -270,13 +270,13 @@ export default function RecommendationsPage() {
 
               {/* Language */}
               <div className="flex flex-wrap items-center gap-2">
-                <span className="text-xs text-gray-500">Language:</span>
+                <span className="text-xs text-ink-faint">Language:</span>
                 {LANG_OPTIONS.map((lang) => (
                   <button key={lang} onClick={() => setActiveLang(lang)}
                     className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
                       activeLang === lang
-                        ? 'bg-accent-pink text-white'
-                        : 'bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white'
+                        ? 'bg-accent-purple text-white'
+                        : 'bg-surface-alt text-ink-soft hover:bg-border/60 hover:text-ink'
                     }`}>
                     {lang}
                   </button>
@@ -307,12 +307,12 @@ export default function RecommendationsPage() {
                           <span className={`px-2 py-0.5 text-xs rounded-full ${
                             course.level === 'beginner'     ? 'bg-accent-teal/20 text-accent-teal' :
                             course.level === 'intermediate' ? 'bg-accent-orange/20 text-accent-orange' :
-                                                             'bg-accent-pink/20 text-accent-pink'
+                                                             'bg-accent-purple/20 text-accent-purple'
                           }`}>
                             {course.level}
                           </span>
                           {/* Type */}
-                          <span className="px-2 py-0.5 text-xs bg-white/10 text-gray-300 rounded-full capitalize">
+                          <span className="px-2 py-0.5 text-xs bg-surface-alt text-ink-soft rounded-full capitalize">
                             {course.type}
                           </span>
                           {/* Free / Paid */}
@@ -339,27 +339,27 @@ export default function RecommendationsPage() {
                         )}
                       </div>
 
-                      <h3 className="text-base font-semibold text-white mb-1">{course.title}</h3>
-                      <p className="text-xs text-gray-500 mb-3">{course.provider}</p>
-                      <p className="text-sm text-gray-400 mb-3 line-clamp-2 flex-1">{course.description}</p>
-                      <button onClick={() => setWhyOpen(whyOpen === course._id ? null : course._id)} className="flex items-center gap-1.5 text-xs text-accent-teal hover:text-white transition-colors mb-3"><Info size={13}/> Why this / Why not?</button>
-                      <AnimatePresence>{whyOpen === course._id && (<motion.div initial={{opacity:0,height:0}} animate={{opacity:1,height:'auto'}} exit={{opacity:0,height:0}} className="mb-3 rounded-xl bg-white/5 border border-white/10 p-3 text-xs">
+                      <h3 className="text-base font-semibold text-ink mb-1">{course.title}</h3>
+                      <p className="text-xs text-ink-faint mb-3">{course.provider}</p>
+                      <p className="text-sm text-ink-soft mb-3 line-clamp-2 flex-1">{course.description}</p>
+                      <button onClick={() => setWhyOpen(whyOpen === course._id ? null : course._id)} className="flex items-center gap-1.5 text-xs text-accent-teal hover:text-ink transition-colors mb-3"><Info size={13}/> Why this / Why not?</button>
+                      <AnimatePresence>{whyOpen === course._id && (<motion.div initial={{opacity:0,height:0}} animate={{opacity:1,height:'auto'}} exit={{opacity:0,height:0}} className="mb-3 rounded-xl bg-surface-alt border border-border p-3 text-xs">
                         <p className="text-green-400 font-semibold mb-1">✓ Why this course?</p>
-                        <ul className="text-gray-400 space-y-1">{(course.explanation?.why || []).map((reason, i)=><li key={i}>• {reason}</li>)}{!(course.explanation?.why || []).length && (course.skills || []).filter(s => gapSet.has(s.toLowerCase())).slice(0,3).map(s=><li key={s}>• Covers {s}, one of your skill gaps</li>)}</ul>
-                        <p className="text-red-400 font-semibold mt-2 mb-1">✕ Why not?</p><ul className="text-gray-500 space-y-1">{(course.explanation?.whyNot || []).map((reason, i)=><li key={i}>• {reason}</li>)}{!(course.explanation?.whyNot || []).length && <li>• Lower-ranked alternatives may cover fewer of your priority gaps.</li>}</ul>
+                        <ul className="text-ink-soft space-y-1">{(course.explanation?.why || []).map((reason, i)=><li key={i}>• {reason}</li>)}{!(course.explanation?.why || []).length && (course.skills || []).filter(s => gapSet.has(s.toLowerCase())).slice(0,3).map(s=><li key={s}>• Covers {s}, one of your skill gaps</li>)}</ul>
+                        <p className="text-red-400 font-semibold mt-2 mb-1">✕ Why not?</p><ul className="text-ink-faint space-y-1">{(course.explanation?.whyNot || []).map((reason, i)=><li key={i}>• {reason}</li>)}{!(course.explanation?.whyNot || []).length && <li>• Lower-ranked alternatives may cover fewer of your priority gaps.</li>}</ul>
                       </motion.div>)}</AnimatePresence>
 
-                      <div className="flex items-center gap-4 text-xs text-gray-500 mb-4">
+                      <div className="flex items-center gap-4 text-xs text-ink-faint mb-4">
                         <span className="flex items-center gap-1"><Clock size={12} /> {course.durationWeeks}w</span>
                         <span className="flex items-center gap-1"><BookOpen size={12} /> {course.skills.length} skills</span>
                       </div>
 
                       <div className="flex flex-wrap gap-1 mb-4">
                         {course.skills.slice(0, 3).map((skill) => (
-                          <span key={skill} className="px-2 py-0.5 text-[10px] bg-white/5 text-gray-400 rounded-full">{skill}</span>
+                          <span key={skill} className="px-2 py-0.5 text-[10px] bg-surface-alt text-ink-soft rounded-full">{skill}</span>
                         ))}
                         {course.skills.length > 3 && (
-                          <span className="px-2 py-0.5 text-[10px] bg-white/5 text-gray-400 rounded-full">+{course.skills.length - 3}</span>
+                          <span className="px-2 py-0.5 text-[10px] bg-surface-alt text-ink-soft rounded-full">+{course.skills.length - 3}</span>
                         )}
                       </div>
 
@@ -368,7 +368,7 @@ export default function RecommendationsPage() {
                         {course.url && (
                           <a href={course.url} target="_blank" rel="noopener noreferrer"
                             className="flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg
-                              bg-accent-orange/10 text-accent-orange hover:bg-accent-orange hover:text-dark-900
+                              bg-accent-orange/10 text-accent-orange hover:bg-accent-orange hover:text-white
                               transition-all text-sm font-medium">
                             View Course <ExternalLink size={13} />
                           </a>
@@ -390,7 +390,7 @@ export default function RecommendationsPage() {
                           </a>
                         )}
                         {!course.url && !course.youtube_url && !course.documentation_url && (
-                          <span className="flex items-center justify-center px-3 py-2 rounded-lg bg-white/5 text-gray-500 text-sm">
+                          <span className="flex items-center justify-center px-3 py-2 rounded-lg bg-surface-alt text-ink-faint text-sm">
                             Internal curated project
                           </span>
                         )}
@@ -404,7 +404,7 @@ export default function RecommendationsPage() {
         </div>
 
         {filteredCourses.length === 0 && !loading && (
-          <p className="text-center text-gray-500 py-16">No courses match these filters.</p>
+          <p className="text-center text-ink-faint py-16">No courses match these filters.</p>
         )}
       </div>
     </div>

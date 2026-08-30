@@ -15,7 +15,7 @@ export default function AnimatedButton({
   const variants = {
     primary: 'btn-primary',
     secondary: 'btn-secondary',
-    ghost: 'px-6 py-3 text-gray-300 hover:text-white hover:bg-white/5 rounded-full transition-all',
+    ghost: 'px-6 py-3 text-ink-soft hover:text-ink hover:bg-surface-alt rounded-full transition-all',
   }
 
   const sizes = {

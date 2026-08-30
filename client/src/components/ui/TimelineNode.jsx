@@ -9,10 +9,10 @@ export default function TimelineNode({
   isActive = false,
 }) {
   const statusConfig = {
-    completed: { icon: Check, color: 'text-accent-teal', bg: 'bg-accent-teal/20', border: 'border-accent-teal' },
-    active: { icon: Play, color: 'text-accent-orange', bg: 'bg-accent-orange/20', border: 'border-accent-orange' },
-    locked: { icon: Lock, color: 'text-gray-500', bg: 'bg-gray-800', border: 'border-gray-700' },
-    upcoming: { icon: Star, color: 'text-gray-400', bg: 'bg-gray-800/50', border: 'border-gray-700' },
+    completed: { icon: Check, color: 'text-accent-teal', bg: 'bg-accent-teal-soft', border: 'border-accent-teal' },
+    active: { icon: Play, color: 'text-accent-orange', bg: 'bg-accent-orange-soft', border: 'border-accent-orange' },
+    locked: { icon: Lock, color: 'text-ink-faint', bg: 'bg-surface-alt', border: 'border-border' },
+    upcoming: { icon: Star, color: 'text-ink-soft', bg: 'bg-surface-alt', border: 'border-border' },
   }
 
   const status = node.completed ? 'completed' : isActive ? 'active' : index === 0 ? 'active' : 'upcoming'
@@ -26,12 +26,12 @@ export default function TimelineNode({
       transition={{ duration: 0.5, delay: index * 0.1 }}
       className="relative flex gap-4"
     >
-      {/* Timeline line */}
+      {/* Flight path — dashed route line connecting waypoints */}
       {!isLast && (
-        <div className="absolute left-6 top-14 w-0.5 h-[calc(100%-2rem)] bg-gradient-to-b from-white/20 to-transparent" />
+        <div className="absolute left-6 top-14 w-0 h-[calc(100%-2rem)] border-l-2 border-dashed border-ink-faint/30" />
       )}
 
-      {/* Node circle */}
+      {/* Node circle (waypoint) */}
       <motion.div
         whileHover={{ scale: 1.1 }}
         onClick={onClick}
@@ -40,7 +40,7 @@ export default function TimelineNode({
           flex items-center justify-center cursor-pointer
           border-2 ${config.border} ${config.bg}
           transition-all duration-300
-          ${isActive ? 'shadow-lg shadow-accent-orange/30' : ''}
+          ${isActive ? 'shadow-md shadow-accent-orange/20' : ''}
         `}
       >
         <Icon size={20} className={config.color} />
@@ -54,24 +54,24 @@ export default function TimelineNode({
         <div className={`
           p-4 rounded-xl border transition-all duration-300
           ${isActive 
-            ? 'bg-white/5 border-accent-orange/30 shadow-lg shadow-accent-orange/5' 
-            : 'bg-white/[0.02] border-white/10 hover:border-white/20'
+            ? 'bg-accent-orange-soft/40 border-accent-orange/30 shadow-sm' 
+            : 'bg-white border-border hover:border-ink-faint/40 shadow-sm'
           }
         `}>
           <div className="flex items-start justify-between mb-2">
-            <h4 className={`font-semibold ${isActive ? 'text-white' : 'text-gray-300'}`}>
+            <h4 className={`font-semibold ${isActive ? 'text-ink' : 'text-ink'}`}>
               {node.title}
             </h4>
             {node.type === 'project' && (
-              <span className="px-2 py-0.5 text-xs bg-accent-purple/20 text-accent-purple rounded-full">
+              <span className="px-2 py-0.5 text-xs bg-accent-purple-soft text-accent-purple rounded-full">
                 Project
               </span>
             )}
           </div>
 
-          <p className="text-sm text-gray-400 mb-3">{node.description}</p>
+          <p className="text-sm text-ink-soft mb-3">{node.description}</p>
 
-          <div className="flex items-center gap-4 text-xs text-gray-500">
+          <div className="flex items-center gap-4 text-xs text-ink-faint">
             <span className="flex items-center gap-1">
               <Clock size={12} />
               {node.duration} weeks
@@ -86,7 +86,7 @@ export default function TimelineNode({
 
           {/* Progress bar */}
           {node.progress > 0 && (
-            <div className="mt-3 h-1.5 bg-white/10 rounded-full overflow-hidden">
+            <div className="mt-3 h-1.5 bg-border rounded-full overflow-hidden">
               <motion.div
                 initial={{ width: 0 }}
                 animate={{ width: `${node.progress}%` }}

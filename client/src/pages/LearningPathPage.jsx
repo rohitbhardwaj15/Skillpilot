@@ -16,19 +16,19 @@ import SkillTree3D from '../components/3d/SkillTree3D'
 function renderMarkdown(text = '') {
   if (!text) return ''
   return text
-    .replace(/^### (.+)$/gm, '<h3 class="text-base font-bold text-white mt-4 mb-1">$1</h3>')
+    .replace(/^### (.+)$/gm, '<h3 class="text-base font-bold text-ink mt-4 mb-1">$1</h3>')
     .replace(/^## (.+)$/gm,  '<h2 class="text-lg font-bold text-accent-orange mt-5 mb-2">$1</h2>')
-    .replace(/^# (.+)$/gm,   '<h1 class="text-xl font-bold text-white mt-6 mb-2">$1</h1>')
+    .replace(/^# (.+)$/gm,   '<h1 class="text-xl font-bold text-ink mt-6 mb-2">$1</h1>')
     .replace(/\*\*\*(.+?)\*\*\*/g, '<strong><em>$1</em></strong>')
-    .replace(/\*\*(.+?)\*\*/g,     '<strong class="text-white">$1</strong>')
-    .replace(/\*(.+?)\*/g,         '<em class="text-gray-300">$1</em>')
-    .replace(/`([^`]+)`/g, '<code class="px-1.5 py-0.5 bg-white/10 rounded text-accent-teal text-xs font-mono">$1</code>')
+    .replace(/\*\*(.+?)\*\*/g,     '<strong class="text-ink">$1</strong>')
+    .replace(/\*(.+?)\*/g,         '<em class="text-ink-soft">$1</em>')
+    .replace(/`([^`]+)`/g, '<code class="px-1.5 py-0.5 bg-surface-alt rounded text-accent-teal text-xs font-mono">$1</code>')
     .replace(/\[(.+?)\]\((.+?)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer" class="text-accent-orange hover:underline">$1</a>')
-    .replace(/^\- (.+)$/gm, '<li class="flex gap-2 text-gray-300 text-sm"><span class="text-accent-orange mt-0.5">•</span><span>$1</span></li>')
-    .replace(/^\d+\. (.+)$/gm, '<li class="flex gap-2 text-gray-300 text-sm"><span class="text-accent-orange font-bold">→</span><span>$1</span></li>')
-    .replace(/^> (.+)$/gm, '<blockquote class="border-l-2 border-accent-orange pl-4 italic text-gray-400 text-sm my-2">$1</blockquote>')
-    .replace(/^---$/gm, '<hr class="border-white/10 my-4" />')
-    .replace(/\n\n/g, '</p><p class="text-gray-400 text-sm mb-3">')
+    .replace(/^\- (.+)$/gm, '<li class="flex gap-2 text-ink-soft text-sm"><span class="text-accent-orange mt-0.5">•</span><span>$1</span></li>')
+    .replace(/^\d+\. (.+)$/gm, '<li class="flex gap-2 text-ink-soft text-sm"><span class="text-accent-orange font-bold">→</span><span>$1</span></li>')
+    .replace(/^> (.+)$/gm, '<blockquote class="border-l-2 border-accent-orange pl-4 italic text-ink-soft text-sm my-2">$1</blockquote>')
+    .replace(/^---$/gm, '<hr class="border-border my-4" />')
+    .replace(/\n\n/g, '</p><p class="text-ink-soft text-sm mb-3">')
     .replace(/\n/g, '<br />')
 }
 
@@ -80,43 +80,43 @@ function MarkdownNote({ node, profileId, initialNote }) {
     <div className="mt-4">
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center gap-2">
-          <span className="text-xs text-gray-500 font-medium uppercase tracking-wide">📝 Notes</span>
-          <span className="text-xs text-gray-600">— Markdown • Auto-saved to cloud</span>
+          <span className="text-xs text-ink-faint font-medium uppercase tracking-wide">📝 Notes</span>
+          <span className="text-xs text-ink-faint">— Markdown • Auto-saved to cloud</span>
           {saving && <span className="text-[10px] text-accent-orange animate-pulse">saving…</span>}
           {saved  && <span className="text-[10px] text-green-400 flex items-center gap-1"><Check size={10} /> Saved</span>}
         </div>
         <div className="flex items-center gap-2">
           <button onClick={() => setPreview(!preview)}
-            className="px-2 py-1 text-xs rounded bg-white/5 text-gray-400 hover:text-white transition-colors">
+            className="px-2 py-1 text-xs rounded bg-surface-alt text-ink-soft hover:text-ink transition-colors">
             {preview ? '✏️ Edit' : '👁 Preview'}
           </button>
           <button onClick={copy}
-            className="flex items-center gap-1 px-2 py-1 text-xs rounded bg-white/5 text-gray-400 hover:text-white transition-colors">
+            className="flex items-center gap-1 px-2 py-1 text-xs rounded bg-surface-alt text-ink-soft hover:text-ink transition-colors">
             {copied ? <Check size={12} className="text-green-400" /> : <Copy size={12} />}
             {copied ? 'Copied!' : 'Copy'}
           </button>
           <button onClick={save}
-            className="px-3 py-1 text-xs rounded bg-accent-orange text-dark-900 font-semibold hover:bg-accent-amber transition-colors">
+            className="px-3 py-1 text-xs rounded bg-accent-orange text-white font-semibold hover:bg-accent-amber transition-colors">
             Save
           </button>
         </div>
       </div>
 
       {preview ? (
-        <div className="min-h-[120px] bg-white/5 border border-white/10 rounded-xl p-4"
-          dangerouslySetInnerHTML={{ __html: `<p class="text-gray-400 text-sm mb-3">${renderMarkdown(notes)}</p>` }} />
+        <div className="min-h-[120px] bg-surface-alt border border-border rounded-xl p-4"
+          dangerouslySetInnerHTML={{ __html: `<p class="text-ink-soft text-sm mb-3">${renderMarkdown(notes)}</p>` }} />
       ) : (
         <textarea value={notes} onChange={(e) => setNotes(e.target.value)}
           placeholder={"Write your notes in Markdown…\n## Heading\n**Bold**, *italic*, `code`\n- Bullet"}
           rows={6}
-          className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-sm text-gray-300
-            placeholder-gray-600 font-mono focus:outline-none focus:border-accent-orange/50 transition-colors resize-y" />
+          className="w-full bg-white border border-border rounded-xl p-4 text-sm text-ink
+            placeholder-ink-faint font-mono focus:outline-none focus:border-accent-orange/50 transition-colors resize-y" />
       )}
 
       <div className="flex flex-wrap gap-2 mt-2">
         {[['## Heading','## '],['**Bold**','**text**'],['*Italic*','*text*'],['`Code`','`code`'],['- List','- item'],['> Quote','> text'],['---','---']].map(([label, ins]) => (
           <button key={label} onClick={() => insertTag(ins)}
-            className="px-2 py-0.5 text-[10px] bg-white/5 text-gray-500 rounded hover:text-white hover:bg-white/10 font-mono transition-colors">
+            className="px-2 py-0.5 text-[10px] bg-surface-alt text-ink-faint rounded hover:text-ink hover:bg-border/60 font-mono transition-colors">
             {label}
           </button>
         ))}
@@ -154,15 +154,15 @@ function FeedbackWidget({ node, pathId, onAdaptation }) {
   }
 
   return (
-    <div className="mt-4 pt-3 border-t border-white/5">
-      <p className="text-xs text-gray-500 mb-2">How was this course?</p>
+    <div className="mt-4 pt-3 border-t border-border">
+      <p className="text-xs text-ink-faint mb-2">How was this course?</p>
       <div className="flex flex-wrap gap-2">
         {RATINGS.map((r) => (
           <button key={r.id} onClick={() => send(r.id)} disabled={loading || !!selected}
             className={`flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-medium border transition-all
               ${selected === r.id
                 ? 'border-accent-orange bg-accent-orange/10 text-accent-orange'
-                : 'border-white/10 bg-white/5 text-gray-400 hover:border-white/20 hover:text-white'
+                : 'border-border bg-surface-alt text-ink-soft hover:border-ink-faint/40 hover:text-ink'
               } disabled:opacity-50`}>
             {r.emoji} {r.label}
           </button>
@@ -192,7 +192,7 @@ function CourseLinks({ node }) {
       {url && (
         <a href={url} target="_blank" rel="noopener noreferrer"
           className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-accent-orange/10
-            text-accent-orange hover:bg-accent-orange hover:text-dark-900 transition-all text-xs font-medium">
+            text-accent-orange hover:bg-accent-orange hover:text-white transition-all text-xs font-medium">
           <ExternalLink size={12} /> View Course
         </a>
       )}
@@ -234,7 +234,7 @@ function StatsBar({ nodes, streakDays }) {
           <div className="p-4 flex items-center gap-3">
             <Icon size={20} className={color} />
             <div>
-              <p className="text-xs text-gray-500">{label}</p>
+              <p className="text-xs text-ink-faint">{label}</p>
               <p className={`text-lg font-bold ${color}`}>{value}</p>
             </div>
           </div>
@@ -347,7 +347,7 @@ export default function LearningPathPage() {
       <div className="min-h-screen pt-24 flex items-center justify-center px-6">
         <GlassCard className="p-8 max-w-md text-center">
           <AlertCircle className="mx-auto mb-3 text-accent-orange" size={28} />
-          <p className="text-gray-300">
+          <p className="text-ink-soft">
             {error || "No learning path yet — complete onboarding first."}
           </p>
         </GlassCard>
@@ -368,22 +368,22 @@ export default function LearningPathPage() {
 
         {/* Header */}
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-6">
-          <h1 className="text-3xl lg:text-4xl font-bold font-display text-white mb-1">
+          <h1 className="text-3xl lg:text-4xl font-bold font-display text-ink mb-1">
             Your <span className="gradient-text">Learning Path</span>
           </h1>
-          <p className="text-gray-400 text-sm">{activePath.description}</p>
-          <div className="flex items-center gap-4 mt-2 text-sm text-gray-400">
+          <p className="text-ink-soft text-sm">{activePath.description}</p>
+          <div className="flex items-center gap-4 mt-2 text-sm text-ink-soft">
             <span className="flex items-center gap-1"><Clock size={14} /> ~{activePath.estimatedWeeks} weeks</span>
             <span className="flex items-center gap-1"><BookOpen size={14} /> {allNodes.length} steps</span>
           </div>
 
           {/* Overall progress bar */}
           <div className="mt-4">
-            <div className="flex justify-between text-xs text-gray-500 mb-1">
+            <div className="flex justify-between text-xs text-ink-faint mb-1">
               <span>Overall Progress</span>
               <span>{progress}%</span>
             </div>
-            <div className="h-2 bg-white/10 rounded-full overflow-hidden">
+            <div className="h-2 bg-border rounded-full overflow-hidden">
               <motion.div className="h-full bg-gradient-to-r from-accent-orange to-accent-teal rounded-full"
                 initial={{ width: 0 }} animate={{ width: `${progress}%` }} transition={{ duration: 0.8 }} />
             </div>
@@ -399,7 +399,7 @@ export default function LearningPathPage() {
             <span>This path adapts from completions and feedback.</span>
           </div>
           <button onClick={handleManualAdapt} disabled={adapting}
-            className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-accent-purple/20 hover:bg-accent-purple/30 text-xs font-semibold text-white disabled:opacity-50">
+            className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-accent-purple/20 hover:bg-accent-purple/30 text-xs font-semibold text-accent-purple disabled:opacity-50">
             <RefreshCw size={13} className={adapting ? 'animate-spin' : ''} />
             {adapting ? 'Recalculating…' : 'Recalculate Path'}
           </button>
@@ -410,13 +410,13 @@ export default function LearningPathPage() {
           <GlassCard className="mb-8">
             <div className="p-5">
               <div className="flex flex-wrap items-center justify-between gap-3 mb-3">
-                <div><h2 className="text-lg font-bold text-white">🧠 Your Skill Graph</h2><p className="text-xs text-gray-500">Dependencies and mastery status derived from your learner model.</p></div>
-                <div className="flex flex-wrap gap-3 text-[11px] text-gray-400">{[['#00d4aa','Mastered'],['#f5a623','Learning'],['#ef4444','Missing'],['#60a5fa','Recommended']].map(([c,l])=><span key={l} className="flex items-center gap-1"><i className="w-2 h-2 rounded-full" style={{background:c}} />{l}</span>)}</div>
+                <div><h2 className="text-lg font-bold text-ink">🧠 Your Skill Graph</h2><p className="text-xs text-ink-faint">Dependencies and mastery status derived from your learner model.</p></div>
+                <div className="flex flex-wrap gap-3 text-[11px] text-ink-soft">{[['#0E9C8F','Mastered'],['#D97B0F','Learning'],['#DC2626','Missing'],['#2563EB','Recommended']].map(([c,l])=><span key={l} className="flex items-center gap-1"><i className="w-2 h-2 rounded-full" style={{background:c}} />{l}</span>)}</div>
               </div>
-              <div className="flex flex-wrap gap-3 mb-3 text-xs text-gray-400">
+              <div className="flex flex-wrap gap-3 mb-3 text-xs text-ink-soft">
                 <span>🟢 Mastered</span><span>🟡 Learning</span><span>🔴 Missing</span><span>🔵 Recommended</span><span>🟣 Target Role</span>
               </div>
-              <p className="text-xs text-gray-500 mb-3">Nodes are derived from your role requirements, knowledge state and roadmap prerequisites.</p>
+              <p className="text-xs text-ink-faint mb-3">Nodes are derived from your role requirements, knowledge state and roadmap prerequisites.</p>
               <SkillTree3D nodes={activePath.skillGraph.nodes} connections={activePath.skillGraph.connections} />
             </div>
           </GlassCard>
@@ -447,8 +447,8 @@ export default function LearningPathPage() {
                             ${node.completed
                               ? 'bg-accent-teal/20 text-accent-teal cursor-default'
                               : isActive
-                              ? 'bg-accent-orange/20 text-accent-orange hover:bg-accent-orange hover:text-dark-900 cursor-pointer'
-                              : 'bg-white/5 text-gray-500 cursor-default'
+                              ? 'bg-accent-orange/20 text-accent-orange hover:bg-accent-orange hover:text-white cursor-pointer'
+                              : 'bg-surface-alt text-ink-faint cursor-default'
                             }`}
                           title={node.completed ? 'Completed' : isActive ? 'Mark as done' : 'Complete previous steps first'}>
                           {marking === node.id
@@ -459,7 +459,7 @@ export default function LearningPathPage() {
 
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2 flex-wrap">
-                            <h3 className="text-white font-semibold text-sm">{node.title}</h3>
+                            <h3 className="text-ink font-semibold text-sm">{node.title}</h3>
                             {node.completed && (
                               <span className="px-2 py-0.5 text-[10px] bg-accent-teal/20 text-accent-teal rounded-full">Done ✓</span>
                             )}
@@ -467,7 +467,7 @@ export default function LearningPathPage() {
                               <span className="px-2 py-0.5 text-[10px] bg-accent-orange/20 text-accent-orange rounded-full animate-pulse">Current</span>
                             )}
                           </div>
-                          <p className="text-xs text-gray-500 mt-0.5">{node.subtitle || node.phase}</p>
+                          <p className="text-xs text-ink-faint mt-0.5">{node.subtitle || node.phase}</p>
 
                           {/* Resource links — ALWAYS visible */}
                           <CourseLinks node={node} />
@@ -475,7 +475,7 @@ export default function LearningPathPage() {
                       </div>
 
                       <button onClick={() => setExpandedNode(isExpanded ? null : node.id)}
-                        className="text-gray-500 hover:text-white transition-colors shrink-0 mt-1">
+                        className="text-ink-faint hover:text-ink transition-colors shrink-0 mt-1">
                         {isExpanded ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
                       </button>
                     </div>
@@ -486,7 +486,7 @@ export default function LearningPathPage() {
                         <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }}
                           exit={{ opacity: 0, height: 0 }} className="mt-4 pl-12 overflow-hidden">
 
-                          <p className="text-sm text-gray-400 mb-3">{node.description}</p>
+                          <p className="text-sm text-ink-soft mb-3">{node.description}</p>
 
                           {node.skills?.length > 0 && (
                             <div className="flex flex-wrap gap-1 mb-4">
@@ -518,8 +518,8 @@ export default function LearningPathPage() {
           <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }}
             className="mt-8 text-center p-8 rounded-2xl bg-gradient-to-r from-accent-orange/10 to-accent-teal/10 border border-accent-orange/20">
             <Trophy size={48} className="mx-auto mb-4 text-yellow-400" />
-            <h2 className="text-2xl font-bold text-white mb-2">🎉 Path Complete!</h2>
-            <p className="text-gray-400">Congratulations! You have completed your entire learning path.</p>
+            <h2 className="text-2xl font-bold text-ink mb-2">🎉 Path Complete!</h2>
+            <p className="text-ink-soft">Congratulations! You have completed your entire learning path.</p>
           </motion.div>
         )}
       </div>

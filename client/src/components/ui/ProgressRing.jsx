@@ -4,7 +4,7 @@ export default function ProgressRing({
   progress, 
   size = 120, 
   strokeWidth = 8, 
-  color = '#f5a623',
+  color = '#D97B0F',
   children,
   label,
 }) {
@@ -21,7 +21,7 @@ export default function ProgressRing({
           cy={size / 2}
           r={radius}
           fill="none"
-          stroke="rgba(255,255,255,0.1)"
+          stroke="rgba(20,21,26,0.08)"
           strokeWidth={strokeWidth}
         />
         {/* Progress circle */}
@@ -42,8 +42,8 @@ export default function ProgressRing({
       <div className="absolute inset-0 flex flex-col items-center justify-center">
         {children || (
           <>
-            <span className="text-2xl font-bold text-white">{progress}%</span>
-            {label && <span className="text-xs text-gray-400 mt-1">{label}</span>}
+            <span className="text-2xl font-bold text-ink">{progress}%</span>
+            {label && <span className="text-xs text-ink-soft mt-1">{label}</span>}
           </>
         )}
       </div>

@@ -55,9 +55,9 @@ function HeroParticles() {
       </bufferGeometry>
       <pointsMaterial
         size={0.04}
-        color="#f5a623"
+        color="#D97B0F"
         transparent
-        opacity={0.5}
+        opacity={0.6}
         sizeAttenuation
         blending={THREE.AdditiveBlending}
       />
@@ -79,11 +79,11 @@ function FloatingCube() {
     <mesh ref={meshRef} position={[3, 0, -2]}>
       <boxGeometry args={[1.5, 1.5, 1.5]} />
       <meshStandardMaterial
-        color="#f5a623"
+        color="#D97B0F"
         transparent
-        opacity={0.3}
+        opacity={0.35}
         wireframe
-        emissive="#f5a623"
+        emissive="#D97B0F"
         emissiveIntensity={0.5}
       />
     </mesh>
@@ -96,7 +96,7 @@ function Hero3D() {
       <Canvas camera={{ position: [0, 0, 8], fov: 60 }} dpr={[1, 1.5]}>
         <ambientLight intensity={0.3} />
         <pointLight position={[10, 10, 10]} intensity={0.8} />
-        <pointLight position={[-10, -10, -5]} intensity={0.3} color="#00d4aa" />
+        <pointLight position={[-10, -10, -5]} intensity={0.3} color="#0E9C8F" />
         <HeroParticles />
         <FloatingCube />
       </Canvas>
@@ -220,7 +220,7 @@ export default function LandingPage() {
             initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.1 }}
-            className="text-5xl sm:text-6xl lg:text-7xl xl:text-8xl font-bold font-display text-white leading-tight mb-6"
+            className="text-5xl sm:text-6xl lg:text-7xl xl:text-8xl font-bold font-display text-ink leading-tight mb-6"
           >
             Your goal, mapped{' '}
             <br className="hidden sm:block" />
@@ -231,7 +231,7 @@ export default function LandingPage() {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
-            className="text-lg sm:text-xl text-gray-400 max-w-2xl mx-auto mb-10 leading-relaxed"
+            className="text-lg sm:text-xl text-ink-soft max-w-2xl mx-auto mb-10 leading-relaxed"
           >
             SkillPilot does not just recommend courses. It builds, explains, and 
             continuously adapts a learning journey — from where you are, to where you are going.
@@ -263,11 +263,11 @@ export default function LandingPage() {
               const Icon = cap.icon
               return (
                 <div key={i} className="text-center">
-                  <div className="w-12 h-12 mx-auto mb-3 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center">
+                  <div className="w-12 h-12 mx-auto mb-3 rounded-xl bg-surface-alt border border-border flex items-center justify-center">
                     <Icon size={22} className="text-accent-orange" />
                   </div>
-                  <div className="text-lg font-bold text-white mb-1">{cap.value}</div>
-                  <div className="text-xs text-gray-500">{cap.label}</div>
+                  <div className="text-lg font-bold text-ink mb-1">{cap.value}</div>
+                  <div className="text-xs text-ink-faint">{cap.label}</div>
                 </div>
               )
             })}
@@ -284,11 +284,67 @@ export default function LandingPage() {
           <motion.div
             animate={{ y: [0, 10, 0] }}
             transition={{ duration: 2, repeat: Infinity }}
-            className="w-6 h-10 rounded-full border-2 border-white/20 flex items-start justify-center p-2"
+            className="w-6 h-10 rounded-full border-2 border-ink-faint/30 flex items-start justify-center p-2"
           >
             <div className="w-1.5 h-1.5 rounded-full bg-accent-orange" />
           </motion.div>
         </motion.div>
+      </section>
+
+      {/* How It Works — placed right after the hero so the process is clear
+          within seconds, before any feature grid or marketing copy. */}
+      <section className="section-padding py-24 lg:py-32 relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-accent-orange/5 to-transparent" />
+
+        <div className="max-w-6xl mx-auto relative z-10">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-center mb-16"
+          >
+            <span className="text-accent-orange text-sm font-semibold tracking-wider uppercase">How It Works</span>
+            <h2 className="text-4xl lg:text-5xl font-bold font-display text-ink mt-3">
+              From your goal to a <span className="gradient-text">real roadmap</span>
+            </h2>
+            <p className="text-ink-soft max-w-xl mx-auto mt-3">
+              Every recommendation traces back to this sequence — nothing is suggested until the gap is known.
+            </p>
+          </motion.div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {[
+              { step: '01', icon: MessageSquare, title: 'Tell Us Your Goal', desc: 'Describe your career goal and current skills in your own words — no long form.' },
+              { step: '02', icon: Target, title: 'We Find the Gap', desc: 'We compare your skills against what your target role actually requires.' },
+              { step: '03', icon: GitBranch, title: 'Get Your Roadmap', desc: 'A prerequisite-ordered path, built only from skills you\'re missing.' },
+              { step: '04', icon: TrendingUp, title: 'Track & Adapt', desc: 'Progress updates your skill state, and the roadmap re-ranks itself.' },
+            ].map((item, i) => {
+              const Icon = item.icon
+              return (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.15 }}
+                  className="relative"
+                >
+                  <div className="text-6xl font-bold text-ink/[0.06] absolute -top-4 -left-2">{item.step}</div>
+                  <div className="relative pt-8">
+                    <div className="w-12 h-12 rounded-full bg-accent-orange/20 border border-accent-orange/40 flex items-center justify-center mb-4">
+                      <Icon size={20} className="text-accent-orange" />
+                    </div>
+                    <h3 className="text-lg font-semibold text-ink mb-2">{item.title}</h3>
+                    <p className="text-sm text-ink-soft">{item.desc}</p>
+                  </div>
+                  {i < 3 && (
+                    <div className="hidden lg:block absolute top-14 left-[calc(100%-0.5rem)] w-8 h-px bg-gradient-to-r from-accent-orange/40 to-transparent" />
+                  )}
+                </motion.div>
+              )
+            })}
+          </div>
+        </div>
       </section>
 
       {/* Features Section */}
@@ -302,10 +358,10 @@ export default function LandingPage() {
             className="text-center mb-16"
           >
             <span className="text-accent-orange text-sm font-semibold tracking-wider uppercase">Features</span>
-            <h2 className="text-4xl lg:text-5xl font-bold font-display text-white mt-3 mb-4">
+            <h2 className="text-4xl lg:text-5xl font-bold font-display text-ink mt-3 mb-4">
               Everything you need to <span className="gradient-text">learn smarter</span>
             </h2>
-            <p className="text-gray-400 max-w-2xl mx-auto">
+            <p className="text-ink-soft max-w-2xl mx-auto">
               A complete suite of AI-powered tools designed to accelerate your learning and help you achieve your goals faster.
             </p>
           </motion.div>
@@ -319,58 +375,12 @@ export default function LandingPage() {
                     <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${feature.color} flex items-center justify-center mb-4`}>
                       <Icon size={24} className="text-white" />
                     </div>
-                    <h3 className="text-lg font-semibold text-white mb-2">{feature.title}</h3>
-                    <p className="text-sm text-gray-400 leading-relaxed">{feature.description}</p>
+                    <h3 className="text-lg font-semibold text-ink mb-2">{feature.title}</h3>
+                    <p className="text-sm text-ink-soft leading-relaxed">{feature.description}</p>
                   </div>
                 </GlassCard>
               )
             })}
-          </div>
-        </div>
-      </section>
-
-      {/* How It Works */}
-      <section className="section-padding py-24 lg:py-32 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-accent-orange/5 to-transparent" />
-
-        <div className="max-w-6xl mx-auto relative z-10">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-center mb-16"
-          >
-            <span className="text-accent-orange text-sm font-semibold tracking-wider uppercase">How It Works</span>
-            <h2 className="text-4xl lg:text-5xl font-bold font-display text-white mt-3">
-              Four steps to your <span className="gradient-text">dream career</span>
-            </h2>
-          </motion.div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {[
-              { step: '01', title: 'Share Your Goals', desc: 'Tell us what you want to achieve in natural language' },
-              { step: '02', title: 'Build Your Profile', desc: 'We analyze your skills, experience, and learning style' },
-              { step: '03', title: 'Get Your Path', desc: 'AI generates a personalized roadmap with courses and projects' },
-              { step: '04', title: 'Learn & Adapt', desc: 'Track progress and get adaptive recommendations as you grow' },
-            ].map((item, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.15 }}
-                className="relative"
-              >
-                <div className="text-6xl font-bold text-white/5 absolute -top-4 -left-2">{item.step}</div>
-                <div className="relative pt-8">
-                  <div className="w-12 h-12 rounded-full bg-accent-orange/20 border border-accent-orange/40 flex items-center justify-center mb-4">
-                    <span className="text-accent-orange font-bold">{item.step}</span>
-                  </div>
-                  <h3 className="text-lg font-semibold text-white mb-2">{item.title}</h3>
-                  <p className="text-sm text-gray-400">{item.desc}</p>
-                </div>
-              </motion.div>
-            ))}
           </div>
         </div>
       </section>
@@ -385,10 +395,10 @@ export default function LandingPage() {
             className="text-center mb-16"
           >
             <span className="text-accent-orange text-sm font-semibold tracking-wider uppercase">Use Cases</span>
-            <h2 className="text-4xl lg:text-5xl font-bold font-display text-white mt-3 mb-4">
+            <h2 className="text-4xl lg:text-5xl font-bold font-display text-ink mt-3 mb-4">
               Built for <span className="gradient-text">every learner</span>
             </h2>
-            <p className="text-gray-400 max-w-xl mx-auto">
+            <p className="text-ink-soft max-w-xl mx-auto">
               See how different learners use SkillPilot to achieve their unique goals.
             </p>
           </motion.div>
@@ -401,16 +411,16 @@ export default function LandingPage() {
                     {[...Array(5)].map((_, j) => (
                       <Star key={j} size={14} className="text-accent-orange fill-accent-orange" />
                     ))}
-                    <span className="ml-2 text-xs text-gray-500">Sample scenario</span>
+                    <span className="ml-2 text-xs text-ink-faint">Sample scenario</span>
                   </div>
-                  <p className="text-gray-300 mb-6 leading-relaxed">"{item.content}"</p>
+                  <p className="text-ink-soft mb-6 leading-relaxed">"{item.content}"</p>
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-full bg-gradient-to-br from-accent-orange to-accent-purple flex items-center justify-center text-sm font-bold text-white">
                       {item.icon}
                     </div>
                     <div>
-                      <div className="text-sm font-semibold text-white">{item.role}</div>
-                      <div className="text-xs text-gray-500">{item.scenario}</div>
+                      <div className="text-sm font-semibold text-ink">{item.role}</div>
+                      <div className="text-xs text-ink-faint">{item.scenario}</div>
                     </div>
                   </div>
                 </div>
@@ -428,14 +438,14 @@ export default function LandingPage() {
           viewport={{ once: true }}
           className="max-w-4xl mx-auto text-center"
         >
-          <div className="relative p-12 lg:p-16 rounded-3xl bg-gradient-to-br from-accent-orange/10 via-accent-purple/10 to-accent-cyan/10 border border-white/10 overflow-hidden">
+          <div className="relative p-12 lg:p-16 rounded-3xl bg-gradient-to-br from-accent-orange/10 via-accent-purple/10 to-accent-cyan/10 border border-border overflow-hidden">
             <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmZmZmYiIGZpbGwtb3BhY2l0eT0iMC4wMyI+PGNpcmNsZSBjeD0iMzAiIGN5PSIzMCIgcj0iMSIvPjwvZz48L2c+PC9zdmc+')] opacity-50" />
 
             <div className="relative z-10">
-              <h2 className="text-3xl lg:text-5xl font-bold font-display text-white mb-4">
+              <h2 className="text-3xl lg:text-5xl font-bold font-display text-ink mb-4">
                 Ready to start your <span className="gradient-text">learning journey?</span>
               </h2>
-              <p className="text-gray-400 mb-8 max-w-xl mx-auto">
+              <p className="text-ink-soft mb-8 max-w-xl mx-auto">
                 Experience AI-powered personalized learning paths. Build your profile and get your first roadmap in minutes.
               </p>
               <Link to={primaryCtaTo} className="btn-primary text-lg inline-flex">

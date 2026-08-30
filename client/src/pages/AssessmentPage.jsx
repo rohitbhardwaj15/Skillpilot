@@ -52,22 +52,22 @@ export default function AssessmentPage() {
 
   return <div className="min-h-screen pt-28 pb-16 section-padding"><div className="max-w-4xl mx-auto">
     <GlassCard className="p-6 md:p-8">
-      <div className="flex items-center gap-3 mb-2"><Brain className="text-accent-orange"/><h1 className="text-2xl font-bold text-white">Skill Assessment</h1></div>
-      <p className="text-gray-400 mb-6">Replace self-reported skills with evidence. Your score updates your learner knowledge state and future roadmap.</p>
+      <div className="flex items-center gap-3 mb-2"><Brain className="text-accent-orange"/><h1 className="text-2xl font-bold text-ink">Skill Assessment</h1></div>
+      <p className="text-ink-soft mb-6">Replace self-reported skills with evidence. Your score updates your learner knowledge state and future roadmap.</p>
       {!assessment && !result && <>
-        <label className="text-sm text-gray-300">Choose a skill</label>
-        <select value={skill || gaps[0] || ''} onChange={e=>setSkill(e.target.value)} className="w-full mt-2 mb-5 bg-white/5 border border-white/10 rounded-xl p-3 text-white">
-          {gapsRaw.length ? gapsRaw.map(g=><option key={g.name} value={g.name} className="bg-gray-900">{g.name}{g.isNew ? ' (new)' : ''}</option>) : <option className="bg-gray-900">No skills available</option>}
+        <label className="text-sm text-ink-soft">Choose a skill</label>
+        <select value={skill || gaps[0] || ''} onChange={e=>setSkill(e.target.value)} className="w-full mt-2 mb-5 bg-white border border-border rounded-xl p-3 text-ink">
+          {gapsRaw.length ? gapsRaw.map(g=><option key={g.name} value={g.name}>{g.name}{g.isNew ? ' (new)' : ''}</option>) : <option>No skills available</option>}
         </select>
-        <button onClick={start} disabled={loading || !(skill || gaps[0])} className="px-5 py-3 rounded-xl bg-accent-orange text-dark-900 font-semibold disabled:opacity-50">{loading ? <Loader2 className="animate-spin"/> : 'Start 5-Question Assessment'}</button>
+        <button onClick={start} disabled={loading || !(skill || gaps[0])} className="px-5 py-3 rounded-xl bg-accent-orange text-white font-semibold disabled:opacity-50">{loading ? <Loader2 className="animate-spin"/> : 'Start 5-Question Assessment'}</button>
         {error && <p className="text-sm text-red-400 mt-3">{error}</p>}
       </>}
       {assessment && !result && <div className="space-y-6">
-        {assessment.questions.map((q,i)=><div key={q._id || i} className="border border-white/10 rounded-xl p-5"><p className="text-white font-medium mb-4">{i+1}. {q.question}</p><div className="grid gap-2">{q.options.map((o,j)=><button key={j} onClick={()=>setAnswers(a=>a.map((v,k)=>k===i?j:v))} className={`text-left p-3 rounded-lg border ${answers[i]===j?'border-accent-orange bg-accent-orange/10 text-white':'border-white/10 bg-white/5 text-gray-400'}`}>{o}</button>)}</div></div>)}
-        <button onClick={submit} disabled={loading || answers.some(a=>a===null)} className="px-5 py-3 rounded-xl bg-accent-teal text-dark-900 font-semibold disabled:opacity-50">{loading?'Scoring…':'Submit Assessment'}</button>
+        {assessment.questions.map((q,i)=><div key={q._id || i} className="border border-border rounded-xl p-5 bg-white"><p className="text-ink font-medium mb-4">{i+1}. {q.question}</p><div className="grid gap-2">{q.options.map((o,j)=><button key={j} onClick={()=>setAnswers(a=>a.map((v,k)=>k===i?j:v))} className={`text-left p-3 rounded-lg border ${answers[i]===j?'border-accent-orange bg-accent-orange-soft text-ink':'border-border bg-surface-alt text-ink-soft'}`}>{o}</button>)}</div></div>)}
+        <button onClick={submit} disabled={loading || answers.some(a=>a===null)} className="px-5 py-3 rounded-xl bg-accent-teal text-white font-semibold disabled:opacity-50">{loading?'Scoring…':'Submit Assessment'}</button>
         {error && <p className="text-sm text-red-400">{error}</p>}
       </div>}
-      {result && <div className="text-center py-8"><CheckCircle size={52} className="mx-auto text-accent-teal mb-4"/><div className="text-5xl font-bold text-white">{result.score}%</div><p className="text-gray-400 mt-2">{result.correctAnswers}/{result.totalQuestions} correct</p><div className="mt-6 grid grid-cols-2 gap-3"><div className="bg-white/5 rounded-xl p-4"><Target className="mx-auto text-accent-orange mb-2"/><div className="text-white font-semibold capitalize">{result.estimatedLevel}</div><div className="text-xs text-gray-500">Estimated Level</div></div><div className="bg-white/5 rounded-xl p-4"><div className="text-2xl font-bold text-accent-teal">{Math.round(result.confidence*100)}%</div><div className="text-xs text-gray-500">Confidence</div></div></div><p className="text-sm text-gray-400 mt-6">Your evidence-backed skill state has been updated. Generate/revisit your roadmap to apply the new estimate.</p><button onClick={()=>navigate('/dashboard')} className="mt-5 px-5 py-3 rounded-xl bg-accent-orange text-dark-900 font-semibold">Back to Dashboard</button></div>}
+      {result && <div className="text-center py-8"><CheckCircle size={52} className="mx-auto text-accent-teal mb-4"/><div className="text-5xl font-bold text-ink">{result.score}%</div><p className="text-ink-soft mt-2">{result.correctAnswers}/{result.totalQuestions} correct</p><div className="mt-6 grid grid-cols-2 gap-3"><div className="bg-surface-alt rounded-xl p-4"><Target className="mx-auto text-accent-orange mb-2"/><div className="text-ink font-semibold capitalize">{result.estimatedLevel}</div><div className="text-xs text-ink-faint">Estimated Level</div></div><div className="bg-surface-alt rounded-xl p-4"><div className="text-2xl font-bold text-accent-teal">{Math.round(result.confidence*100)}%</div><div className="text-xs text-ink-faint">Confidence</div></div></div><p className="text-sm text-ink-soft mt-6">Your evidence-backed skill state has been updated. Generate/revisit your roadmap to apply the new estimate.</p><button onClick={()=>navigate('/dashboard')} className="mt-5 px-5 py-3 rounded-xl bg-accent-orange text-white font-semibold">Back to Dashboard</button></div>}
     </GlassCard>
   </div></div>
 }

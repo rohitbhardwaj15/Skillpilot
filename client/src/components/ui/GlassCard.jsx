@@ -17,23 +17,20 @@ export default function GlassCard({
       initial={{ opacity: 0, y: 30 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay }}
-      whileHover={{ scale: hover3D ? undefined : 1.02 }}
+      whileHover={{ scale: hover3D ? undefined : 1.01 }}
       onClick={onClick}
       className={`
         relative overflow-hidden rounded-2xl
-        bg-white/[0.03] backdrop-blur-xl
-        border border-white/10
+        bg-white
+        border border-border
+        shadow-sm
         transition-all duration-300
         ${hover3D ? 'cursor-pointer' : ''}
-        ${glow ? 'hover:shadow-[0_0_30px_rgba(245,166,35,0.15)]' : ''}
+        ${glow ? 'hover:shadow-md hover:border-accent-orange/30' : ''}
         ${onClick ? 'cursor-pointer' : ''}
         ${className}
       `}
     >
-      {/* Subtle gradient overlay */}
-      <div className="absolute inset-0 bg-gradient-to-br from-white/[0.05] to-transparent pointer-events-none" />
-
-      {/* Content */}
       <div className="relative z-10">
         {children}
       </div>

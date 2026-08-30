@@ -18,7 +18,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 /*
  * Roles are loaded from the same roles.json used by the
  * recommendation/evaluation system. This avoids depending on an empty
- * MongoDB Role collection for career simulation.
+ * MongoDB Role collection.
  */
 const rolesPath = path.join(__dirname, '../../data/roles.json');
 let roles = [];
@@ -341,7 +341,6 @@ router.post('/:id/adapt', requireAuth, async (req, res) => {
     return res.status(500).json({ message: 'Failed to adapt learning path.' });
   }
 });
-
 
 /* ───────────────────────────────────────────────
  * Career Readiness (standalone, no persisted path required)

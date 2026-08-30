@@ -192,15 +192,72 @@ function round(n) {
 
 /* ── Explain recommendation ────────────────────── */
 
-function explainWhy(course, breakdown, profile, role, gaps) {
+/**
+ * Builds a skill → "required skills it unlocks" map from the course
+ * catalog's prerequisite edges, restricted to the target role's required
+ * skills. Used to produce concrete, countable reasons like "SQL is required
+ * for 3 other skills in your Data Analyst path", instead of only naming
+ * skills. Built once per rankCourses() call, not per course, since it scans
+ * the whole catalog.
+ */
+function buildSkillUnlockMap(courses, requiredSkillsSet) {
+  const unlockMap = new Map(); // prerequisite skill (lower) -> Map<lower, originally-cased skill> it unlocks
+
+  for (const course of courses) {
+    const prereqs = (course.prerequisites || []).map((p) => p.toLowerCase());
+    if (!prereqs.length) continue;
+
+    const requiredSkillsTaught = course.skills.filter((s) => requiredSkillsSet.has(s.toLowerCase()));
+    if (!requiredSkillsTaught.length) continue;
+
+    for (const prereq of prereqs) {
+      if (!unlockMap.has(prereq)) unlockMap.set(prereq, new Map());
+      const unlocked = unlockMap.get(prereq);
+      for (const skill of requiredSkillsTaught) {
+        const skillLower = skill.toLowerCase();
+        if (skillLower !== prereq) unlocked.set(skillLower, skill);
+      }
+    }
+  }
+
+  return unlockMap;
+}
+
+function explainWhy(course, breakdown, profile, role, gaps, unlockMap) {
   const reasons = [];
   const blockers = [];
 
   const gapSkills = course.skills.filter((s) => gaps.some((g) => g.toLowerCase() === s.toLowerCase()));
 
-  if (gapSkills.length) {
+  // Concrete, countable reasons first — these are the ones a learner can
+  // actually verify against their own roadmap, not just a qualitative label.
+  if (gapSkills.length && gaps.length) {
+    reasons.push(
+      `Closes ${gapSkills.length} of your ${gaps.length} remaining skill gap${gaps.length === 1 ? '' : 's'} for ${role.role}`
+    );
+  }
+
+  // "SQL is required for 3 other skills in your Data Analyst path" — the
+  // exact style of reason the brief asks for, computed from real
+  // prerequisite edges in the catalog rather than asserted.
+  let bestUnlockSkill = null;
+  let bestUnlockSet = null;
+  for (const skill of gapSkills) {
+    const unlocked = unlockMap?.get(skill.toLowerCase());
+    if (unlocked && unlocked.size && (!bestUnlockSet || unlocked.size > bestUnlockSet.size)) {
+      bestUnlockSkill = skill;
+      bestUnlockSet = unlocked;
+    }
+  }
+  if (bestUnlockSkill) {
+    const names = [...bestUnlockSet.values()].slice(0, 3).join(', ');
+    reasons.push(
+      `${bestUnlockSkill} is required for ${bestUnlockSet.size} other skill${bestUnlockSet.size === 1 ? '' : 's'} in your ${role.role} path (${names})`
+    );
+  } else if (gapSkills.length) {
     reasons.push(`Covers ${gapSkills.slice(0, 2).join(', ')} — current skill gap`);
   }
+
   if (breakdown.semanticMatch >= 0.18) {
     reasons.push('Semantically aligned with your goal');
   }
@@ -255,6 +312,11 @@ export async function rankCourses(courses, profile, role, options = {}) {
   const gaps = computeSkillGaps(role.requiredSkills, profile.currentSkills, profile.knowledgeState);
   const gapSet = new Set(gaps.map((s) => s.toLowerCase()));
 
+  // Built once per call (scans the whole filtered catalog) so explainWhy()
+  // can cite concrete counts like "SQL is required for 3 other skills"
+  // without re-scanning courses per recommendation.
+  const unlockMap = buildSkillUnlockMap(filtered, requiredSkillsSet);
+
   // Hybrid semantic layer: TF-IDF + dense embedding cosine similarity.
   const semanticScores = await semanticCourseScores(filtered, profile, role, gaps);
 
@@ -286,7 +348,7 @@ export async function rankCourses(courses, profile, role, options = {}) {
       const base = scoreCourse(course, { requiredSkillsSet, gapSet, profile, semanticMatch, learnedPreference: 0.5 });
       const learnedPreference = predictPreference(preferenceModel, base);
       const breakdown = scoreCourse(course, { requiredSkillsSet, gapSet, profile, semanticMatch, learnedPreference });
-      const explanation = explainWhy(course, breakdown, profile, role, gaps);
+      const explanation = explainWhy(course, breakdown, profile, role, gaps, unlockMap);
 
       return {
         course,

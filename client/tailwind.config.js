@@ -11,6 +11,15 @@ export default {
         display: ['Space Grotesk', 'Inter', 'sans-serif'],
       },
       colors: {
+        // Light theme — see design plan. 'dark' tokens kept only for any
+        // stray reference during migration; new UI should use these.
+        base: '#F6F7FB',
+        surface: '#FFFFFF',
+        'surface-alt': '#EEF0F5',
+        border: '#E2E5ED',
+        ink: '#14151A',
+        'ink-soft': '#5B6072',
+        'ink-faint': '#8A8FA3',
         dark: {
           900: '#0a0a0f',
           800: '#12121a',
@@ -19,12 +28,15 @@ export default {
           500: '#333355',
         },
         accent: {
-          orange: '#f5a623',
+          orange: '#D97B0F',
+          'orange-soft': '#FDF0DE',
           gold: '#d4a574',
           amber: '#ff9500',
-          teal: '#00d4aa',
+          teal: '#0E9C8F',
+          'teal-soft': '#E1F5F2',
           cyan: '#00b4d8',
-          purple: '#7c3aed',
+          purple: '#6D28D9',
+          'purple-soft': '#F1EBFC',
           pink: '#ec4899',
         },
         glass: {

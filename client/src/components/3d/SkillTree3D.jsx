@@ -36,8 +36,8 @@ function Node({ position, color, label, completed, status, onClick, isActive }) 
       <mesh ref={meshRef}>
         <icosahedronGeometry args={[0.35, 1]} />
         <meshStandardMaterial
-          color={completed ? '#00d4aa' : color}
-          emissive={completed ? '#00d4aa' : color}
+          color={completed ? '#0E9C8F' : color}
+          emissive={completed ? '#0E9C8F' : color}
           emissiveIntensity={0.6}
           metalness={0.8}
           roughness={0.2}
@@ -58,7 +58,7 @@ function Node({ position, color, label, completed, status, onClick, isActive }) 
       <Text
         position={[0, -0.9, 0]}
         fontSize={0.2}
-        color="white"
+        color="#14151A"
         anchorX="center"
         anchorY="middle"
         maxWidth={3}
@@ -110,7 +110,7 @@ function SkillTreeScene({ nodes, connections, onNodeClick, activeNode }) {
     <>
       <ambientLight intensity={0.4} />
       <pointLight position={[10, 10, 10]} intensity={1} />
-      <pointLight position={[-10, -10, -10]} intensity={0.3} color="#f5a623" />
+      <pointLight position={[-10, -10, -10]} intensity={0.3} color="#D97B0F" />
 
       {connections.map((conn, i) => (
         <Connection
@@ -150,7 +150,7 @@ function SkillTreeScene({ nodes, connections, onNodeClick, activeNode }) {
 
 export default function SkillTree3D({ nodes, connections, onNodeClick, activeNode }) {
   return (
-    <div className="w-full h-[600px] rounded-2xl overflow-hidden border border-white/10">
+    <div className="w-full h-[600px] rounded-2xl overflow-hidden border border-border bg-surface-alt/40">
       <Canvas
         camera={{ position: [0, 0, 10], fov: 50 }}
         dpr={[1, 2]}

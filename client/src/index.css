@@ -15,16 +15,16 @@
 
   body {
     font-family: 'Inter', system-ui, sans-serif;
-    background-color: #0a0a0f;
-    color: #e2e8f0;
+    background-color: #F6F7FB;
+    color: #14151A;
     overflow-x: hidden;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
 
   ::selection {
-    background: rgba(245, 166, 35, 0.3);
-    color: #fff;
+    background: rgba(217, 123, 15, 0.2);
+    color: #14151A;
   }
 
   ::-webkit-scrollbar {
@@ -32,26 +32,26 @@
   }
 
   ::-webkit-scrollbar-track {
-    background: #0a0a0f;
+    background: #F6F7FB;
   }
 
   ::-webkit-scrollbar-thumb {
-    background: #333355;
+    background: #C7CBD9;
     border-radius: 4px;
   }
 
   ::-webkit-scrollbar-thumb:hover {
-    background: #f5a623;
+    background: #D97B0F;
   }
 }
 
 @layer components {
   .glass-card {
-    @apply bg-glass-light backdrop-blur-xl border border-white/10 rounded-2xl;
+    @apply bg-white border border-border rounded-2xl shadow-sm;
   }
 
   .glass-card-hover {
-    @apply glass-card transition-all duration-300 hover:bg-glass-medium hover:border-accent-orange/30 hover:shadow-lg hover:shadow-accent-orange/10;
+    @apply glass-card transition-all duration-300 hover:border-accent-orange/40 hover:shadow-md;
   }
 
   .gradient-text {
@@ -67,14 +67,14 @@
   }
 
   .btn-primary {
-    @apply px-8 py-4 bg-gradient-to-r from-accent-orange to-accent-amber text-dark-900 font-bold rounded-full 
-           transition-all duration-300 hover:shadow-lg hover:shadow-accent-orange/30 hover:scale-105 
+    @apply px-8 py-4 bg-gradient-to-r from-accent-orange to-accent-amber text-white font-bold rounded-full 
+           transition-all duration-300 hover:shadow-lg hover:shadow-accent-orange/25 hover:scale-105 
            active:scale-95 flex items-center gap-2;
   }
 
   .btn-secondary {
-    @apply px-8 py-4 bg-glass-medium backdrop-blur-xl border border-white/20 text-white font-semibold rounded-full 
-           transition-all duration-300 hover:bg-glass-heavy hover:border-accent-orange/50 hover:scale-105 
+    @apply px-8 py-4 bg-white border border-border text-ink font-semibold rounded-full 
+           transition-all duration-300 hover:border-accent-orange/50 hover:shadow-sm hover:scale-105 
            active:scale-95 flex items-center gap-2;
   }
 
@@ -101,7 +101,7 @@
 
 @layer utilities {
   .text-shadow-glow {
-    text-shadow: 0 0 20px rgba(245, 166, 35, 0.5), 0 0 40px rgba(245, 166, 35, 0.3);
+    text-shadow: 0 0 20px rgba(217, 123, 15, 0.25), 0 0 40px rgba(217, 123, 15, 0.15);
   }
 
   .animate-delay-100 { animation-delay: 100ms; }

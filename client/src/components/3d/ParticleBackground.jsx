@@ -1,6 +1,5 @@
 import { useRef, useMemo, useEffect } from 'react'
 import { Canvas, useFrame } from '@react-three/fiber'
-import * as THREE from 'three'
 
 function Particles({ count = 500 }) {
   const mesh = useRef()
@@ -74,12 +73,11 @@ function Particles({ count = 500 }) {
         />
       </bufferGeometry>
       <pointsMaterial
-        size={0.03}
-        color="#f5a623"
+        size={0.035}
+        color="#D97B0F"
         transparent
-        opacity={0.6}
+        opacity={0.35}
         sizeAttenuation
-        blending={THREE.AdditiveBlending}
       />
     </points>
   )
@@ -89,10 +87,10 @@ function FloatingOrbs() {
   const group = useRef()
 
   const orbs = useMemo(() => [
-    { position: [-4, 2, -3], color: '#f5a623', scale: 0.8 },
-    { position: [3, -2, -2], color: '#00d4aa', scale: 0.6 },
-    { position: [-2, -3, -4], color: '#00b4d8', scale: 0.5 },
-    { position: [4, 3, -5], color: '#7c3aed', scale: 0.7 },
+    { position: [-4, 2, -3], color: '#D97B0F', scale: 0.8 },
+    { position: [3, -2, -2], color: '#0E9C8F', scale: 0.6 },
+    { position: [-2, -3, -4], color: '#6D28D9', scale: 0.5 },
+    { position: [4, 3, -5], color: '#0E9C8F', scale: 0.7 },
   ], [])
 
   useFrame((state) => {
@@ -112,9 +110,9 @@ function FloatingOrbs() {
           <meshStandardMaterial
             color={orb.color}
             transparent
-            opacity={0.15}
+            opacity={0.08}
             emissive={orb.color}
-            emissiveIntensity={0.3}
+            emissiveIntensity={0.15}
           />
         </mesh>
       ))}
