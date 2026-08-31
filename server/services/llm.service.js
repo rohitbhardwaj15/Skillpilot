@@ -38,9 +38,16 @@ function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-/** 429 and 5xx are worth retrying; 4xx (bad key, bad request) are not. */
-function isRetryableStatus(status) {
-  return status === 429 || status >= 500;
+/**
+ * 429 and 5xx are worth retrying; 4xx (bad key, bad request) generally are
+ * not — except Groq's json_validate_failed, which is a 400 but represents
+ * the model failing to generate valid JSON on that attempt (documented as
+ * an intermittent ~10% failure rate even with strict structured outputs),
+ * not a problem with the request itself. A retry with the same prompt
+ * frequently succeeds.
+ */
+function isRetryableStatus(status, code) {
+  return status === 429 || status >= 500 || (status === 400 && code === 'json_validate_failed');
 }
 
 async function requestGroqOnce(apiKey, body, timeoutMs) {
@@ -62,6 +69,17 @@ async function requestGroqOnce(apiKey, body, timeoutMs) {
       const errText = await response.text().catch(() => '');
       const error = new Error(`LLM API error (${response.status}): ${errText.slice(0, 300)}`);
       error.status = response.status;
+      // Groq's JSON/structured-output modes return a 400 with
+      // code: "json_validate_failed" when the model itself fails to produce
+      // valid JSON (often because a reasoning model like gpt-oss-120b ran
+      // out of max_tokens mid chain-of-thought). This is an intermittent
+      // generation failure, not a malformed-request problem on our end, so
+      // callers need the code to decide whether it's worth retrying.
+      try {
+        error.code = JSON.parse(errText)?.error?.code;
+      } catch {
+        // errText wasn't JSON — leave error.code undefined
+      }
       throw error;
     }
 
@@ -72,7 +90,11 @@ async function requestGroqOnce(apiKey, body, timeoutMs) {
   }
 }
 
-async function callGroq(systemPrompt, userMessage, { jsonMode = false } = {}) {
+async function callGroq(
+  systemPrompt,
+  userMessage,
+  { jsonMode = false, jsonSchema = null, maxTokens = 1024, reasoningEffort = null } = {}
+) {
   const apiKey = process.env.LLM_API_KEY;
   if (!apiKey) {
     throw new Error(
@@ -82,13 +104,31 @@ async function callGroq(systemPrompt, userMessage, { jsonMode = false } = {}) {
 
   const body = {
     model: MODEL,
-    max_tokens: 1024,
+    // gpt-oss-120b is a reasoning model — it spends tokens on hidden
+    // chain-of-thought before writing the actual answer. If max_tokens
+    // runs out mid-reasoning there's nothing left for the response, which
+    // for JSON-mode calls surfaces as a 400 json_validate_failed with an
+    // empty failed_generation. Callers that need JSON should pass a higher
+    // maxTokens to leave room for both.
+    max_tokens: maxTokens,
     messages: [
       { role: 'system', content: systemPrompt },
       { role: 'user', content: userMessage },
     ],
   };
-  if (jsonMode) {
+  // Lower reasoning effort leaves more of the token budget for the actual
+  // output instead of internal chain-of-thought — only supported by the
+  // gpt-oss reasoning models, and mainly useful for jsonMode calls where
+  // truncated reasoning is what causes invalid JSON.
+  if (reasoningEffort) {
+    body.reasoning_effort = reasoningEffort;
+  }
+  if (jsonSchema) {
+    // Structured Outputs: constrained decoding guarantees the response
+    // matches the schema (Groq docs) — more reliable than plain json_object
+    // for the fixed shapes our callers actually need.
+    body.response_format = { type: 'json_schema', json_schema: jsonSchema };
+  } else if (jsonMode) {
     body.response_format = { type: 'json_object' };
   }
 
@@ -102,7 +142,7 @@ async function callGroq(systemPrompt, userMessage, { jsonMode = false } = {}) {
 
       const isTimeout = err.name === 'AbortError';
       const isNetworkError = !err.status && !isTimeout;
-      const retryable = isTimeout || isNetworkError || isRetryableStatus(err.status);
+      const retryable = isTimeout || isNetworkError || isRetryableStatus(err.status, err.code);
 
       if (!retryable || attempt === MAX_RETRIES) {
         throw isTimeout ? new Error(`LLM request timed out after ${REQUEST_TIMEOUT_MS}ms`) : err;
@@ -229,11 +269,55 @@ Write the explanation now.`;
  * missing field) is caught here with a clear error instead of reaching the
  * database or the learner's screen half-broken.
  */
+// Note: deliberately no minItems/maxItems/minimum/maximum here. Groq's
+// strict structured-output engine is OpenAI-compatible, and array-length /
+// numeric-range constraints are a documented gap in that engine (they're
+// accepted in the schema but not actually enforced, and have caused schema
+// validation errors on other OpenAI-compatible providers). We ask for the
+// right shape in the prompt and keep the exact-count / range enforcement in
+// validateAssessmentQuestions() below, which already throws a clear,
+// specific error if the model gets those wrong.
+const ASSESSMENT_JSON_SCHEMA = {
+  name: 'skill_assessment',
+  strict: true,
+  schema: {
+    type: 'object',
+    properties: {
+      questions: {
+        type: 'array',
+        items: {
+          type: 'object',
+          properties: {
+            question: { type: 'string' },
+            options: {
+              type: 'array',
+              items: { type: 'string' },
+            },
+            correctIndex: { type: 'integer' },
+            explanation: { type: 'string' },
+          },
+          required: ['question', 'options', 'correctIndex', 'explanation'],
+          additionalProperties: false,
+        },
+      },
+    },
+    required: ['questions'],
+    additionalProperties: false,
+  },
+};
+
 export async function generateSkillAssessment(skill, learnerLevel = 'beginner') {
   const systemPrompt = `Create a fair 5-question multiple-choice assessment for the skill "${skill}" at ${learnerLevel} level.
 Return ONLY valid JSON: {"questions":[{"question":string,"options":[string,string,string,string],"correctIndex":number,"explanation":string}]}.
 Questions must test practical understanding, not trivia. correctIndex must be 0-3.`;
-  const raw = await callGroq(systemPrompt, `Generate the assessment for ${skill}.`, { jsonMode: true });
+  const raw = await callGroq(systemPrompt, `Generate the assessment for ${skill}.`, {
+    jsonSchema: ASSESSMENT_JSON_SCHEMA,
+    // Leave real headroom beyond the default 1024: this model reasons
+    // before writing JSON, and 5 questions + options + explanations is a
+    // few hundred tokens of actual output on top of that reasoning.
+    maxTokens: 2048,
+    reasoningEffort: 'low',
+  });
 
   let parsed;
   try {
