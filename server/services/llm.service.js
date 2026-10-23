@@ -5,27 +5,38 @@
  * "understanding" the user. It does three jobs:
  *   1. extractGoalProfile()      — turn free text into structured data
  *   2. explainRecommendation()   — turn a score breakdown into plain English
- *   3. chatWithAssistant()       — grounded Q&A for the AI Assistant page
+ *   3. chatWithAssistant()       — grounded, tool-using Q&A for the AI
+ *                                  Assistant page (an "AI agent": the model
+ *                                  decides when to call search_courses,
+ *                                  get_skill_gaps, or check_prerequisites —
+ *                                  see agent.service.js — instead of
+ *                                  guessing facts about the learner)
  *
- * Uses Groq's OpenAI-compatible API (free tier) running Llama 3.3 70B.
+ * Uses Groq's OpenAI-compatible API (free tier), currently the gpt-oss-120b
+ * model (Groq deprecated llama-3.3-70b-versatile on 2026-06-17 in favor of
+ * this as the recommended replacement).
  *
  * IMPORTANT: this service must NEVER be used to generate the actual
  * recommendations or ranking — that logic lives in
  * services/recommendation.service.js and is deterministic code, not an LLM
- * call. Keeping this boundary is what makes the AI/ML implementation real
- * instead of "a chatbot wearing a UI."
+ * call. chatWithAssistant()'s search_courses tool uses a separate,
+ * lightweight retrieval path (rag.service.js — plain embedding similarity)
+ * rather than that ranking pipeline, so this boundary holds even with tool
+ * use added. Keeping this boundary is what makes the AI/ML implementation
+ * real instead of "a chatbot wearing a UI."
  *
  * RESILIENCE: a transient Groq failure (rate limit, timeout, 5xx) should
- * never surface as a raw 500 to the learner. callGroq() retries retryable
- * failures with exponential backoff + jitter under a hard timeout; callers
- * that produce "nice to have" text (chat, explanations) fall back to a
- * clear, honest message instead of throwing, while callers that need
- * structured data (goal extraction, assessment generation) still throw
- * after retries are exhausted, since guessing structured data silently
- * would be worse than a visible error.
+ * never surface as a raw 500 to the learner. callGroq()/callGroqWithTools()
+ * retry retryable failures with exponential backoff + jitter under a hard
+ * timeout; callers that produce "nice to have" text (chat, explanations)
+ * fall back to a clear, honest message instead of throwing, while callers
+ * that need structured data (goal extraction, assessment generation) still
+ * throw after retries are exhausted, since guessing structured data
+ * silently would be worse than a visible error.
  */
 
 import { validateAssessmentQuestions } from './assessment.service.js';
+import { AGENT_TOOLS, executeAgentTool } from './agent.service.js';
 
 const GROQ_API_URL = 'https://api.groq.com/openai/v1/chat/completions';
 const MODEL = 'openai/gpt-oss-120b'; // llama-3.3-70b-versatile was deprecated by Groq on 2026-06-17; this is Groq's recommended replacement
@@ -84,17 +95,20 @@ async function requestGroqOnce(apiKey, body, timeoutMs) {
     }
 
     const data = await response.json();
-    return data.choices?.[0]?.message?.content || '';
+    return data.choices?.[0]?.message || { role: 'assistant', content: '' };
   } finally {
     clearTimeout(timer);
   }
 }
 
-async function callGroq(
-  systemPrompt,
-  userMessage,
-  { jsonMode = false, jsonSchema = null, maxTokens = 1024, reasoningEffort = null } = {}
-) {
+/**
+ * Shared retry loop (exponential backoff + jitter under a hard timeout) —
+ * used by both callGroq() (single system+user prompt, returns text) and
+ * callGroqWithTools() (multi-turn + function-calling, returns the full
+ * message object). Centralizing this means the agent loop gets the exact
+ * same resilience guarantees as the three original LLM jobs, for free.
+ */
+async function callGroqRaw(body) {
   const apiKey = process.env.LLM_API_KEY;
   if (!apiKey) {
     throw new Error(
@@ -102,6 +116,38 @@ async function callGroq(
     );
   }
 
+  let lastError;
+
+  for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
+    try {
+      return await requestGroqOnce(apiKey, body, REQUEST_TIMEOUT_MS);
+    } catch (err) {
+      lastError = err;
+
+      const isTimeout = err.name === 'AbortError';
+      const isNetworkError = !err.status && !isTimeout;
+      const retryable = isTimeout || isNetworkError || isRetryableStatus(err.status, err.code);
+
+      if (!retryable || attempt === MAX_RETRIES) {
+        throw isTimeout ? new Error(`LLM request timed out after ${REQUEST_TIMEOUT_MS}ms`) : err;
+      }
+
+      // Exponential backoff with jitter, so a burst of retries doesn't
+      // itself look like a thundering-herd retry storm to Groq.
+      const backoff = BASE_BACKOFF_MS * 2 ** attempt + Math.random() * 200;
+      console.warn(`LLM call failed (attempt ${attempt + 1}/${MAX_RETRIES + 1}), retrying in ${Math.round(backoff)}ms:`, err.message);
+      await sleep(backoff);
+    }
+  }
+
+  throw lastError;
+}
+
+async function callGroq(
+  systemPrompt,
+  userMessage,
+  { jsonMode = false, jsonSchema = null, maxTokens = 1024, reasoningEffort = null } = {}
+) {
   const body = {
     model: MODEL,
     // gpt-oss-120b is a reasoning model — it spends tokens on hidden
@@ -132,31 +178,28 @@ async function callGroq(
     body.response_format = { type: 'json_object' };
   }
 
-  let lastError;
+  const message = await callGroqRaw(body);
+  return message.content || '';
+}
 
-  for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
-    try {
-      return await requestGroqOnce(apiKey, body, REQUEST_TIMEOUT_MS);
-    } catch (err) {
-      lastError = err;
-
-      const isTimeout = err.name === 'AbortError';
-      const isNetworkError = !err.status && !isTimeout;
-      const retryable = isTimeout || isNetworkError || isRetryableStatus(err.status, err.code);
-
-      if (!retryable || attempt === MAX_RETRIES) {
-        throw isTimeout ? new Error(`LLM request timed out after ${REQUEST_TIMEOUT_MS}ms`) : err;
-      }
-
-      // Exponential backoff with jitter, so a burst of retries doesn't
-      // itself look like a thundering-herd retry storm to Groq.
-      const backoff = BASE_BACKOFF_MS * 2 ** attempt + Math.random() * 200;
-      console.warn(`LLM call failed (attempt ${attempt + 1}/${MAX_RETRIES + 1}), retrying in ${Math.round(backoff)}ms:`, err.message);
-      await sleep(backoff);
-    }
-  }
-
-  throw lastError;
+/**
+ * Multi-turn, function-calling variant of callGroq(), used only by the AI
+ * Assistant's agent loop (see chatWithAssistant() below). Accepts a full
+ * `messages` array (system + user + any prior assistant/tool turns) and a
+ * `tools` schema (OpenAI/Groq function-calling format), and returns the
+ * full assistant message object — including `tool_calls` when the model
+ * wants to call a tool, since a tool-calling turn's `content` is often
+ * empty and the interesting part is which tool it asked for.
+ */
+async function callGroqWithTools(messages, tools, { maxTokens = 800, toolChoice = 'auto' } = {}) {
+  const body = {
+    model: MODEL,
+    max_tokens: maxTokens,
+    messages,
+    tools,
+    tool_choice: toolChoice,
+  };
+  return callGroqRaw(body);
 }
 
 /**
@@ -209,20 +252,97 @@ If the learner doesn't mention a skill, don't include it. Be conservative — on
  * Falls back to an honest, clearly-labeled message on failure rather than
  * throwing — a transient Groq outage shouldn't break the whole chat UI.
  */
+const MAX_AGENT_STEPS = 4;
+
+/**
+ * Grounded, tool-using Q&A for the AI Assistant page.
+ *
+ * This is a small AI agent: rather than answering purely from the context
+ * object + its own knowledge, the model is given a fixed toolbox
+ * (AGENT_TOOLS — search_courses, get_skill_gaps, check_prerequisites; see
+ * agent.service.js) and decides per-turn whether it needs to call one
+ * before it can answer accurately. Tool execution is 100% deterministic —
+ * the model can only relay what a tool actually returned, so it can't
+ * invent course names, skill gaps, or prerequisites even though it's now
+ * "acting" rather than just responding to one prompt.
+ *
+ * Loop: ask the model → if it asks for a tool, run the tool and feed the
+ * result back as a new turn → repeat (capped at MAX_AGENT_STEPS) → once it
+ * responds without requesting a tool, that's the final answer.
+ */
 export async function chatWithAssistant(message, context = {}) {
   const systemPrompt = `You are SkillPilot's AI learning assistant. You help learners
 understand their personalized learning path, explain recommendations, and answer
 questions about their goal and progress. Keep answers concise (2-4 sentences unless
-the question needs more detail). Use ONLY the context provided below — if you don't
-have enough information to answer specifically, say so rather than inventing details.
+the question needs more detail).
 
-Learner context:
+You have tools that look up the learner's REAL data (their actual skill gaps,
+course catalog matches, and prerequisite chains). Whenever a question needs a
+specific fact — a course name, a skill gap, a prerequisite — call the
+relevant tool instead of guessing. Never invent course titles, skill names,
+or prerequisites that a tool did not return to you. If a tool reports
+nothing found, say so honestly rather than making something up.
+
+Learner context (already known, no tool needed for this):
 ${JSON.stringify(context, null, 2)}`;
 
+  const messages = [
+    { role: 'system', content: systemPrompt },
+    { role: 'user', content: message },
+  ];
+
   try {
-    return await callGroq(systemPrompt, message);
+    for (let step = 0; step < MAX_AGENT_STEPS; step++) {
+      const assistantMessage = await callGroqWithTools(messages, AGENT_TOOLS, { maxTokens: 700 });
+
+      if (!assistantMessage.tool_calls || !assistantMessage.tool_calls.length) {
+        return assistantMessage.content || "I couldn't come up with a response — try rephrasing your question.";
+      }
+
+      // Record the assistant's tool-call turn before appending results —
+      // Groq/OpenAI's chat format requires this turn to exist so the
+      // following 'tool' messages have something to respond to.
+      messages.push({
+        role: 'assistant',
+        content: assistantMessage.content || null,
+        tool_calls: assistantMessage.tool_calls,
+      });
+
+      for (const call of assistantMessage.tool_calls) {
+        let args = {};
+        try {
+          args = JSON.parse(call.function.arguments || '{}');
+        } catch {
+          // Malformed arguments from the model — proceed with {} rather
+          // than failing the whole turn; most tools handle empty args
+          // gracefully (e.g. "no query provided").
+        }
+
+        let result;
+        try {
+          result = await executeAgentTool(call.function.name, args, context);
+        } catch (err) {
+          result = { error: `Tool "${call.function.name}" failed: ${err.message}` };
+        }
+
+        messages.push({
+          role: 'tool',
+          tool_call_id: call.id,
+          content: JSON.stringify(result),
+        });
+      }
+    }
+
+    // Hit the step cap without a final answer — force one more call with
+    // tool use disabled so the learner still gets a reply instead of
+    // silence, using whatever tool results were already gathered above.
+    const finalMessage = await callGroqWithTools(messages, AGENT_TOOLS, {
+      maxTokens: 700,
+      toolChoice: 'none',
+    });
+    return finalMessage.content || "I wasn't able to finish looking that up — could you narrow the question?";
   } catch (err) {
-    console.error('chatWithAssistant failed after retries:', err.message);
+    console.error('chatWithAssistant (agent) failed after retries:', err.message);
     return "I'm having trouble reaching the assistant service right now. Please try again in a moment — your progress and roadmap are unaffected.";
   }
 }

@@ -217,7 +217,7 @@ export async function resolveEmbedding(text) {
   return vector;
 }
 
-function denseCosineSimilarity(a, b) {
+export function denseCosineSimilarity(a, b) {
   if (!a.length || !b.length) return 0;
 
   let dot = 0;
@@ -243,7 +243,7 @@ function denseCosineSimilarity(a, b) {
  * Course representation
  * ─────────────────────────────────────────────── */
 
-function courseText(course) {
+export function courseText(course) {
   return [
     course.title,
     course.description,

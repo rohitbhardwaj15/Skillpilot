@@ -411,11 +411,46 @@ Recommendation Update
 This makes assessments part of the recommendation system rather than an isolated feature.
 
 
-# 💬 Grounded AI Assistant
+# 💬 Grounded, Tool-Using AI Assistant
 
-The AI assistant receives the learner's actual profile and learning-path context.
+The AI Assistant is a small **AI agent**, not a single-shot prompt: the model is
+given a fixed toolbox and decides, per question, whether it needs to look
+something up before answering.
 
-It is designed to answer questions using that context instead of inventing generic recommendations.
+```text
+Learner question
+       ↓
+Model decides: answer directly, or call a tool?
+       ↓
+ ┌───────────────┬──────────────────┬────────────────────────┐
+ │ search_courses│  get_skill_gaps  │  check_prerequisites    │
+ │ (RAG retrieval│ (deterministic   │ (DB lookup + evidence-  │
+ │  over catalog)│  skill-gap math) │  based knowledge state) │
+ └───────────────┴──────────────────┴────────────────────────┘
+       ↓
+Tool result (real data) fed back to the model
+       ↓
+Final answer — grounded in tool output, not model memory
+```
+
+Every tool is plain deterministic code — a database lookup, the same
+skill-gap math used elsewhere in the app, or embedding-based retrieval. The
+model can only relay what a tool actually returned; it cannot invent course
+names, skill gaps, or prerequisites, and it's instructed to say so honestly
+when a tool finds nothing.
+
+### Retrieval-Augmented Generation (RAG)
+
+The `search_courses` tool is backed by real RAG: the learner's question is
+embedded and compared (cosine similarity) against embeddings of the course
+catalog, and only the top-matching courses are returned as retrieved
+context — not the whole 1,324-course catalog stuffed into a prompt, and not
+the LLM guessing course names from training data. This uses the same
+embedding layer as the recommendation engine (including its local
+deterministic fallback when no embedding provider is configured), so it
+works fully offline too. It's a separate, lightweight retrieval path from
+the Recommendations page's full hybrid ranking pipeline — the agent finds
+candidates worth mentioning in conversation, it doesn't rank them.
 
 If the LLM service becomes unavailable, SkillPilot gracefully falls back to an honest response instead of pretending that it generated an AI answer.
 
@@ -563,7 +598,7 @@ This makes it possible to measure actual improvement instead of simply claiming 
 ---
 ### 🤖 LLM Integration
 
-SkillPilot uses **Groq's OpenAI-compatible API** with **Llama 3.3 70B** for natural-language understanding and recommendation explanations.
+SkillPilot uses **Groq's OpenAI-compatible API** with the **gpt-oss-120b** model (Groq's recommended replacement after deprecating Llama 3.3 70B on 2026-06-17) for natural-language understanding, recommendation explanations, and the tool-using AI Assistant agent.
 
 The LLM is intentionally limited to two responsibilities:
 
@@ -622,13 +657,22 @@ The LLM is intentionally limited to two responsibilities:
 │ │ assessment.service.js                                │ │
 │ │ AI-generated skill assessments • Scoring             │ │
 │ └──────────────────────────────────────────────────────┘ │
+│                                                          │
+│ ┌──────────────────────────────────────────────────────┐ │
+│ │ rag.service.js                                       │ │
+│ │ Embedding-based retrieval over the course catalog    │ │
+│ └──────────────────────────────────────────────────────┘ │
+│                                                          │
+│ ┌──────────────────────────────────────────────────────┐ │
+│ │ agent.service.js                                     │ │
+│ │ AI Assistant tool definitions • deterministic exec   │ │
+│ └──────────────────────────────────────────────────────┘ │
 └───────────────────────────┬──────────────────────────────┘
                             │
              ┌──────────────┼───────────────┐
              ↓              ↓               ↓
         MongoDB          Groq LLM       Embeddings
-                         Llama 3.3       Optional
-                           70B
+                        gpt-oss-120b     Optional
 ```
 
 ---
@@ -647,9 +691,11 @@ The LLM is intentionally limited to two responsibilities:
 | Backend             | Node.js, Express 5            |
 | Database            | MongoDB, Mongoose             |
 | Authentication      | JWT + bcrypt                  |
-| LLM                 | Groq / Llama 3.3 70B          |
+| LLM                 | Groq / gpt-oss-120b           |
 | NLP                 | TF-IDF                        |
 | Semantic Search     | Dense Embeddings              |
+| RAG                 | Embedding retrieval over course catalog |
+| AI Agent            | Function-calling tool use (Groq)         |
 | Preference Learning | Online Logistic Regression    |
 | Ranking             | Hybrid scoring + MMR          |
 | Testing             | Node.js test suites           |
@@ -927,7 +973,9 @@ E2E_BASE_URL=<server-url> npm run test:api
 │   │   ├── pathgen.service.js
 │   │   ├── readiness.service.js
 │   │   ├── learner.service.js
-│   │   └── assessment.service.js
+│   │   ├── assessment.service.js
+│   │   ├── rag.service.js
+│   │   └── agent.service.js
 │   │
 │   ├── middleware/
 │   │   ├── auth
